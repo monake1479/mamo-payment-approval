@@ -33,6 +33,7 @@ class PaymentsPage extends StatelessWidget {
             ),
             PaymentsLoadStatus.success => _PaymentsHistory(
               payments: state.decidedPayments,
+              reportingTimeZone: state.reportingTimeZone,
               formatters: PaymentFormatters(
                 reportingTimeZone: state.reportingTimeZone,
               ),
@@ -48,38 +49,56 @@ class PaymentsPage extends StatelessWidget {
 class _PaymentsHistory extends StatelessWidget {
   const _PaymentsHistory({
     required this.payments,
+    required this.reportingTimeZone,
     required this.formatters,
     required this.onOpenPayment,
   });
 
   final List<Payment> payments;
+  final String reportingTimeZone;
   final PaymentFormatters formatters;
   final ValueChanged<String> onOpenPayment;
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
-    if (payments.isEmpty) {
-      return PaymentsEmptyView(
-        title: l10n.emptyPaymentsTitle,
-        description: l10n.emptyPaymentsDescription,
-      );
-    }
+    final ThemeData theme = Theme.of(context);
+    final Widget history = payments.isEmpty
+        ? PaymentsEmptyView(
+            title: l10n.emptyPaymentsTitle,
+            description: l10n.emptyPaymentsDescription,
+          )
+        : ListView.separated(
+            key: const PageStorageKey<String>('payments.history'),
+            padding: const EdgeInsets.only(bottom: AppTheme.sectionGap),
+            itemCount: payments.length,
+            separatorBuilder: (BuildContext context, int index) =>
+                const SizedBox(height: AppTheme.itemGap),
+            itemBuilder: (BuildContext context, int index) {
+              final Payment payment = payments[index];
+              return PaymentRow(
+                payment: payment,
+                formatters: formatters,
+                onTap: () => onOpenPayment(payment.id),
+              );
+            },
+          );
 
-    return ListView.separated(
-      key: const PageStorageKey<String>('payments.history'),
-      padding: const EdgeInsets.only(bottom: AppTheme.sectionGap),
-      itemCount: payments.length,
-      separatorBuilder: (BuildContext context, int index) =>
-          const SizedBox(height: AppTheme.itemGap),
-      itemBuilder: (BuildContext context, int index) {
-        final Payment payment = payments[index];
-        return PaymentRow(
-          payment: payment,
-          formatters: formatters,
-          onTap: () => onOpenPayment(payment.id),
-        );
-      },
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Semantics(
+          identifier: 'payments.reportingTimeZone',
+          child: Text(
+            l10n.paymentsReportingTimeZone(reportingTimeZone),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.itemGap),
+        Expanded(child: history),
+      ],
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mamo_payment_approval_challenge/app/app.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
@@ -42,6 +43,18 @@ void main() {
         theme.filledButtonTheme.style!.minimumSize!.resolve(<WidgetState>{}),
         const Size(48, 48),
       );
+      final SystemUiOverlayStyle systemUiStyle = AppTheme.systemUiOverlayStyle(
+        colors,
+      );
+      expect(systemUiStyle.statusBarColor, colors.surface);
+      expect(systemUiStyle.statusBarBrightness, theme.brightness);
+      expect(
+        systemUiStyle.statusBarIconBrightness,
+        theme.brightness == Brightness.dark
+            ? Brightness.light
+            : Brightness.dark,
+      );
+      expect(theme.appBarTheme.systemOverlayStyle, systemUiStyle);
     });
   }
 
