@@ -30,6 +30,8 @@ The read-only increment implements `HOME-01..04`, `PAY-01..03`, `DETAIL-01/02`, 
 
 Compact layouts use bottom navigation; expanded layouts use a rail. Loading, empty, typed-error/retry, success, light/dark, account-zone dates, fixed AED formatting, and 200% text are covered by widget tests. The app shell exposes a composition builder for the later global approval/debug layer but does not implement either feature in this increment. `maestro/payments_list.yaml` and `maestro/payment_details.yaml` cover the deterministic list, summary, details, and return journeys; native run evidence remains separate from Flutter tests.
 
+Local review follow-up for `MONEY-01` rejects any positive input that would normalize to zero fils, including values inside the binary-noise tolerance. Regression tests cover the shared validator and payment model. Date display delegates English month names to `intl` with an explicit locale, preserving the accepted format and account zone even when the device locale differs.
+
 ## Native foundation increment
 
 The local foundation adds `dev`, `staging`, and `prod` on both platforms (ADR 0007) and removes the unused Web scaffold and platform metadata. This supports `DELIVERY-01/02` without implementing payment behaviour.
