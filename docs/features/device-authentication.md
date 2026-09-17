@@ -16,9 +16,10 @@ Call `cancel()` when the active request is invalidated, the approval state owner
 disposed, or actual backgrounding revokes disclosure. Cancellation invalidates the
 active generation before requesting native prompt closure, so a late success is
 reported as cancelled. Its typed result distinguishes no active attempt, a stopped
-prompt, and a failed prompt stop without exposing plugin exceptions. A new attempt
-is rejected while native cancellation is settling. The UI must still scope success
-to the same active request.
+prompt, and a failed prompt stop without exposing plugin exceptions. Native
+occupancy remains reserved until the previous `authenticate()` future settles, even
+when prompt stopping returns false or throws (as on iOS); a new attempt is rejected
+until then. The UI must still scope success to the same active request.
 
 The adapter allows biometrics or the operating system credential, treats the
 operation as sensitive, and does not persist authentication across backgrounding.

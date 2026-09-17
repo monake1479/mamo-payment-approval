@@ -10,6 +10,7 @@ final class LocalAuthDeviceAuthenticator implements DeviceAuthenticator {
   final LocalAuthClient _client;
 
   int _nextAttempt = 0;
+  int? _inFlightAttempt;
   int? _activeAttempt;
   Future<DeviceAuthenticationCancellationResult>? _cancellationInProgress;
 
@@ -24,11 +25,12 @@ final class LocalAuthDeviceAuthenticator implements DeviceAuthenticator {
         'The device authentication prompt reason must not be empty.',
       );
     }
-    if (_activeAttempt != null || _cancellationInProgress != null) {
+    if (_inFlightAttempt != null || _cancellationInProgress != null) {
       return const DeviceAuthenticationFailed();
     }
 
     final attempt = ++_nextAttempt;
+    _inFlightAttempt = attempt;
     _activeAttempt = attempt;
     try {
       final supported = await _client.isDeviceSupported();
@@ -69,6 +71,9 @@ final class LocalAuthDeviceAuthenticator implements DeviceAuthenticator {
     } finally {
       if (_isCurrent(attempt)) {
         _activeAttempt = null;
+      }
+      if (_inFlightAttempt == attempt) {
+        _inFlightAttempt = null;
       }
     }
   }

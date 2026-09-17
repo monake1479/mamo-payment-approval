@@ -323,16 +323,51 @@ void main() {
           await cancellation,
           DeviceAuthenticationCancellationResult.promptStopped,
         );
+        authenticationCompletion.complete(true);
+        expect(await first, isA<DeviceAuthenticationCancelled>());
         client.authenticateCompletion = null;
         final next = await authenticator.authenticate(localizedReason: 'Next');
         expect(next, isA<DeviceAuthenticationSucceeded>());
         expect(client.authenticateCallCount, 2);
-        authenticationCompletion.complete(true);
-        expect(await first, isA<DeviceAuthenticationCancelled>());
       },
     );
 
-    test('a new attempt can start while a cancelled native result is still pending', () async {
+    test(
+      'keeps native occupancy until a cancelled result settles when stop fails',
+      () async {
+        final firstCompletion = Completer<bool>();
+        final client = _FakeLocalAuthClient(
+          authenticateCompletion: firstCompletion,
+          stopAuthenticationResult: false,
+        );
+        final authenticator = LocalAuthDeviceAuthenticator(client: client);
+        final first = authenticator.authenticate(localizedReason: 'First');
+        await client.authenticationStarted;
+
+        expect(
+          await authenticator.cancel(),
+          DeviceAuthenticationCancellationResult.promptStopFailed,
+        );
+        final overlapping = await authenticator.authenticate(
+          localizedReason: 'Overlapping',
+        );
+
+        expect(overlapping, isA<DeviceAuthenticationFailed>());
+        expect(client.authenticateCallCount, 1);
+
+        firstCompletion.complete(true);
+        expect(await first, isA<DeviceAuthenticationCancelled>());
+        client.authenticateCompletion = null;
+        final retry = await authenticator.authenticate(
+          localizedReason: 'Retry',
+        );
+
+        expect(retry, isA<DeviceAuthenticationSucceeded>());
+        expect(client.authenticateCallCount, 2);
+      },
+    );
+
+    test('keeps native occupancy until a cancelled result settles when stop succeeds', () async {
       final firstCompletion = Completer<bool>();
       final client = _FakeLocalAuthClient(
         authenticateCompletion: firstCompletion,
@@ -340,20 +375,54 @@ void main() {
       final authenticator = LocalAuthDeviceAuthenticator(client: client);
       final first = authenticator.authenticate(localizedReason: 'First');
       await client.authenticationStarted;
+
       expect(
         await authenticator.cancel(),
         DeviceAuthenticationCancellationResult.promptStopped,
       );
-      client.authenticateCompletion = null;
-      client.authenticateResult = true;
-
-      final second = await authenticator.authenticate(
-        localizedReason: 'Second',
+      final overlapping = await authenticator.authenticate(
+        localizedReason: 'Overlapping',
       );
-      firstCompletion.complete(true);
 
-      expect(second, isA<DeviceAuthenticationSucceeded>());
+      expect(overlapping, isA<DeviceAuthenticationFailed>());
+      expect(client.authenticateCallCount, 1);
+
+      firstCompletion.complete(true);
       expect(await first, isA<DeviceAuthenticationCancelled>());
+      client.authenticateCompletion = null;
+      final retry = await authenticator.authenticate(localizedReason: 'Retry');
+
+      expect(retry, isA<DeviceAuthenticationSucceeded>());
+      expect(client.authenticateCallCount, 2);
+    });
+
+    test('keeps native occupancy until a cancelled result settles when stop throws', () async {
+      final firstCompletion = Completer<bool>();
+      final client = _FakeLocalAuthClient(
+        authenticateCompletion: firstCompletion,
+        stopExceptionCode: LocalAuthExceptionCode.deviceError,
+      );
+      final authenticator = LocalAuthDeviceAuthenticator(client: client);
+      final first = authenticator.authenticate(localizedReason: 'First');
+      await client.authenticationStarted;
+
+      expect(
+        await authenticator.cancel(),
+        DeviceAuthenticationCancellationResult.promptStopFailed,
+      );
+      final overlapping = await authenticator.authenticate(
+        localizedReason: 'Overlapping',
+      );
+
+      expect(overlapping, isA<DeviceAuthenticationFailed>());
+      expect(client.authenticateCallCount, 1);
+
+      firstCompletion.complete(true);
+      expect(await first, isA<DeviceAuthenticationCancelled>());
+      client.authenticateCompletion = null;
+      final retry = await authenticator.authenticate(localizedReason: 'Retry');
+
+      expect(retry, isA<DeviceAuthenticationSucceeded>());
       expect(client.authenticateCallCount, 2);
     });
 
