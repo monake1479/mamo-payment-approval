@@ -3,7 +3,7 @@
 - [Product requirements](product/requirements.md): behavioural source of truth and acceptance criteria.
 - [Architecture overview](architecture/overview.md): boundaries, state ownership, and runtime flow.
 - [ADR 0001](decisions/0001-feature-first-clean-architecture.md): initial architecture decision.
-- [Money representation](decisions/0002-money-representation.md): deferred details for the explicit `double` direction.
+- [Money representation](decisions/0002-money-representation.md): accepted bounded whole-fils `double` semantics and verification obligations.
 - [Testing strategy](testing/strategy.md): test levels and critical scenarios.
 - [Verification record template](testing/evidence-template.md): criteria, local input identity, results, findings, and handoff evidence.
 - [Agent workflow review](testing/agent-workflow-review.md): independent audit scope, corrections, and verification limits.
@@ -19,6 +19,11 @@
 - [Local push gate](decisions/0009-local-push-gate-and-exceptions.md): change-based checks, single-attempt exceptions, and audit limits.
 - [Bootstrap and diagnostics](decisions/0010-bootstrap-and-local-error-boundary.md): flavor entry points, dependency ownership, and safe fatal failures.
 - [Runtime screen contract](product/runtime-foundation.md): startup/failure criteria, layouts, and native privacy scope.
+- [Payments data](features/payments-data.md): authoritative collection, money, ordering, and account-month behaviour.
+- [Payment screens](features/payment-screens.md): Home, Payments, and decided-payment details.
+- [Device authentication](features/device-authentication.md): native adapter contract and platform setup.
+- [Approval flow](features/approval-flow.md): overlay, masking, lifecycle, decisions, and draggable request action.
+- [Reviewer APK delivery](features/reviewer-delivery.md): private artifact provenance, installation, and limitations.
 - [Configuration hygiene](architecture/configuration-hygiene.md): lockfile, dependency review, and secret scanning.
 - [Push workflow](../.ai/workflows/push-gate.md): installation, test selection, approval, and evidence.
 - [Extension backlog](product/extension-backlog.md): candidates for discussion, not accepted scope.

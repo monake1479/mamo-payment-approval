@@ -1,6 +1,10 @@
 # Implementation Contracts
 
-These concrete contracts support parallel implementation. The owner delegated remaining routine design decisions on 2026-09-17; the decisions below are coordinator-selected and remain subject to owner review. They do not claim implementation or verification. Existing accepted product Q&A takes precedence.
+These concrete contracts guided the parallel feature work and now describe the
+integrated baseline. The owner delegated remaining routine design decisions on
+2026-09-17; those coordinator-selected decisions remain subject to owner review.
+Verification claims belong in commit/PR evidence rather than in this contract.
+Existing accepted product Q&A takes precedence.
 
 ## Scope and boundaries
 
@@ -23,7 +27,12 @@ The data/state task owns and publishes the exact Dart signatures before downstre
 
 PaymentsCubit is the single collection state owner. It owns loading, request creation, and decision writes through domain operations/repository, and updates the collection before returning operation success. UI and details derive from this state. The short-lived ApprovalCubit owns only authentication, disclosure, and submission state for one request. Inject authenticator and a typed decision callback/operation; it must not subscribe to another Cubit or maintain a second collection. App composition connects the callback to the authoritative write path.
 
-The authentication task can implement its domain-facing contract independently: `DeviceAuthenticator.authenticate()` returns a typed success/cancelled/unavailable/failed outcome and exposes cancellation where supported. Presentation supplies localized prompt text through composition, not domain imports. Cancellation or late completion never grants disclosure. Platform plugins live only in data adapters.
+`DeviceAuthenticator.authenticate()` returns a typed
+success/cancelled/unavailable/failed outcome and exposes typed cancellation results.
+Presentation supplies localized prompt text through composition, not domain
+imports. Cancellation or late completion never grants disclosure. The production
+`local_auth` plugin remains in the data adapter; deterministic fakes remain in
+tests.
 
 Only a native authentication result may reveal the current request. Approval additionally requires a separate explicit action while authorized. Reject does not require authentication. Guard duplicate requests, decisions, disposal, and stale auth completions.
 
@@ -39,6 +48,13 @@ All demo state is session-only. OS process termination resets to the seed on the
 
 The UI/theme PR targets `dev` and remains unmerged. Feature workers use separate Git and Orca child worktrees based on its exact branch/commit. Each task owns a small feature branch and its tests. No worker merges PRs, enables auto-merge, force-pushes, or writes to `dev`/`main`.
 
-Workers may commit their tested local increments and publish feature PRs into `dev` with an explicit dependency link to the theme PR; until dependencies merge, these PRs include that ancestor. Coordinate shared dependency/ARB/router changes rather than assuming another branch already provides them. Integrate selected commits into a separate work branch with provenance and rerun the full gate. A green branch is not proof that the combined application works.
+Workers may commit their tested local increments and publish feature PRs into `dev`
+with an explicit dependency link to the theme PR; until dependencies merge, these
+PRs include that ancestor. The integration branch is based on the tested approval
+head, which already contains the theme, data, authentication, and screen ancestors;
+it adds only the selected reviewer-delivery commits plus deliberate reconciliation.
+Shared ARB, composition, documentation, and workflow changes require a combined
+full gate and native journey evidence. A green feature branch alone is not proof
+that the integrated application works.
 
 The coordinator owns integration and emulator allocation. Do not run concurrent installs on the same simulator/emulator. Use separate devices or a requested exclusive lease. Every report identifies branch, commit, tests, evidence, and remaining gaps. A blocked native/manual check stays visible; no fake-auth release or test bypass is permitted.

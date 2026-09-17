@@ -96,9 +96,11 @@ jobs:
             printf '3. Transfer `%s` to an Android API 24+ phone.\n' "$apk_name"
             printf '4. Open the APK on the phone and approve installation from that file source when Android asks.\n'
             printf '5. Launch **Mamo**.\n\n'
+            printf 'To try approval, configure a device screen lock or biometric first. Tap the floating request action, choose **Reveal details**, complete the operating-system prompt, then choose **Approve** separately. Without an enrolled device credential, details stay masked and **Reject** remains available.\n\n'
             printf 'As an optional developer path, install with `adb install -r %s`.\n' "$apk_name"
             printf 'This runner uses an ephemeral debug key that can differ between builds. If Android reports a signature conflict, manually uninstall the existing challenge app in Android settings and retry; uninstalling resets its demo session data. Do not automate uninstall on a personal device.\n'
             printf 'Repository access is required to download the artifact. It expires after 30 days.\n'
+            printf 'This sample stores data only for the app session and performs no backend payment execution.\n'
           } > "$delivery_dir/README.md"
 
       - name: Upload private reviewer artifact

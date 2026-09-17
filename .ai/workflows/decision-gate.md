@@ -20,7 +20,11 @@ For the authorized implementation increment, consult [delegated implementation c
 
 - Money semantics: ADR 0002 preserves `double`, with details open.
 - Monthly summary: approved-only inclusion, decision-time membership, and account-level reporting time zone are accepted in product Q2/Q5/Q6; do not reopen them without a new owner request.
-- Approval: masks, process termination, and backgrounding during an already submitted decision remain open. Non-dismissible approval, one active request, device-credential fallback, authentication before approval, and remasking after actual backgrounding are accepted in product Q7–Q11.
+- Approval: the delegated implementation contract selects masks, session reset on
+  process termination, and one allowed completion for a decision already submitted
+  before backgrounding. Non-dismissible approval, one active request,
+  device-credential fallback, authentication before approval, and remasking after
+  actual backgrounding are accepted in product Q7–Q11.
 - Distribution: installable iOS channel and signing access.
 - Product additions: evaluate with the owner after the baseline works.
 

@@ -8,7 +8,14 @@ The versioned `.githooks/pre-push` runs `tool/push_gate.py`. After `fvm use` and
 sh tool/install_hooks.sh
 ```
 
-This requires Git with worktree configuration support, Python 3 on macOS/Linux (standard library only), and FVM on PATH. The installer enables `extensions.worktreeConfig` in the local repository and sets `core.hooksPath=.githooks` only for the current worktree. It refuses to replace a different hook configuration. Git can copy worktree configuration when creating a new worktree; the relative path still selects that checkout's own hooks. Run the installer there to verify setup. Existing other worktrees are not reconfigured. Cloning does not activate hooks automatically; never set this path globally.
+This requires Git with worktree configuration support, Python 3.9 or newer on
+macOS/Linux (standard library only), and FVM on PATH. The installer enables
+`extensions.worktreeConfig` in the local repository and sets
+`core.hooksPath=.githooks` only for the current worktree. It refuses to replace a
+different hook configuration. Git can copy worktree configuration when creating a
+new worktree; the relative path still selects that checkout's own hooks. Run the
+installer there to verify setup. Existing other worktrees are not reconfigured.
+Cloning does not activate hooks automatically; never set this path globally.
 
 Push one checked-out branch, at its committed HEAD, to a configured remote name. The working tree and index must be clean, including untracked source files; ignored build output is allowed. The hook does not stash, stage, commit, or restore work. It rejects tags, deletions, multi-ref pushes, direct URLs, and direct `dev`/`main` updates. Repository bootstrap is a separate owner-reviewed action, not a test exception.
 

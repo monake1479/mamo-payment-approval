@@ -10,24 +10,17 @@ import 'package:mamo_payment_approval_challenge/features/payments/domain/authent
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
-typedef GlobalAppLayerBuilder = Widget Function(
-  BuildContext context,
-  Widget navigator,
-);
-
 class MamoPaymentApprovalApp extends StatefulWidget {
   const MamoPaymentApprovalApp({
     required this.router,
     required this.paymentsCubit,
     required this.deviceAuthenticator,
-    this.globalLayerBuilder,
     super.key,
   });
 
   final GoRouter router;
   final PaymentsCubit paymentsCubit;
   final DeviceAuthenticator deviceAuthenticator;
-  final GlobalAppLayerBuilder? globalLayerBuilder;
 
   @override
   State<MamoPaymentApprovalApp> createState() => _MamoPaymentApprovalAppState();
@@ -85,15 +78,12 @@ class _MamoPaymentApprovalAppState extends State<MamoPaymentApprovalApp>
         onGenerateTitle: (BuildContext context) =>
             AppLocalizations.of(context).appTitle,
         builder: (BuildContext context, Widget? navigator) {
-          final Widget routedContent = widget.globalLayerBuilder == null
-              ? navigator!
-              : widget.globalLayerBuilder!(context, navigator!);
           return AnnotatedRegion<SystemUiOverlayStyle>(
             value: AppTheme.systemUiOverlayStyle(Theme.of(context).colorScheme),
             child: PaymentFlowLayer(
               router: widget.router,
               authenticator: widget.deviceAuthenticator,
-              child: routedContent,
+              child: navigator!,
             ),
           );
         },

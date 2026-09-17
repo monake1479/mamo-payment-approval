@@ -1,6 +1,6 @@
 ---
 name: mamo-feature-slice
-description: Plan or implement a runnable feature increment or behavioural fix in this project. Use for new features, reproduced defects, or vertical-slice planning; not for documentation-only edits or review-only tasks.
+description: Plan, implement, or integrate a runnable feature increment or behavioural fix in this project. Use for new features, reproduced defects, vertical-slice planning, or integration reconciliation; not for documentation-only edits or review-only tasks.
 ---
 
 # Mamo Feature Slice
@@ -40,7 +40,9 @@ If a teammate is authorized, give them the same concrete scope, the full spec pa
 ## Current code anchors
 
 - [App composition](../../../lib/app/app.dart)
-- [Foundation page](../../../lib/features/payments/presentation/pages/foundation_page.dart)
-- [Foundation test](../../../test/app/app_test.dart)
+- [Payment flow composition](../../../lib/app/payment_flow_layer.dart)
+- [Home page](../../../lib/features/payments/presentation/pages/home_page.dart)
+- [App composition tests](../../../test/app/app_test.dart)
+- [Approval-flow tests](../../../test/app/approval_flow_test.dart)
 
-These are the current starting points. Use the closest implemented feature and its tests when available; do not invent source paths.
+Use the closest implemented feature and its tests; do not invent source paths.

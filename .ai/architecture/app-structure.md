@@ -15,7 +15,7 @@ presentation -> domain <- data
 - `lib/core/`: small primitives shared by multiple features. Do not use it as a miscellaneous folder.
 - `lib/features/payments/domain/`: payment entities, value rules, repository contracts, and use cases. It must not import Flutter.
 - `lib/features/payments/data/`: deterministic demo data, DTO mapping, and repository implementations.
-- `lib/features/payments/presentation/`: screens, overlays, widgets, and state holders.
+- `lib/features/payments/presentation/`: implemented screens, overlays, widgets, and state holders.
 
 Create directories and abstractions when the first real type needs them; do not commit empty architecture ceremony.
 
@@ -34,4 +34,4 @@ Create directories and abstractions when the first real type needs them; do not 
 
 - `docs/decisions/0001-feature-first-clean-architecture.md`
 - `docs/architecture/overview.md`
-- `lib/app/app.dart` (current composition entry point; feature wiring is planned)
+- `lib/app/app.dart` and `lib/app/payment_flow_layer.dart` (current composition and feature wiring)

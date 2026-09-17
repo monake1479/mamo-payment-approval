@@ -4,7 +4,10 @@
 
 Use Maestro for native application journeys. Read this workflow when changing a screen, navigation, an approval interaction, a flow, or the E2E runner. Flutter unit/widget tests still own detailed business rules, semantics assertions, and controlled async races.
 
-The runtime foundation has launch/resume and configuration-failure flows under `maestro/`. Payment journeys and native CI remain planned in `docs/implementation-plan.md`.
+The repository has launch/resume, configuration-failure, payment list/details,
+approval-rejection, and draggable-action flows under `maestro/`. Native
+authentication evidence and Maestro CI remain separate as described in
+`docs/implementation-plan.md`.
 
 ## Before authoring or running
 

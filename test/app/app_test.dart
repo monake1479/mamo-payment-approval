@@ -162,27 +162,6 @@ void main() {
     expect(find.bySemanticsIdentifier('app.failure'), findsNothing);
   });
 
-  testWidgets('global layer builder wraps the navigator without replacing it', (
-    WidgetTester tester,
-  ) async {
-    await tester.pumpWidget(
-      MamoPaymentApprovalApp(
-        router: router,
-        paymentsCubit: cubit,
-        deviceAuthenticator: authenticator,
-        globalLayerBuilder: (BuildContext context, Widget navigator) => Stack(
-          children: <Widget>[
-            navigator,
-            const IgnorePointer(child: SizedBox(key: Key('global-layer'))),
-          ],
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('global-layer')), findsOneWidget);
-    expect(find.bySemanticsIdentifier('home.page'), findsOneWidget);
-  });
-
   testWidgets('resume refreshes the account-month summary', (
     WidgetTester tester,
   ) async {

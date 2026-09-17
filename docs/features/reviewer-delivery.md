@@ -34,6 +34,14 @@ For the primary no-tooling installation path:
 4. Open the APK on the phone and approve installation from that file source when Android asks.
 5. Launch **Mamo**.
 
+To exercise the approval path, first configure an operating-system screen lock or
+biometric on the review device. Tap the floating request action, select **Reveal
+details**, complete the native prompt, and then select **Approve** as a separate
+action. If the device has no enrolled credential, the app reports authentication
+as unavailable, keeps amount and counterparty masked, and still permits rejection.
+Cancellation or a failed prompt also keeps data masked. No app-owned PIN or test
+bypass exists in the reviewer build.
+
 For developers with Android platform tools, `adb` is an optional alternative after extracting the artifact:
 
 ```sh
@@ -55,4 +63,17 @@ flutter build apk --flavor prod -t lib/main_prod.dart --release
 
 The Android Gradle release configuration currently selects the debug signing config. The job verifies the built APK with the Android SDK's `apksigner` and requires the signer certificate output to identify `Android Debug` before upload. It also reads the packaged metadata with `aapt` and requires the declared minimum SDK to be API 24, matching the current pinned Flutter/native configuration.
 
-This artifact does not claim production signing, Play Store readiness, durable payment execution, or independent native-authentication evidence. Application data is session-only and resets when the OS process is terminated. CI compilation and signature verification do not replace device installation, critical-journey, or physical-device authentication checks; those remain separate delivery evidence when the corresponding features are integrated.
+This artifact does not claim production signing, Play Store readiness, durable
+payment execution, or physical-device authentication evidence. Native
+authentication authorizes local disclosure and confirmation in this session-only
+sample; it does not execute a backend payment. Application data resets when the OS
+process is terminated. CI compilation and signature verification do not replace
+device installation or critical-journey checks.
+
+The baseline deliberately uses an in-memory repository, English-only UI copy,
+fixed AED formatting, and account-zone reporting with `Asia/Dubai`; it does not add
+a backend, persistence, an account settings surface, or a production signing
+configuration. With more time, the next work would be reviewer-approved product
+scope such as a deliberately selected backlog addition, broader physical-device
+authentication coverage, and automated native-journey evidence—not speculative
+framework layers or an authentication bypass.

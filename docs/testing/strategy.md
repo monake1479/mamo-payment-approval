@@ -41,7 +41,7 @@ Use widget tests for:
 - masked and revealed content;
 - Approve unavailable before authenticated disclosure and after background remasking, Reject available without authentication, and remasking covering semantics/copyable content without closing the overlay or adding an app-wide lock;
 - debug-action visibility, dragging, and session position;
-- compact and expanded layouts, semantics, loading, empty, and error states in both light and dark appearances as implemented (`UI-01`; the current foundation has only a light placeholder).
+- compact and expanded layouts, semantics, loading, empty, error, and success states in both implemented light and dark appearances (`UI-01`).
 
 ## Maestro end-to-end tests
 
@@ -52,14 +52,14 @@ Keep a small set of critical journeys, introduced with their implementation slic
 3. Navigate between screens and verify the debug action retains its position.
 4. Open decided-payment details from Home and Payments and return to the originating screen.
 
-The runtime foundation adds `maestro/foundation.yaml` (normal launch and resume,
+The repository includes `maestro/foundation.yaml` (normal launch and resume,
 `RUNTIME-01/03`) and `maestro/configuration_failure.yaml` (safe mismatched-flavor
-rejection, `RUNTIME-01/03`). The failure flow requires an Android build with
+rejection, `RUNTIME-01/03`), plus payment list/details, approval-rejection, and
+draggable-action flows. The failure flow requires an Android build with
 `--flavor dev -t lib/main_prod.dart --release`; it is not a production test flag.
-Reinstall the correctly paired build after that test. Both flows operate only on
-the supplied `APP_ID`; normal launch resets that test installation. Privacy-preview
-inspection is separate from a passing resume assertion. A seeded payments-list
-flow arrives with slice 1. Keep flows under `maestro/`.
+Reinstall the correctly paired build after that test. Flows operate only on the
+supplied `APP_ID`; normal launch resets that test installation. Privacy-preview
+inspection is separate from a passing resume assertion. Keep flows under `maestro/`.
 
 Use Android emulators and iOS simulators for repeatable local runs, with deterministic data/session reset and stable semantics identifiers. Each journey must run independently. Cover affected states and materially different layouts; use lower-level tests for exhaustive combinations. The [Maestro workflow](../../.ai/workflows/maestro-e2e.md) defines authoring, commands, artifact collection, and reruns.
 
@@ -67,9 +67,24 @@ Use Android emulators and iOS simulators for repeatable local runs, with determi
 
 Keep deterministic authentication fakes in unit/widget tests and exercise the native adapter in full-app journeys. Do not silently bypass authentication for Maestro. Simulator/emulator authentication input, where supported, must be labelled as simulated rather than real-device biometric evidence.
 
-Separately verify real authentication success, cancellation, failure/unavailability, and lifecycle behaviour on iOS and Android devices. Cover biometrics and the operating system's device PIN/passcode fallback, including no available credential. Verify that the native prompt's own lifecycle transitions do not invalidate a successful result, while actually switching away remasks the request and prevents a late authentication result from revealing it. Return must preserve the overlay, require fresh authentication for disclosure/approval, and impose no global app lock. Confirm that successful authentication still requires a separate Approve action. These are planned checks for Q9–Q11, not existing coverage.
+Separately verify native authentication success, cancellation,
+failure/unavailability, and lifecycle behaviour on iOS and Android. Cover
+biometrics and the operating system's device PIN/passcode fallback, including no
+available credential. Verify that the native prompt's own lifecycle transitions do
+not invalidate a successful result, while actually switching away remasks the
+request and prevents a late authentication result from revealing it. Return must
+preserve the overlay, require fresh authentication for disclosure/approval, and
+impose no global app lock. Confirm that successful authentication still requires a
+separate Approve action. Unit/widget coverage implements these state contracts;
+native observations remain separate platform evidence and must identify the tested
+binary.
 
-Record hardware, OS, setup, and limitations without capturing credentials. Current Maestro iOS execution targets simulators; real iOS-device checks are manual. If a native step cannot be automated, report it as manual or blocked, not a passing automated flow. Process termination and backgrounding during an already submitted decision remain owner decisions.
+Record hardware, OS, setup, and limitations without capturing credentials. Current
+Maestro iOS execution targets simulators; real iOS-device checks are manual. If a
+native step cannot be automated, report it as manual or blocked, not a passing
+automated flow. Process termination resets the session. A decision submitted before
+backgrounding may complete once, with its terminal UI effect consumed once after
+resume.
 
 ## Local push tooling
 
@@ -89,13 +104,15 @@ CI retains format, analysis, and machine-readable test logs for 30 days. Preserv
 
 Current coverage includes runtime startup/flavor/error-handler tests, localized
 failure/theme layout tests, push-tooling and scanner-wrapper regression tests,
-payment domain/data/collection-state tests, read-only Home/Payments/details widget
-tests, and native foundation/payment-screen Maestro flows. Swift `RunnerTests` cover the privacy cover
-itself; run through the `dev` Xcode scheme on a selected simulator. These tests do
-not replace OS app-switcher inspection. CI enforces the lockfile, runs pinned
-Gitleaks, generates localizations, and runs format/analyze/full Flutter and tooling
-tests, not native tests or Maestro. Payment coverage arrives with each slice. No
-arbitrary coverage percentage replaces meaningful scenario coverage.
+payment domain/data/collection-state tests, Home/Payments/details widget tests,
+native-authentication adapter/controller tests, approval-overlay/lifecycle widget
+tests, and native foundation/payment/rejection/debug-action Maestro flows. Swift
+`RunnerTests` cover the privacy cover itself; run them through the `dev` Xcode
+scheme on a selected simulator. These tests do not replace OS app-switcher
+inspection. CI enforces the lockfile, runs pinned Gitleaks, generates
+localizations, and runs format/analyze/full Flutter and tooling tests, not native
+tests or Maestro. No arbitrary coverage percentage replaces meaningful scenario
+coverage.
 
 Use controlled futures/fake time for duplicate decisions, stale loads, request replacement, and completion after disposal. Cover compact/expanded layouts, long content, large text, semantics, and safe-area changes. Add regression tests for reproduced defects where practical.
 

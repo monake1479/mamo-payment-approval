@@ -15,7 +15,11 @@ Documented checks and CI do not stop an unchecked local push. Occasionally the o
 - For Flutter changes, resolve dependencies with the lockfile enforced, generate localizations, format-check changed Dart files, analyze, and run selected tests. Reject direct integration/promotion branch updates.
 - Support only a single-attempt Flutter-test exception tied to exact source and destination, with separate request and owner-approval records. Consume it before checks; failed attempts also consume approval.
 - Keep a local JSONL journal and command logs in Git metadata. Export relevant sanitized evidence with an authorized PR; never report omitted tests as passing.
-- Use a small Python standard-library CLI for structured JSON, subprocess exit statuses, and filesystem locking. A shell entry point integrates with Git. This adds a development-only Python 3 prerequisite, no Flutter/runtime or package-manager dependency. The supported development hosts are macOS/Linux; Windows support is not claimed.
+- Use a small Python standard-library CLI for structured JSON, subprocess exit
+  statuses, and filesystem locking. A shell entry point integrates with Git. This
+  adds a development-only Python 3.9-or-newer prerequisite, no Flutter/runtime or
+  package-manager dependency. The supported development hosts are macOS/Linux;
+  Windows support is not claimed.
 
 ## Consequences
 
