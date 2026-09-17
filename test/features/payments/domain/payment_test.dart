@@ -63,6 +63,13 @@ void main() {
       expect(first, second);
       expect(first.hashCode, second.hashCode);
     });
+
+    test('rejects positive amounts that would serialize as zero', () {
+      expect(
+        _payment(status: PaymentStatus.pending, amount: 0.00000001).validate(),
+        const InvalidPaymentFailure(InvalidPaymentReason.invalidAmount),
+      );
+    });
   });
 }
 

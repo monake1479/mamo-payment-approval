@@ -58,6 +58,16 @@ void main() {
       );
     });
 
+    test('never normalizes a positive payment to zero fils', () {
+      expect(PaymentMoney.tryToFils(0.00000001), isNull);
+      expect(
+        PaymentMoney.canonicalize(0.00000001),
+        isA<PaymentsError<double>>(),
+      );
+      expect(() => PaymentMoney.serialize(0.00000001), throwsArgumentError);
+      expect(PaymentMoney.tryToFils(0.01), 1);
+    });
+
     test('serializes and formats with the fixed AED contract', () {
       expect(PaymentMoney.formatAed(0), 'AED 0.00');
       expect(PaymentMoney.serialize(1234.5), '1234.50');

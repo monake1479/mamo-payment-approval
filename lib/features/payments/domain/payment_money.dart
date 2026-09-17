@@ -87,7 +87,8 @@ abstract final class PaymentMoney {
     }
     final int roundedFils = (amount * 100).round();
     final double canonicalAmount = roundedFils / 100;
-    if ((amount - canonicalAmount).abs() >= _precisionTolerance ||
+    if (roundedFils <= 0 ||
+        (amount - canonicalAmount).abs() >= _precisionTolerance ||
         roundedFils > _maximumFils) {
       return null;
     }
