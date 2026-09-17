@@ -1,0 +1,26 @@
+# Product Extension Backlog
+
+## Status and selection
+
+This backlog contains discussion candidates and explicitly deferred owner requests. The owner will choose an original contribution after the core flow works. Neither a candidate nor a deferred request authorizes implementation.
+
+Choose a small addition with clear user value, a demonstrable journey, explainable architecture, realistic effort, and focused tests. Preserve baseline criteria and session-only storage unless explicitly changed.
+
+| Candidate | User value | Questions and costs |
+|---|---|---|
+| Payment decision timeline | Explain when a request arrived and was decided | Timestamp semantics, privacy, distinction from durable audit logs |
+| Search and status filtering | Find payments as the list grows | Filter ownership, empty results, return-navigation state |
+| Deterministic demo scenarios | Exercise recovery as well as success | Separate from real authentication; no release auth bypass |
+| Accessible decision feedback | Clear results through text, motion, optional haptics | Duplicate feedback, reduced motion, platform settings |
+
+Accessibility, errors, and authentication correctness are baseline quality, not optional differentiators. Each selected extension needs acceptance criteria, design rationale, tests, evidence, and a PR to `dev`.
+
+## Deferred owner request: app PIN and session expiry
+
+Recorded on 2026-09-17. Status: retained for future planning; not implemented and not part of the current foundation increment.
+
+- Add an app-entry PIN and a session valid for an agreed duration. The duration is intentionally unspecified; do not invent a timeout.
+- Current direction: obscure app content in the background/task-switcher preview, without requiring biometrics or a PIN merely on returning to the foreground. The privacy cover is separate from the future session lock; this note does not claim either is implemented.
+- App-entry authentication is distinct from the device authentication required to reveal sensitive payment data under `APPROVAL-04`. A future app PIN must not silently replace that requirement.
+- Before implementation, agree on PIN setup/change/recovery, secure verification/storage, failed-attempt limits, absolute versus inactivity-based expiry, and session behaviour across backgrounding and process restarts.
+- Define locked/expired-session behaviour, accessibility, deterministic clock-based tests, and native end-to-end scenarios with that slice. Do not persist sensitive data or add storage dependencies merely to prepare for it.

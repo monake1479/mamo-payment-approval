@@ -1,0 +1,23 @@
+{
+  "@@locale": "en",
+  "appFailureTitle": "Unable to continue",
+  "@appFailureTitle": {"description": "Heading for an unrecoverable startup or application error."},
+  "appConfigurationFailure": "This build has an invalid environment configuration. Please use a correctly configured build.",
+  "@appConfigurationFailure": {"description": "Safe explanation when the native flavor and Dart entry point do not match."},
+  "appStartupFailure": "The app could not start. Close it and try again. If the problem continues, contact the developer.",
+  "@appStartupFailure": {"description": "Recovery guidance after dependency initialization fails."},
+  "appUnexpectedFailure": "An unexpected problem occurred. Close and reopen the app to start a new demo session. No operation will be retried automatically.",
+  "@appUnexpectedFailure": {"description": "Recovery guidance after an unexpected fatal application error; does not assert a payment result."},
+  "appTitle": "Payment Approval",
+  "@appTitle": {
+    "description": "Application title used by Flutter and the operating system task switcher."
+  },
+  "foundationTitle": "Payment approval",
+  "@foundationTitle": {
+    "description": "Heading on the temporary foundation screen."
+  },
+  "foundationDescription": "The project foundation is ready. The complete payment flow will replace this temporary screen.",
+  "@foundationDescription": {
+    "description": "Explanation shown until the payment flow is implemented."
+  }
+}

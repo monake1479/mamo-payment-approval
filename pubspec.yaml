@@ -1,0 +1,27 @@
+name: mamo_payment_approval_challenge
+description: A production-minded payment approval flow built with Flutter.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.3
+
+dependencies:
+  cupertino_icons: ^1.0.9
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  get_it: ^9.2.1
+  go_router: ^18.0.1
+  intl: ^0.20.3
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  default-flavor: dev
+  generate: true
+  uses-material-design: true

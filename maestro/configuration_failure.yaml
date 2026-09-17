@@ -1,0 +1,11 @@
+appId: ${APP_ID}
+name: Reject a mismatched native flavor and Dart entry point
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: app.failure
+- assertVisible:
+    text: '(?s)Unable to continue.*This build has an invalid environment configuration.*'
+- assertNotVisible: Payment approval
+- takeScreenshot: configuration-failure

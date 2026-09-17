@@ -1,0 +1,25 @@
+# Documentation
+
+- [Product requirements](product/requirements.md): behavioural source of truth and acceptance criteria.
+- [Architecture overview](architecture/overview.md): boundaries, state ownership, and runtime flow.
+- [ADR 0001](decisions/0001-feature-first-clean-architecture.md): initial architecture decision.
+- [Money representation](decisions/0002-money-representation.md): deferred details for the explicit `double` direction.
+- [Testing strategy](testing/strategy.md): test levels and critical scenarios.
+- [Verification record template](testing/evidence-template.md): criteria, local input identity, results, findings, and handoff evidence.
+- [Agent workflow review](testing/agent-workflow-review.md): independent audit scope, corrections, and verification limits.
+- [Agent skills](../.ai/INDEX.md#project-skill-routing): task-specific execution procedures and permissions.
+- [Maestro E2E decision](decisions/0005-maestro-for-mobile-e2e.md): selected tool, trade-offs, and adoption status.
+- [Maestro workflow](../.ai/workflows/maestro-e2e.md): flow authoring, native execution, and evidence.
+- [Implementation plan](implementation-plan.md): incremental delivery sequence.
+- [Mobile scope](decisions/0003-mobile-only-platform-scope.md): iOS/Android and distribution consequences.
+- [PR delivery and evidence](decisions/0004-pr-based-delivery-and-quality-evidence.md): integration and promotion.
+- [FVM-managed Flutter](decisions/0006-fvm-managed-flutter.md): exact SDK pin, local tooling, and CI alignment.
+- [Native flavors](decisions/0007-native-flavors.md): dev/staging/prod identities, build selection, and verification.
+- [Localization](decisions/0008-localization.md): ARB messages, generated AppLocalizations, and English fallback.
+- [Local push gate](decisions/0009-local-push-gate-and-exceptions.md): change-based checks, single-attempt exceptions, and audit limits.
+- [Bootstrap and diagnostics](decisions/0010-bootstrap-and-local-error-boundary.md): flavor entry points, dependency ownership, and safe fatal failures.
+- [Runtime screen contract](product/runtime-foundation.md): startup/failure criteria, layouts, and native privacy scope.
+- [Configuration hygiene](architecture/configuration-hygiene.md): lockfile, dependency review, and secret scanning.
+- [Push workflow](../.ai/workflows/push-gate.md): installation, test selection, approval, and evidence.
+- [Extension backlog](product/extension-backlog.md): candidates for discussion, not accepted scope.
+- [Review loop](../.ai/workflows/review-loop.md): findings, verification, acceptance, and merging.

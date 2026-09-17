@@ -1,0 +1,70 @@
+"""Scan publishable working files and Git history without printing secret values."""
+
+import argparse
+from pathlib import Path
+import shutil
+import subprocess
+import tempfile
+
+
+VERSION = "8.30.1"
+
+
+def scan(root, binary):
+    version = subprocess.run([binary, "version"], capture_output=True, text=True, check=True)
+    if version.stdout.strip().removeprefix("v") != VERSION:
+        raise ValueError(f"Gitleaks {VERSION} is required.")
+    paths = subprocess.run(
+        ["git", "ls-files", "-co", "--exclude-standard", "-z"], cwd=root,
+        capture_output=True, check=True,
+    ).stdout.decode().split("\0")
+    with tempfile.TemporaryDirectory(prefix="mamo-secret-scan-") as directory:
+        temporary = Path(directory)
+        snapshot = temporary / "snapshot"
+        snapshot.mkdir()
+        for relative in sorted(set(paths) - {""}):
+            source = root / relative
+            if source.is_symlink() or not source.resolve().is_relative_to(root.resolve()):
+                raise ValueError("The publishable snapshot contains a symlink or external path.")
+            if not source.exists():
+                continue  # Local deletions remain covered by the history scan.
+            target = snapshot / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source, target)
+        config = temporary / "defaults.toml"
+        config.write_text("[extend]\nuseDefault = true\n")
+        flags = [
+            "--no-banner", "--redact=100", "--ignore-gitleaks-allow",
+            "--gitleaks-ignore-path", str(temporary), "--config", str(config),
+        ]
+        passed = True
+        for label, command in (
+            ("working snapshot", ["dir", str(snapshot)]),
+            ("Git history", ["git", str(root), "--log-opts=--all"]),
+        ):
+            result = subprocess.run([binary, *command, *flags], capture_output=True)
+            # Even redacted third-party output may contain contextual source lines.
+            # Retain only the status; inspect findings locally, never in CI artifacts.
+            status = "passed" if result.returncode == 0 else (
+                "findings detected" if result.returncode == 1 else "scanner failed"
+            )
+            print(f"Gitleaks {VERSION}: {label}: {status} (exit {result.returncode}).")
+            passed = passed and result.returncode == 0
+        return 0 if passed else 1
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--binary", default="gitleaks")
+    arguments = parser.parse_args()
+    binary = shutil.which(arguments.binary)
+    if binary is None:
+        parser.exit(2, f"Install Gitleaks {VERSION} or supply --binary.\n")
+    try:
+        return scan(Path(__file__).resolve().parents[1], binary)
+    except (OSError, ValueError, subprocess.CalledProcessError):
+        parser.exit(2, "Secret scan could not complete. Check tool version and repository inputs.\n")
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
