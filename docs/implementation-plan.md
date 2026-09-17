@@ -8,6 +8,8 @@ The shared `dev` base contains the placeholder app, rules and project skills, na
 
 The current UI foundation increment adds system-following light/dark themes and centralized component/layout tokens. The owner authorized a theme PR and separate stacked feature worktrees on 2026-09-17, without merging into `dev`. [UI contract](product/ui-contract.md) and [implementation contracts](architecture/implementation-contract.md) govern that increment and resolve its previously open routine decisions under delegated authority. Their selections remain subject to owner review. No payment screen is claimed implemented by the theme increment.
 
+The stacked approval feature branch now implements the incoming overlay, rejection, native-authenticated reveal and explicit approval, lifecycle remasking, and session-scoped draggable action described in [the approval feature note](features/approval-flow.md). This is branch status, not a claim that the increment is merged, independently reviewed, or promoted; native journey evidence remains a delivery gate.
+
 An earlier version of the workflow received an [independent audit and targeted correction check](testing/agent-workflow-review.md). That audit does not verify subsequent workflow or application changes. New planning decisions are recorded in the [product Q&A](product/requirements.md#planning-qa-accepted-decisions); accepted requirements are distinct from implemented behaviour.
 
 | Slice | Scope and criteria | Decisions and evidence |

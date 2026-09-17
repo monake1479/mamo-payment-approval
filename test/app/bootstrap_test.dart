@@ -11,6 +11,7 @@ import 'package:mamo_payment_approval_challenge/app/di/configure_dependencies.da
 import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostics.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payment_operations.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_repository.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
@@ -28,6 +29,7 @@ void main() {
       expect(getIt<LocalDiagnostics>(), same(getIt<LocalDiagnostics>()));
       expect(getIt<PaymentsRepository>(), same(getIt<PaymentsRepository>()));
       expect(getIt<PaymentOperations>(), same(getIt<PaymentOperations>()));
+      expect(getIt<DeviceAuthenticator>(), same(getIt<DeviceAuthenticator>()));
       expect(getIt<PaymentsCubit>(), same(getIt<PaymentsCubit>()));
       expect(getIt<GoRouter>(), same(getIt<GoRouter>()));
     });

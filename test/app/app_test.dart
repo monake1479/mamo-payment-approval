@@ -16,6 +16,7 @@ void main() {
   late GoRouter router;
   late StubPaymentsRepository repository;
   late PaymentsCubit cubit;
+  late StubDeviceAuthenticator authenticator;
 
   setUp(() {
     repository = StubPaymentsRepository(
@@ -25,6 +26,7 @@ void main() {
       ]),
     );
     cubit = createPaymentsCubit(repository);
+    authenticator = StubDeviceAuthenticator();
     router = createAppRouter();
   });
   tearDown(() async {
@@ -44,7 +46,11 @@ void main() {
       addTearDown(tester.platformDispatcher.clearLocalesTestValue);
 
       await tester.pumpWidget(
-        MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+        MamoPaymentApprovalApp(
+          router: router,
+          paymentsCubit: cubit,
+          deviceAuthenticator: authenticator,
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -65,7 +71,11 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+      MamoPaymentApprovalApp(
+        router: router,
+        paymentsCubit: cubit,
+        deviceAuthenticator: authenticator,
+      ),
     );
     await tester.pumpAndSettle();
     expect(
@@ -77,7 +87,11 @@ void main() {
     expect(repository.loadCalls, 1);
 
     await tester.pumpWidget(
-      MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+      MamoPaymentApprovalApp(
+        router: router,
+        paymentsCubit: cubit,
+        deviceAuthenticator: authenticator,
+      ),
     );
     await tester.pumpAndSettle();
     expect(repository.loadCalls, 1);
@@ -88,7 +102,11 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+      MamoPaymentApprovalApp(
+        router: router,
+        paymentsCubit: cubit,
+        deviceAuthenticator: authenticator,
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -118,7 +136,11 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
-      MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+      MamoPaymentApprovalApp(
+        router: router,
+        paymentsCubit: cubit,
+        deviceAuthenticator: authenticator,
+      ),
     );
     await tester.pumpAndSettle();
     router.go('/missing/PRIVATE_PAYLOAD');
@@ -126,7 +148,11 @@ void main() {
     expect(find.bySemanticsIdentifier('app.failure'), findsOneWidget);
     expect(find.textContaining('PRIVATE_PAYLOAD'), findsNothing);
     await tester.pumpWidget(
-      MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+      MamoPaymentApprovalApp(
+        router: router,
+        paymentsCubit: cubit,
+        deviceAuthenticator: authenticator,
+      ),
     );
     await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('app.failure'), findsOneWidget);
@@ -143,6 +169,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        deviceAuthenticator: authenticator,
         globalLayerBuilder: (BuildContext context, Widget navigator) => Stack(
           children: <Widget>[
             navigator,
@@ -177,7 +204,11 @@ void main() {
     );
 
     await tester.pumpWidget(
-      MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+      MamoPaymentApprovalApp(
+        router: router,
+        paymentsCubit: cubit,
+        deviceAuthenticator: authenticator,
+      ),
     );
     await tester.pumpAndSettle();
     expect(find.text('AED 0.00'), findsOneWidget);

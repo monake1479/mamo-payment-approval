@@ -8,6 +8,7 @@ import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostic
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
 
 Future<void> bootstrap(AppEnvironment environment) async {
@@ -33,6 +34,7 @@ Future<void> bootstrap(AppEnvironment environment) async {
     MamoPaymentApprovalApp(
       router: getIt<GoRouter>(),
       paymentsCubit: getIt<PaymentsCubit>(),
+      deviceAuthenticator: getIt<DeviceAuthenticator>(),
     ),
   );
 }

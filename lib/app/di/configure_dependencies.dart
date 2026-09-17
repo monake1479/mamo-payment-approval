@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/config/app_environment.dart';
 import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostics.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/data/authentication/local_auth_device_authenticator.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/data/in_memory_payments_repository.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payment_operations.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_repository.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
@@ -21,6 +23,9 @@ Future<void> configureDependencies(AppEnvironment environment) async {
   );
   getIt.registerLazySingleton<PaymentOperations>(
     () => PaymentOperations(reportingTimeZone: _demoReportingTimeZone),
+  );
+  getIt.registerLazySingleton<DeviceAuthenticator>(
+    LocalAuthDeviceAuthenticator.new,
   );
   getIt.registerSingleton<PaymentsCubit>(
     PaymentsCubit(

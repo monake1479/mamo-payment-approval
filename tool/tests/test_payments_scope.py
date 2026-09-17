@@ -76,6 +76,37 @@ class PaymentsScopeTest(unittest.TestCase):
         self.assertEqual(scope["flutter_tests"], sorted(PAYMENTS_UI_TESTS))
         self.assertFalse(scope["hook_tests"])
 
+    def test_approval_controller_selects_state_and_flow_consumers(self):
+        scope = select_scope(
+            ["lib/features/payments/presentation/cubit/approval_cubit.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(
+            scope["flutter_tests"],
+            [
+                "test/app/approval_flow_test.dart",
+                "test/features/payments/presentation/cubit/approval_cubit_test.dart",
+            ],
+        )
+        self.assertFalse(scope["hook_tests"])
+
+    def test_authentication_contract_selects_adapter_and_approval_consumers(self):
+        scope = select_scope(
+            ["lib/features/payments/domain/authentication/device_authenticator.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(
+            scope["flutter_tests"],
+            [
+                "test/app/approval_flow_test.dart",
+                "test/features/payments/data/authentication/local_auth_device_authenticator_test.dart",
+                "test/features/payments/presentation/cubit/approval_cubit_test.dart",
+            ],
+        )
+        self.assertFalse(scope["hook_tests"])
+
 
 if __name__ == "__main__":
     unittest.main()

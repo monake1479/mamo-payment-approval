@@ -82,7 +82,11 @@ void main() {
         final cubit = createPaymentsCubit(repository);
         addTearDown(cubit.close);
         await tester.pumpWidget(
-          MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+          MamoPaymentApprovalApp(
+            router: router,
+            paymentsCubit: cubit,
+            deviceAuthenticator: StubDeviceAuthenticator(),
+          ),
         );
         await tester.pumpAndSettle();
         expect(

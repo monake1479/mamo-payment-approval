@@ -95,5 +95,67 @@
       "status": {"type": "String"},
       "date": {"type": "String"}
     }
-  }
+  },
+  "debugIncomingRequestLabel": "Create incoming payment request",
+  "@debugIncomingRequestLabel": {"description": "Accessible label for the global draggable incoming-request action."},
+  "requestCreateFailed": "The incoming request could not be created. Try again.",
+  "@requestCreateFailed": {"description": "Safe message shown when deterministic request creation fails."},
+  "approvalModalLabel": "Incoming payment approval",
+  "@approvalModalLabel": {"description": "Accessible route and modal barrier label for the incoming approval overlay."},
+  "approvalTitle": "Incoming payment",
+  "@approvalTitle": {"description": "Heading on the incoming payment approval overlay."},
+  "approvalDescription": "Review the reference, reveal protected details, then approve or reject the request.",
+  "@approvalDescription": {"description": "Guidance on the incoming payment approval overlay."},
+  "approvalCounterpartyLabel": "Counterparty",
+  "@approvalCounterpartyLabel": {"description": "Label for the protected incoming payment counterparty."},
+  "approvalAmountLabel": "Amount",
+  "@approvalAmountLabel": {"description": "Label for the protected incoming payment amount."},
+  "approvalReferenceLabel": "Reference",
+  "@approvalReferenceLabel": {"description": "Label for the visible incoming payment reference."},
+  "approvalMaskedAmount": "AED ••••.••",
+  "@approvalMaskedAmount": {"description": "Fixed mask shown instead of an incoming payment amount before authentication."},
+  "approvalMaskedCounterpartySemantics": "Masked counterparty, {mask}",
+  "@approvalMaskedCounterpartySemantics": {
+    "description": "Accessible description of a masked incoming payment counterparty.",
+    "placeholders": {"mask": {"type": "String"}}
+  },
+  "approvalMaskedAmountSemantics": "Masked amount, AED hidden",
+  "@approvalMaskedAmountSemantics": {"description": "Accessible description of a masked incoming payment amount without disclosing it."},
+  "approvalRevealedCounterpartySemantics": "Counterparty, {counterparty}",
+  "@approvalRevealedCounterpartySemantics": {
+    "description": "Accessible description of an authenticated incoming payment counterparty.",
+    "placeholders": {"counterparty": {"type": "String"}}
+  },
+  "approvalRevealedAmountSemantics": "Amount, {amount}",
+  "@approvalRevealedAmountSemantics": {
+    "description": "Accessible description of an authenticated incoming payment amount.",
+    "placeholders": {"amount": {"type": "String"}}
+  },
+  "approvalReferenceSemantics": "Reference, {reference}",
+  "@approvalReferenceSemantics": {
+    "description": "Accessible description of the visible incoming payment reference.",
+    "placeholders": {"reference": {"type": "String"}}
+  },
+  "approvalRevealAction": "Reveal details",
+  "@approvalRevealAction": {"description": "Action that opens native authentication to reveal protected payment details."},
+  "approvalAuthenticatingAction": "Authenticating…",
+  "@approvalAuthenticatingAction": {"description": "Disabled action label while native authentication is active."},
+  "approvalDetailsRevealedAction": "Details revealed",
+  "@approvalDetailsRevealedAction": {"description": "Disabled action label after protected payment details are revealed."},
+  "approvalApproveAction": "Approve",
+  "@approvalApproveAction": {"description": "Explicit action that approves an authenticated incoming payment."},
+  "approvalRejectAction": "Reject",
+  "@approvalRejectAction": {"description": "Action that rejects an incoming payment without authentication."},
+  "approvalSubmittingDecision": "Submitting payment decision",
+  "@approvalSubmittingDecision": {"description": "Accessible status announced while an approval or rejection is being submitted."},
+  "approvalAuthReason": "Authenticate to reveal incoming payment details",
+  "@approvalAuthReason": {"description": "Localized reason displayed by the operating system authentication prompt."},
+  "approvalAuthenticationCancelled": "Authentication was cancelled. The payment details remain hidden.",
+  "@approvalAuthenticationCancelled": {"description": "Recoverable message after the user cancels native authentication."},
+  "approvalAuthenticationUnavailable": "Device authentication is unavailable. You can try again or reject the request.",
+  "@approvalAuthenticationUnavailable": {"description": "Recoverable message when no supported device authentication is available."},
+  "approvalAuthenticationFailed": "Authentication did not succeed. The payment details remain hidden.",
+  "@approvalAuthenticationFailed": {"description": "Recoverable message after native authentication fails."},
+  "approvalDecisionFailed": "The payment could not be updated. Try again.",
+  "@approvalDecisionFailed": {"description": "Safe recovery message after approval or rejection fails."}
 }

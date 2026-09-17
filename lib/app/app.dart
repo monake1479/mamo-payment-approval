@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mamo_payment_approval_challenge/app/payment_flow_layer.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
@@ -17,12 +19,14 @@ class MamoPaymentApprovalApp extends StatefulWidget {
   const MamoPaymentApprovalApp({
     required this.router,
     required this.paymentsCubit,
+    required this.deviceAuthenticator,
     this.globalLayerBuilder,
     super.key,
   });
 
   final GoRouter router;
   final PaymentsCubit paymentsCubit;
+  final DeviceAuthenticator deviceAuthenticator;
   final GlobalAppLayerBuilder? globalLayerBuilder;
 
   @override
@@ -81,13 +85,16 @@ class _MamoPaymentApprovalAppState extends State<MamoPaymentApprovalApp>
         onGenerateTitle: (BuildContext context) =>
             AppLocalizations.of(context).appTitle,
         builder: (BuildContext context, Widget? navigator) {
-          final Widget routedApp = navigator!;
-          final Widget app = widget.globalLayerBuilder == null
-              ? routedApp
-              : widget.globalLayerBuilder!(context, routedApp);
+          final Widget routedContent = widget.globalLayerBuilder == null
+              ? navigator!
+              : widget.globalLayerBuilder!(context, navigator!);
           return AnnotatedRegion<SystemUiOverlayStyle>(
             value: AppTheme.systemUiOverlayStyle(Theme.of(context).colorScheme),
-            child: app,
+            child: PaymentFlowLayer(
+              router: widget.router,
+              authenticator: widget.deviceAuthenticator,
+              child: routedContent,
+            ),
           );
         },
       ),

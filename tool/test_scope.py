@@ -6,6 +6,7 @@ from pathlib import Path
 # Include every consumer test, not just a same-named unit test. Extend this map
 # alongside each vertical slice; CI remains the full-suite safety net.
 PAYMENTS_UI_TESTS = [
+    "test/app/approval_flow_test.dart",
     "test/app/app_test.dart",
     "test/app/app_theme_test.dart",
     "test/app/bootstrap_test.dart",
@@ -18,16 +19,26 @@ PAYMENTS_UI_TESTS = [
     "test/features/payments/presentation/widgets/payment_state_views_test.dart",
 ]
 
+AUTHENTICATION_TESTS = [
+    "test/app/approval_flow_test.dart",
+    "test/features/payments/data/authentication/local_auth_device_authenticator_test.dart",
+    "test/features/payments/presentation/cubit/approval_cubit_test.dart",
+]
+
 FLUTTER_TESTS = {
+    "lib/app/payment_flow_layer.dart": PAYMENTS_UI_TESTS,
     "lib/app/app.dart": PAYMENTS_UI_TESTS,
     "lib/app/bootstrap.dart": PAYMENTS_UI_TESTS,
     "lib/app/di/configure_dependencies.dart": PAYMENTS_UI_TESTS,
     "lib/app/navigation/app_router.dart": PAYMENTS_UI_TESTS,
     "lib/app/navigation/payment_navigation_shell.dart": PAYMENTS_UI_TESTS,
+    "lib/app/theme/app_theme.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/data/in_memory_payments_repository.dart": [
         "test/features/payments/data/in_memory_payments_repository_test.dart",
         *PAYMENTS_UI_TESTS,
     ],
+    "lib/features/payments/data/authentication/local_auth_device_authenticator.dart": AUTHENTICATION_TESTS,
+    "lib/features/payments/domain/authentication/device_authenticator.dart": AUTHENTICATION_TESTS,
     "lib/features/payments/data/payment_record_codec.dart": [
         "test/features/payments/data/in_memory_payments_repository_test.dart",
         "test/features/payments/data/payment_record_codec_test.dart",
@@ -81,11 +92,25 @@ FLUTTER_TESTS = {
         "test/features/payments/presentation/cubit/payments_cubit_test.dart",
         *PAYMENTS_UI_TESTS,
     ],
+    "lib/features/payments/presentation/cubit/approval_cubit.dart": [
+        "test/features/payments/presentation/cubit/approval_cubit_test.dart",
+        "test/app/approval_flow_test.dart",
+    ],
+    "lib/features/payments/presentation/cubit/debug_action_cubit.dart": [
+        "test/app/approval_flow_test.dart",
+    ],
     "lib/features/payments/presentation/formatters/payment_formatters.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/presentation/pages/home_page.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/presentation/pages/payment_details_page.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/presentation/pages/payments_page.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/presentation/widgets/monthly_summary_card.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/presentation/widgets/approval_overlay.dart": [
+        "test/features/payments/presentation/cubit/approval_cubit_test.dart",
+        "test/app/approval_flow_test.dart",
+    ],
+    "lib/features/payments/presentation/widgets/debug_payment_action.dart": [
+        "test/app/approval_flow_test.dart",
+    ],
     "lib/features/payments/presentation/widgets/payment_detail_field.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/presentation/widgets/payment_page_scaffold.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/presentation/widgets/payment_row.dart": PAYMENTS_UI_TESTS,
