@@ -1,0 +1,127 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_failure.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_result.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/presentation/pages/payments_page.dart';
+import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+
+import '../../../../support/payments_test_support.dart';
+
+void main() {
+  testWidgets('shows decided history newest first and excludes pending', (
+    WidgetTester tester,
+  ) async {
+    final Payment newest = rejectedPayment(
+      decidedAt: DateTime.utc(2026, 9, 17, 7),
+    );
+    final Payment older = approvedPayment(
+      decidedAt: DateTime.utc(2026, 9, 16, 7),
+    );
+    final Payment pending = Payment(
+      id: 'pending-payment',
+      counterparty: 'Hidden Pending Party',
+      amount: 45,
+      reference: 'PENDING-1',
+      createdAt: DateTime.utc(2026, 9, 17, 6),
+      status: PaymentStatus.pending,
+    );
+    final StubPaymentsRepository repository = StubPaymentsRepository(
+      onLoad: () async =>
+          PaymentsSuccess<List<Payment>>(<Payment>[older, pending, newest]),
+    );
+    final PaymentsCubit cubit = createPaymentsCubit(repository);
+    addTearDown(cubit.close);
+    await cubit.load();
+    String? openedId;
+
+    await tester.pumpWidget(
+      _PaymentsTestApp(
+        cubit: cubit,
+        child: PaymentsPage(onOpenPayment: (String id) => openedId = id),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Hidden Pending Party'), findsNothing);
+    expect(find.text(newest.counterparty), findsOneWidget);
+    expect(find.text(older.counterparty), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text(newest.counterparty)).dy,
+      lessThan(tester.getTopLeft(find.text(older.counterparty)).dy),
+    );
+    await tester.tap(find.bySemanticsIdentifier('payment.row.${newest.id}'));
+    expect(openedId, newest.id);
+  });
+
+  testWidgets('renders loading, empty, and recoverable failure states', (
+    WidgetTester tester,
+  ) async {
+    final Completer<PaymentsResult<List<Payment>>> pendingLoad =
+        Completer<PaymentsResult<List<Payment>>>();
+    final StubPaymentsRepository loadingRepository = StubPaymentsRepository(
+      onLoad: () => pendingLoad.future,
+    );
+    final PaymentsCubit loadingCubit = createPaymentsCubit(loadingRepository);
+    addTearDown(loadingCubit.close);
+    unawaited(loadingCubit.load());
+    await tester.pumpWidget(
+      _PaymentsTestApp(
+        cubit: loadingCubit,
+        child: PaymentsPage(onOpenPayment: (_) {}),
+      ),
+    );
+    expect(find.bySemanticsIdentifier('payments.loading'), findsOneWidget);
+    pendingLoad.complete(const PaymentsSuccess<List<Payment>>(<Payment>[]));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payments.empty'), findsOneWidget);
+
+    var attempts = 0;
+    final StubPaymentsRepository retryRepository = StubPaymentsRepository(
+      onLoad: () async {
+        attempts += 1;
+        return attempts == 1
+            ? const PaymentsError<List<Payment>>(StorageFailure())
+            : const PaymentsSuccess<List<Payment>>(<Payment>[]);
+      },
+    );
+    final PaymentsCubit retryCubit = createPaymentsCubit(retryRepository);
+    addTearDown(retryCubit.close);
+    await retryCubit.load();
+    await tester.pumpWidget(
+      _PaymentsTestApp(
+        cubit: retryCubit,
+        child: PaymentsPage(onOpenPayment: (_) {}),
+      ),
+    );
+    expect(find.bySemanticsIdentifier('payments.error'), findsOneWidget);
+    await tester.tap(find.text('Try again'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payments.empty'), findsOneWidget);
+    expect(attempts, 2);
+  });
+}
+
+class _PaymentsTestApp extends StatelessWidget {
+  const _PaymentsTestApp({required this.cubit, required this.child});
+
+  final PaymentsCubit cubit;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => BlocProvider<PaymentsCubit>.value(
+    value: cubit,
+    child: MaterialApp(
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: child,
+    ),
+  );
+}

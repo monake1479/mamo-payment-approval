@@ -88,8 +88,9 @@ Maestro evidence adds CLI version, installed app binary checksum/build mode, det
 CI retains format, analysis, and machine-readable test logs for 30 days. Preserve evidence needed beyond that period before expiry. Logs must contain no sensitive payment/authentication data.
 
 Current coverage includes runtime startup/flavor/error-handler tests, localized
-failure/foundation layout tests, push-tooling and scanner-wrapper regression tests,
-and native foundation Maestro flows. Swift `RunnerTests` cover the privacy cover
+failure/theme layout tests, push-tooling and scanner-wrapper regression tests,
+payment domain/data/collection-state tests, read-only Home/Payments/details widget
+tests, and native foundation/payment-screen Maestro flows. Swift `RunnerTests` cover the privacy cover
 itself; run through the `dev` Xcode scheme on a selected simulator. These tests do
 not replace OS app-switcher inspection. CI enforces the lockfile, runs pinned
 Gitleaks, generates localizations, and runs format/analyze/full Flutter and tooling

@@ -7,7 +7,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tool"))
-from test_scope import select_scope
+from test_scope import PAYMENTS_UI_TESTS, select_scope
 
 
 class PaymentsScopeTest(unittest.TestCase):
@@ -19,7 +19,12 @@ class PaymentsScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            ["test/features/payments/presentation/cubit/payments_cubit_test.dart"],
+            sorted(
+                {
+                    "test/features/payments/presentation/cubit/payments_cubit_test.dart",
+                    *PAYMENTS_UI_TESTS,
+                }
+            ),
         )
         self.assertFalse(scope["hook_tests"])
 
@@ -31,14 +36,17 @@ class PaymentsScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            [
-                "test/features/payments/data/in_memory_payments_repository_test.dart",
-                "test/features/payments/data/payment_record_codec_test.dart",
-                "test/features/payments/domain/payment_money_test.dart",
-                "test/features/payments/domain/payment_operations_test.dart",
-                "test/features/payments/domain/payment_test.dart",
-                "test/features/payments/presentation/cubit/payments_cubit_test.dart",
-            ],
+            sorted(
+                {
+                    "test/features/payments/data/in_memory_payments_repository_test.dart",
+                    "test/features/payments/data/payment_record_codec_test.dart",
+                    "test/features/payments/domain/payment_money_test.dart",
+                    "test/features/payments/domain/payment_operations_test.dart",
+                    "test/features/payments/domain/payment_test.dart",
+                    "test/features/payments/presentation/cubit/payments_cubit_test.dart",
+                    *PAYMENTS_UI_TESTS,
+                }
+            ),
         )
         self.assertFalse(scope["hook_tests"])
 
@@ -50,11 +58,23 @@ class PaymentsScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            [
-                "test/features/payments/data/in_memory_payments_repository_test.dart",
-                "test/features/payments/presentation/cubit/payments_cubit_test.dart",
-            ],
+            sorted(
+                {
+                    "test/features/payments/data/in_memory_payments_repository_test.dart",
+                    "test/features/payments/presentation/cubit/payments_cubit_test.dart",
+                    *PAYMENTS_UI_TESTS,
+                }
+            ),
         )
+
+    def test_payment_row_change_selects_all_screen_consumers(self):
+        scope = select_scope(
+            ["lib/features/payments/presentation/widgets/payment_row.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(scope["flutter_tests"], sorted(PAYMENTS_UI_TESTS))
+        self.assertFalse(scope["hook_tests"])
 
 
 if __name__ == "__main__":

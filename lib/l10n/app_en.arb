@@ -12,12 +12,83 @@
   "@appTitle": {
     "description": "Application title used by Flutter and the operating system task switcher."
   },
-  "foundationTitle": "Payment approval",
-  "@foundationTitle": {
-    "description": "Heading on the temporary foundation screen."
+  "homeNavigationLabel": "Home",
+  "@homeNavigationLabel": {"description": "Label for the Home navigation destination."},
+  "paymentsNavigationLabel": "Payments",
+  "@paymentsNavigationLabel": {"description": "Label for the Payments navigation destination."},
+  "homeTitle": "Home",
+  "@homeTitle": {"description": "Heading on the Home screen."},
+  "paymentsTitle": "Payments",
+  "@paymentsTitle": {"description": "Heading on the decided payments history screen."},
+  "currentMonthTitle": "This month",
+  "@currentMonthTitle": {"description": "Heading above the current account-month payment summary."},
+  "approvedAmountLabel": "Approved amount",
+  "@approvedAmountLabel": {"description": "Label for the approved payment amount total."},
+  "approvedPaymentCount": "{count, plural, =0{No approved payments} =1{1 approved payment} other{{count} approved payments}}",
+  "@approvedPaymentCount": {
+    "description": "Count of approved payments in the current account month.",
+    "placeholders": {"count": {"type": "int"}}
   },
-  "foundationDescription": "The project foundation is ready. The complete payment flow will replace this temporary screen.",
-  "@foundationDescription": {
-    "description": "Explanation shown until the payment flow is implemented."
+  "reportingPeriodContext": "{month} · {timeZone}",
+  "@reportingPeriodContext": {
+    "description": "Current reporting month followed by the account reporting time zone.",
+    "placeholders": {
+      "month": {"type": "String"},
+      "timeZone": {"type": "String"}
+    }
+  },
+  "recentPaymentsTitle": "Recent payments",
+  "@recentPaymentsTitle": {"description": "Heading above recent decided payments on Home."},
+  "viewAllPayments": "View all",
+  "@viewAllPayments": {"description": "Action that opens the full decided payments history."},
+  "paymentsLoadingLabel": "Loading payments",
+  "@paymentsLoadingLabel": {"description": "Accessible label shown while payment data is loading."},
+  "paymentsLoadErrorTitle": "Payments are unavailable",
+  "@paymentsLoadErrorTitle": {"description": "Heading shown when payment data cannot be loaded."},
+  "paymentsLoadErrorDescription": "We could not load the payment history. Try again.",
+  "@paymentsLoadErrorDescription": {"description": "Safe recovery guidance for a failed payment load."},
+  "paymentsInvalidDataDescription": "Some payment data could not be read. Try again.",
+  "@paymentsInvalidDataDescription": {"description": "Safe recovery guidance when stored payment data is invalid."},
+  "retryAction": "Try again",
+  "@retryAction": {"description": "Action that retries a failed operation."},
+  "emptyPaymentsTitle": "No decided payments yet",
+  "@emptyPaymentsTitle": {"description": "Heading shown when the decided payment history is empty."},
+  "emptyPaymentsDescription": "Approved and rejected payments will appear here.",
+  "@emptyPaymentsDescription": {"description": "Explanation shown when the decided payment history is empty."},
+  "emptyRecentPaymentsDescription": "Your most recent approved and rejected payments will appear here.",
+  "@emptyRecentPaymentsDescription": {"description": "Explanation shown when Home has no recent decided payments."},
+  "paymentStatusApproved": "Approved",
+  "@paymentStatusApproved": {"description": "Visible status label for an approved payment."},
+  "paymentStatusRejected": "Rejected",
+  "@paymentStatusRejected": {"description": "Visible status label for a rejected payment."},
+  "paymentStatusPending": "Pending",
+  "@paymentStatusPending": {"description": "Visible status label for a pending payment request."},
+  "paymentDetailsTitle": "Payment details",
+  "@paymentDetailsTitle": {"description": "Heading on a decided payment details screen."},
+  "paymentDetailsBackLabel": "Back",
+  "@paymentDetailsBackLabel": {"description": "Accessible label for returning from payment details."},
+  "paymentNotFoundTitle": "Payment not found",
+  "@paymentNotFoundTitle": {"description": "Heading shown when a payment details route has an invalid or missing identifier."},
+  "paymentNotFoundDescription": "This payment is no longer available. Go back and choose another payment.",
+  "@paymentNotFoundDescription": {"description": "Safe explanation for an invalid or missing payment details identifier."},
+  "counterpartyLabel": "Counterparty",
+  "@counterpartyLabel": {"description": "Label for the payment counterparty."},
+  "referenceLabel": "Reference",
+  "@referenceLabel": {"description": "Label for the payment reference."},
+  "statusLabel": "Status",
+  "@statusLabel": {"description": "Label for the payment decision status."},
+  "requestedAtLabel": "Requested",
+  "@requestedAtLabel": {"description": "Label for the payment request creation time."},
+  "decidedAtLabel": "Decided",
+  "@decidedAtLabel": {"description": "Label for the payment decision time."},
+  "paymentRowAccessibilityLabel": "{counterparty}, {amount}, {status}, decided {date}",
+  "@paymentRowAccessibilityLabel": {
+    "description": "Accessible summary for a decided payment history row.",
+    "placeholders": {
+      "counterparty": {"type": "String"},
+      "amount": {"type": "String"},
+      "status": {"type": "String"},
+      "date": {"type": "String"}
+    }
   }
 }
