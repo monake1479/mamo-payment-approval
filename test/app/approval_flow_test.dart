@@ -402,6 +402,69 @@ void main() {
     expect(repository.createCalls, 1);
   });
 
+  for (final double textScale in <double>[1, 2]) {
+    testWidgets(
+      'disabled request action does not intercept approval at ${textScale}x text',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(320, 640);
+        tester.view.devicePixelRatio = 1;
+        tester.platformDispatcher.textScaleFactorTestValue = textScale;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+
+        await pumpApp(tester);
+        await openRequest(tester);
+
+        final Finder action = find.bySemanticsIdentifier(
+          'debug.incomingRequest',
+        );
+        expect(
+          tester.getSemantics(action).flagsCollection.isEnabled,
+          Tristate.isFalse,
+        );
+        expect(
+          tester
+              .getSemantics(action)
+              .getSemanticsData()
+              .hasAction(SemanticsAction.tap),
+          isFalse,
+        );
+
+        await tester.ensureVisible(find.text('Reveal details'));
+        await tester.tap(find.text('Reveal details'));
+        await tester.pumpAndSettle();
+        final Finder approveButton = find.widgetWithText(
+          FilledButton,
+          'Approve',
+        );
+        await tester.ensureVisible(approveButton);
+        await tester.pumpAndSettle();
+
+        final Offset savedPosition = tester.getTopLeft(action);
+        final Rect overlap = tester
+            .getRect(action)
+            .intersect(tester.getRect(approveButton));
+        expect(overlap.isEmpty, isFalse);
+        await tester.tapAt(overlap.center);
+        await tester.pumpAndSettle();
+
+        expect(find.bySemanticsIdentifier('approval.overlay'), findsNothing);
+        expect(paymentsCubit.state.activeRequest, isNull);
+        expect(decisions, <PaymentDecision>[PaymentDecision.approve]);
+        expect(tester.getTopLeft(action), savedPosition);
+        expect(
+          tester.getSemantics(action).flagsCollection.isEnabled,
+          Tristate.isTrue,
+        );
+
+        await tester.drag(action, const Offset(-80, -80));
+        await tester.pumpAndSettle();
+        expect(tester.getTopLeft(action), isNot(savedPosition));
+      },
+    );
+  }
+
   for (final Brightness brightness in Brightness.values) {
     for (final Size size in <Size>[
       const Size(320, 640),

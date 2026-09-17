@@ -10,7 +10,12 @@ This increment implements `APPROVAL-01..10`, `DEBUG-01..04`, and the incoming-de
 
 ## Interaction and lifecycle
 
-- The draggable request action is rendered above the router and modal barrier. Its session position survives route changes, defaults above compact bottom navigation, and clamps to current safe bounds after layout changes. Drag gestures do not activate it.
+- The draggable request action is rendered above the router and modal barrier. Its
+  session position survives route changes, defaults above compact bottom
+  navigation, and clamps to current safe bounds after layout changes. Drag gestures
+  do not activate it. While a request is active, the action remains visibly disabled
+  at its saved position and ignores taps and drags so it cannot intercept approval
+  controls; interaction resumes after the overlay closes.
 - The approval popup retains the underlying route. Outside taps, swipes, and Back cannot dismiss it. Rejection updates canonical state before closing and leaves the router location unchanged; approval updates canonical state before closing and selects Payments.
 - Counterparty and amount widgets contain only masks until successful native authentication. The reference remains visible. Authentication success reveals but never decides; approval requires a separate action, while rejection does not authenticate.
 - Native-prompt-only `inactive` lifecycle events are ignored. `hidden` or `paused` revokes disclosure, invalidates an in-flight authentication result, and explicitly attempts prompt cancellation. A submitted decision may complete once while backgrounded; its route/navigation effect is consumed once after resume.
@@ -19,4 +24,10 @@ This increment implements `APPROVAL-01..10`, `DEBUG-01..04`, and the incoming-de
 
 - `test/features/payments/presentation/cubit/approval_cubit_test.dart` covers authentication outcomes, authorization, duplicate actions, background cancellation/remasking, submitted-decision completion, recoverable failures, and disposal races.
 - `test/app/approval_flow_test.dart` covers masking in visual and semantic content, non-dismissal, origin preservation, explicit approval navigation, canonical ordering, lifecycle distinction, deferred completion, draggable/clamped session position, reduced motion, failures, themes, compact/expanded layouts, and 200% text.
-- `maestro/approval_rejection.yaml` and `maestro/debug_action.yaml` cover the deterministic native rejection and global-action journeys. Native approval requires labelled OS-authentication simulation or physical-device evidence; no fake is present in reviewer composition.
+- `maestro/approval_rejection.yaml` and `maestro/debug_action.yaml` cover the
+  deterministic native rejection and global-action journeys.
+  `maestro/approval_success_prepare.yaml` and
+  `maestro/approval_success_verify.yaml` bracket a real operating-system
+  authentication event so the separate explicit approval and canonical cross-view
+  update have repeatable assertions. The event itself uses labelled simulator/device
+  input and separate evidence; no fake is present in reviewer composition.

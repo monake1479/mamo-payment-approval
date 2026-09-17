@@ -1,0 +1,17 @@
+appId: ${APP_ID}
+name: Prepare native authentication for approval
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: home.page
+- tapOn:
+    id: debug.incomingRequest
+- assertVisible:
+    id: approval.overlay
+- assertVisible:
+    id: approval.counterparty
+- assertVisible:
+    id: approval.amount
+- tapOn:
+    id: approval.reveal

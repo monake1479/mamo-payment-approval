@@ -106,8 +106,10 @@ The local push hook selects tests from the pushed diff, with an explicit impact 
 
 ADR 0005 accepts Maestro as the E2E layer. The repository now contains
 launch/resume, configuration-failure, payment list/summary, details/origin,
-masked-overlay rejection, and debug-drag/session flows. There are no Maestro CI jobs
-yet; retain local results and tool-version provenance.
+masked-overlay rejection, native-approval preparation/verification, and
+debug-drag/session flows. The approval pair brackets real OS authentication; it is
+not an app bypass. There are no Maestro CI jobs yet; retain local results and
+tool-version provenance.
 
 Native-authentication success, cancellation, unavailability, and lifecycle checks
 remain separate native evidence because the app has no automation bypass. Label

@@ -1,0 +1,22 @@
+appId: ${APP_ID}
+name: Verify explicit approval after native authentication
+---
+- assertVisible: Crescent Supplies
+- assertVisible: AED 125.75
+- assertVisible:
+    id: approval.overlay
+- tapOn:
+    id: approval.approve
+- assertNotVisible:
+    id: approval.overlay
+- assertVisible:
+    id: payments.page
+- assertVisible:
+    id: payment.row.request-0001
+- tapOn:
+    id: payment.row.request-0001
+- assertVisible:
+    id: payment.details
+- assertVisible:
+    id: payment.status.approved
+- takeScreenshot: approval-approved

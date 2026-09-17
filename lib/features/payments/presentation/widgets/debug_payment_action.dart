@@ -67,35 +67,38 @@ class DebugPaymentAction extends StatelessWidget {
                 Positioned(
                   left: position.x,
                   top: position.y,
-                  child: GestureDetector(
-                    onPanUpdate: (DragUpdateDetails details) {
-                      final DebugActionPosition current =
-                          positionCubit.state ?? position;
-                      positionCubit.moveTo(
-                        _clamp(
-                          DebugActionPosition(
-                            x: current.x + details.delta.dx,
-                            y: current.y + details.delta.dy,
+                  child: IgnorePointer(
+                    ignoring: !enabled,
+                    child: GestureDetector(
+                      onPanUpdate: (DragUpdateDetails details) {
+                        final DebugActionPosition current =
+                            positionCubit.state ?? position;
+                        positionCubit.moveTo(
+                          _clamp(
+                            DebugActionPosition(
+                              x: current.x + details.delta.dx,
+                              y: current.y + details.delta.dy,
+                            ),
+                            minX: minX,
+                            maxX: maxX,
+                            minY: minY,
+                            maxY: maxY,
                           ),
-                          minX: minX,
-                          maxX: maxX,
-                          minY: minY,
-                          maxY: maxY,
+                        );
+                      },
+                      child: Semantics(
+                        identifier: 'debug.incomingRequest',
+                        excludeSemantics: true,
+                        button: true,
+                        enabled: enabled,
+                        label: l10n.debugIncomingRequestLabel,
+                        onTap: enabled ? () => unawaited(onPressed()) : null,
+                        child: FloatingActionButton(
+                          onPressed: enabled
+                              ? () => unawaited(onPressed())
+                              : null,
+                          child: const Icon(Icons.add_card),
                         ),
-                      );
-                    },
-                    child: Semantics(
-                      identifier: 'debug.incomingRequest',
-                      excludeSemantics: true,
-                      button: true,
-                      enabled: enabled,
-                      label: l10n.debugIncomingRequestLabel,
-                      onTap: enabled ? () => unawaited(onPressed()) : null,
-                      child: FloatingActionButton(
-                        onPressed: enabled
-                            ? () => unawaited(onPressed())
-                            : null,
-                        child: const Icon(Icons.add_card),
                       ),
                     ),
                   ),
