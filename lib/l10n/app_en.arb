@@ -20,6 +20,11 @@
   "@homeTitle": {"description": "Heading on the Home screen."},
   "paymentsTitle": "Payments",
   "@paymentsTitle": {"description": "Heading on the decided payments history screen."},
+  "paymentsReportingTimeZone": "Times shown in {timeZone}",
+  "@paymentsReportingTimeZone": {
+    "description": "Context showing which account reporting time zone is used for payment history timestamps.",
+    "placeholders": {"timeZone": {"type": "String"}}
+  },
   "currentMonthTitle": "This month",
   "@currentMonthTitle": {"description": "Heading above the current account-month payment summary."},
   "approvedAmountLabel": "Approved amount",

@@ -5,7 +5,7 @@ Status: implemented on the feature branch; dependent on the unmerged theme and p
 ## Behaviour
 
 - Home shows the current `Asia/Dubai` account month, approved-only amount/count, and up to five recent decided payments.
-- Payments shows every approved or rejected payment newest decision first; pending requests never appear in history.
+- Payments shows every approved or rejected payment newest decision first, labels its timestamps with the account reporting zone, and never includes pending requests.
 - Selecting a row pushes decided-payment details within the active Home or Payments branch, so Back returns to the exact origin.
 - Details resolve the stable identifier against live canonical collection state. Missing, invalid, or pending identifiers show localized safe UI.
 - Compact widths use bottom navigation; widths at or above 720 logical pixels use a rail. Both use the shared light/dark themes and support 200% text without fixed-height payment cards.
