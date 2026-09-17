@@ -20,9 +20,9 @@
   "@homeTitle": {"description": "Heading on the Home screen."},
   "paymentsTitle": "Payments",
   "@paymentsTitle": {"description": "Heading on the decided payments history screen."},
-  "reportingTimeZoneContext": "Times shown in {timeZone}",
-  "@reportingTimeZoneContext": {
-    "description": "Reporting time zone context shown above the payment history.",
+  "paymentsReportingTimeZone": "Times shown in {timeZone}",
+  "@paymentsReportingTimeZone": {
+    "description": "Context showing which account reporting time zone is used for payment history timestamps.",
     "placeholders": {"timeZone": {"type": "String"}}
   },
   "currentMonthTitle": "This month",

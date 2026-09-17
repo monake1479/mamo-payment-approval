@@ -47,6 +47,12 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(
+      find.bySemanticsIdentifier('payments.reportingTimeZone'),
+      findsOneWidget,
+    );
+    expect(find.text('Times shown in Asia/Dubai'), findsOneWidget);
+    expect(find.text('17 Sep 2026, 11:00'), findsOneWidget);
     expect(find.text('Hidden Pending Party'), findsNothing);
     expect(find.text('Times shown in Asia/Dubai'), findsOneWidget);
     expect(find.text(newest.counterparty), findsOneWidget);
@@ -106,6 +112,35 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('payments.empty'), findsOneWidget);
     expect(attempts, 2);
+  });
+
+  testWidgets('reporting-zone context fits compact layout at 200% text', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(320, 640);
+    tester.view.devicePixelRatio = 1;
+    tester.platformDispatcher.textScaleFactorTestValue = 2;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    final StubPaymentsRepository repository = StubPaymentsRepository(
+      onLoad: () async =>
+          PaymentsSuccess<List<Payment>>(<Payment>[approvedPayment()]),
+    );
+    final PaymentsCubit cubit = createPaymentsCubit(repository);
+    addTearDown(cubit.close);
+    await cubit.load();
+
+    await tester.pumpWidget(
+      _PaymentsTestApp(
+        cubit: cubit,
+        child: PaymentsPage(onOpenPayment: (_) {}),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Times shown in Asia/Dubai'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }
 

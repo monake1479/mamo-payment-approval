@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
@@ -79,10 +80,16 @@ class _MamoPaymentApprovalAppState extends State<MamoPaymentApprovalApp>
         supportedLocales: AppLocalizations.supportedLocales,
         onGenerateTitle: (BuildContext context) =>
             AppLocalizations.of(context).appTitle,
-        builder: widget.globalLayerBuilder == null
-            ? null
-            : (BuildContext context, Widget? navigator) =>
-                  widget.globalLayerBuilder!(context, navigator!),
+        builder: (BuildContext context, Widget? navigator) {
+          final Widget routedApp = navigator!;
+          final Widget app = widget.globalLayerBuilder == null
+              ? routedApp
+              : widget.globalLayerBuilder!(context, routedApp);
+          return AnnotatedRegion<SystemUiOverlayStyle>(
+            value: AppTheme.systemUiOverlayStyle(Theme.of(context).colorScheme),
+            child: app,
+          );
+        },
       ),
     );
   }

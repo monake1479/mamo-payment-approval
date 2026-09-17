@@ -63,35 +63,43 @@ class _PaymentsHistory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
-    if (payments.isEmpty) {
-      return PaymentsEmptyView(
-        title: l10n.emptyPaymentsTitle,
-        description: l10n.emptyPaymentsDescription,
-      );
-    }
-
-    return ListView.separated(
-      key: const PageStorageKey<String>('payments.history'),
-      padding: const EdgeInsets.only(bottom: AppTheme.sectionGap),
-      itemCount: payments.length + 1,
-      separatorBuilder: (BuildContext context, int index) =>
-          const SizedBox(height: AppTheme.itemGap),
-      itemBuilder: (BuildContext context, int index) {
-        if (index == 0) {
-          return Text(
-            l10n.reportingTimeZoneContext(reportingTimeZone),
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+    final ThemeData theme = Theme.of(context);
+    final Widget history = payments.isEmpty
+        ? PaymentsEmptyView(
+            title: l10n.emptyPaymentsTitle,
+            description: l10n.emptyPaymentsDescription,
+          )
+        : ListView.separated(
+            key: const PageStorageKey<String>('payments.history'),
+            padding: const EdgeInsets.only(bottom: AppTheme.sectionGap),
+            itemCount: payments.length,
+            separatorBuilder: (BuildContext context, int index) =>
+                const SizedBox(height: AppTheme.itemGap),
+            itemBuilder: (BuildContext context, int index) {
+              final Payment payment = payments[index];
+              return PaymentRow(
+                payment: payment,
+                formatters: formatters,
+                onTap: () => onOpenPayment(payment.id),
+              );
+            },
           );
-        }
-        final Payment payment = payments[index - 1];
-        return PaymentRow(
-          payment: payment,
-          formatters: formatters,
-          onTap: () => onOpenPayment(payment.id),
-        );
-      },
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Semantics(
+          identifier: 'payments.reportingTimeZone',
+          child: Text(
+            l10n.paymentsReportingTimeZone(reportingTimeZone),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.itemGap),
+        Expanded(child: history),
+      ],
     );
   }
 }

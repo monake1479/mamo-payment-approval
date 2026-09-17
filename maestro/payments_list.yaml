@@ -16,6 +16,8 @@ name: Decided payments list and monthly summary
 - assertVisible:
     id: payments.page
 - assertVisible:
+    id: payments.reportingTimeZone
+- assertVisible:
     id: payment.row.seed-approved-current
 - assertVisible:
     id: payment.row.seed-rejected-current
