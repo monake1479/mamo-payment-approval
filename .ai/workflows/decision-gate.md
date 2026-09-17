@@ -16,9 +16,11 @@ New dependencies need a concrete reason and an alternative considered, not autom
 
 ## Current gates
 
+For the authorized implementation increment, consult [delegated implementation contracts](../../docs/architecture/implementation-contract.md) and the [UI contract](../../docs/product/ui-contract.md). They resolve baseline details listed below under delegated authority; product extensions and publication/merge restrictions remain unchanged. Do not attribute coordinator-selected details to direct owner Q&A answers.
+
 - Money semantics: ADR 0002 preserves `double`, with details open.
-- Monthly summary: status inclusion, reporting calendar, and timestamp semantics.
-- Approval: masks, native fallback, dismissal, and background/resume policy.
+- Monthly summary: approved-only inclusion, decision-time membership, and account-level reporting time zone are accepted in product Q2/Q5/Q6; do not reopen them without a new owner request.
+- Approval: masks, process termination, and backgrounding during an already submitted decision remain open. Non-dismissible approval, one active request, device-credential fallback, authentication before approval, and remasking after actual backgrounding are accepted in product Q7–Q11.
 - Distribution: installable iOS channel and signing access.
 - Product additions: evaluate with the owner after the baseline works.
 

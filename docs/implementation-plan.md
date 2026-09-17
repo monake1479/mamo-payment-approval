@@ -4,21 +4,25 @@
 
 Every slice is a runnable increment with a PR into `dev`. Verified increments reach `main` through separate promotion PRs from `dev`. PRs link decisions, criteria, tests, and evidence; no implementation goes directly into shared branches.
 
-The foundation contains the placeholder app, initial rules, native-only scope, branch flow, and CI configuration. Local additions include flavors and localization/layout widget tests. All payment behaviour below is planned. Further workflow refinements remain local until ready for a PR.
+The committed foundation contains the placeholder app, rules and project skills, native flavors, localization, bootstrap/error handling, router, push tooling, tests, and CI configuration. All payment behaviour below is planned. The current theme is a light placeholder; the accepted light/dark design has not been implemented.
 
-The current local process iteration adds Maestro policy, four project skills routed through `.ai/INDEX.md`, and a verification record template. An earlier version received an [independent audit and targeted correction check](testing/agent-workflow-review.md). Subsequent changes generalize the skills, add local review, require explicit owner authorization for agent merges, and pin Flutter through FVM (ADR 0006); the earlier audit does not verify these later changes. Keep edits uncommitted until the agreed process-review checkpoint.
+The current UI foundation increment adds system-following light/dark themes and centralized component/layout tokens. The owner authorized a theme PR and separate stacked feature worktrees on 2026-09-17, without merging into `dev`. [UI contract](product/ui-contract.md) and [implementation contracts](architecture/implementation-contract.md) govern that increment and resolve its previously open routine decisions under delegated authority. Their selections remain subject to owner review. No payment screen is claimed implemented by the theme increment.
+
+An earlier version of the workflow received an [independent audit and targeted correction check](testing/agent-workflow-review.md). That audit does not verify subsequent workflow or application changes. New planning decisions are recorded in the [product Q&A](product/requirements.md#planning-qa-accepted-decisions); accepted requirements are distinct from implemented behaviour.
 
 | Slice | Scope and criteria | Decisions and evidence |
 |---|---|---|
 | 0. Rules and workflow | `.ai/`, docs, PR template, `dev`, CI; supports `DELIVERY-02` | ADRs 0003/0004; rule/link audit, local gate, CI logs |
-| 1. Read-only payments | Model, deterministic async repository, collection state, list; `PAY-01/02` | Resolve money ADR 0002, pending-row disclosure, and minimum fixture contract first; failures, ordering, loading/empty/error, compact/expanded tests; first Maestro list flow and local Android/iOS harness |
-| 2. Home and details | Summary, recent payments, decided-only details, origin back navigation; `HOME-01..04`, `PAY-03`, `DETAIL-01/02` | Settle summary/calendar/timestamps; boundary, navigation, and layout tests |
-| 3. Incoming request and rejection | Draggable global action, masked overlay, rejection, canonical update; `DEBUG-01..04`, `APPROVAL-01..03/05/07/08`, rejection part of `PAY-04` | Agree masks, dismissal, concurrency, ordering; safe drag, origin preservation, duplicate/stale operation tests |
-| 4. Native authentication and approval | Real adapter, reveal, approve, list navigation; `APPROVAL-04/05/06/08`, remaining `PAY-04` | Agree fallback/lifecycle; fake contract tests plus native iOS/Android verification; no shipping fake success |
+| 1. Read-only payments | Model, deterministic async repository, collection state, decided-payment list; `PAY-01/02`, `MONEY-01` | Resolve remaining money semantics in ADR 0002 and fixture contract; AED-only, pending excluded from history; failures, ordering, loading/empty/error, compact/expanded tests; first Maestro list flow and local Android/iOS harness |
+| 2. Home and details | Approved-only summary, decided recent payments and details, origin back navigation; `HOME-01..04`, `PAY-03`, `DETAIL-01/02` | Decision time drives ordering and monthly membership in the account reporting zone (demo: `Asia/Dubai`); test pending/rejected exclusion, UTC-converted month boundaries, device-zone independence, navigation, and layout |
+| 3. Incoming request and rejection | Draggable global action, masked non-dismissible overlay, rejection, canonical update; `DEBUG-01..04`, `APPROVAL-01..03/05/07..09`, rejection part of `PAY-04` | One active request, no queue/replacement; agree masks and equal-timestamp tie-breaker; test dismissal blocking, disabled creation, safe drag, origin preservation, duplicate/stale operations |
+| 4. Native authentication and approval | Real adapter, reveal, explicit approve, list navigation; `APPROVAL-04/05/06/08/10`, remaining `PAY-04` | Q9–Q11 accept biometrics/device credentials, authentication before approval, and remasking on actual backgrounding; test native-prompt lifecycle separately from leaving the app, stale completions, cancellation/unavailability, and rejection without authentication; fake contract tests plus native iOS/Android verification; no shipping fake success |
 | 5. Original addition | Jointly select from extension backlog | New criteria, proportional design, tests, evidence, own PR |
 | 6. Delivery and reviewer guide | Installable Android APK, supported/tested iOS, critical journeys; `DELIVERY-01/02` | Native builds, APK install/access checks, recordings, provenance, limitations; no store/TestFlight requirement |
 
 Split slices further when useful. Domain/data/state/UI types arrive when the runnable increment needs them. Introduce native CI/build artifacts with platform delivery work.
+
+Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01`). Verify both appearances at compact/expanded widths and with large text as screens arrive. No manual theme selector is included. A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
 
 ## Native foundation increment
 
@@ -86,10 +90,12 @@ Run affected journeys with each slice before completion/push. Each implemented c
 
 ## Open decisions
 
-- Before slice 1: `double` precision, rounding, equality, totals, currency, formatting, parsing, and wire representation. Earlier recommendations are not accepted decisions.
-- Before slice 1: pending-row visibility/disclosure and the minimum seeded currency, locale, and status contract. Do not render full pending values, silently filter them, or claim complete all-payment coverage from decided-only fixtures without an agreed scope.
-- Before slice 2: summary inclusion, reporting calendar/timestamp, and additional seed scenarios needed by the summary.
-- Before slices 3/4: masks, dismissal/back, multiple requests, ordering older requests after decisions, auth fallback and lifecycle.
+The slice questions below are historical planning gates resolved for the baseline by the delegated implementation contract unless explicitly marked as an extension or delivery-access dependency. Do not silently reinterpret them as permission to expand the scope.
+
+- Before slice 1: remaining `double` comparison, summation, boundary parsing/validation, and serialization details in ADR 0002. Q12–Q14 settle whole-fils incoming amounts, no business-rounding feature, and fixed English display (`AED 1,234.56`) independent of device locale.
+- Before slice 1: the minimum deterministic fixture contract. Pending requests are explicitly excluded from Home/Payments history; tests must prove the filter rather than relying only on decided fixtures.
+- Before slice 2: additional seed scenarios and date formatting. Approved-only membership, decision-time ordering, UTC/ISO 8601 storage, and account-level reporting zone are settled in Q6. The demo uses `Asia/Dubai`; no country/account management UI is required.
+- Before slices 3/4: masks, equal-decision-time tie-breaker, process termination, and backgrounding during an already submitted decision. Q7–Q11 settle non-dismissible approval, one active request without queue/replacement, native credential fallback, authentication before approval, rejection without authentication, and remasking after actual backgrounding without a global app lock.
 - Before slice 5: choose an original addition with user/reviewer value and manageable scope. Retain the [deferred app PIN and session-expiry request](product/extension-backlog.md#deferred-owner-request-app-pin-and-session-expiry); its timeout and security policy remain undecided, and recording it does not authorize implementation.
 - Before delivery: APK installation and reviewer artifact permissions. iOS distribution is not required; iOS support and native verification remain required.
 

@@ -23,6 +23,7 @@
 
 ## Anchors
 
+- `docs/product/ui-contract.md` (shared screen and component contract)
 - `lib/app/theme/app_theme.dart`
 - `docs/product/requirements.md`
 - `docs/testing/strategy.md`

@@ -357,6 +357,7 @@ class PushGateTest(unittest.TestCase):
         tests.mkdir(parents=True)
         (tests / "app_test.dart").write_text("fixture")
         (tests / "app_failure_view_test.dart").write_text("fixture")
+        (tests / "app_theme_test.dart").write_text("fixture")
         source = self.repo / "lib/features/payments/presentation/pages/foundation_page.dart"
         source.parent.mkdir(parents=True)
         source.write_text("fixture")
@@ -365,7 +366,7 @@ class PushGateTest(unittest.TestCase):
         self.commit()
         result = self.gate()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(self.commands()[-1], "flutter test test/app/app_failure_view_test.dart test/app/app_test.dart")
+        self.assertEqual(self.commands()[-1], "flutter test test/app/app_failure_view_test.dart test/app/app_test.dart test/app/app_theme_test.dart")
 
     def test_unavailable_remote_history_falls_back_to_full_suite(self):
         payload = f"{BRANCH} {self.git('rev-parse', 'HEAD')} {BRANCH} {'1' * 40}\n"
@@ -388,7 +389,7 @@ class PushGateTest(unittest.TestCase):
 class TestScopeTest(unittest.TestCase):
     def test_existing_foundation_mapping(self):
         scope = select_scope(["lib/features/payments/presentation/pages/foundation_page.dart"], SOURCE)
-        self.assertEqual(scope["flutter_tests"], ["test/app/app_failure_view_test.dart", "test/app/app_test.dart"])
+        self.assertEqual(scope["flutter_tests"], ["test/app/app_failure_view_test.dart", "test/app/app_test.dart", "test/app/app_theme_test.dart"])
 
     def test_unknown_shared_deleted_and_missing_inputs_fall_back(self):
         for path in ("lib/new.dart", "lib/core/shared.dart", "pubspec.lock", "lib/main.dart", "test/deleted_test.dart"):

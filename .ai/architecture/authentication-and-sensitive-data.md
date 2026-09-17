@@ -11,7 +11,7 @@ Reveal approval data only after successful native authentication for the active 
 - Test text, semantics, and copyable content for disclosure. Hidden full-value widgets must not expose data to accessibility services.
 - Scope reveal state to one request, discard it on closing, and ignore late results after disposal or replacement.
 - Authentication reveals data and never implicitly approves a payment.
-- Agree on biometric/passcode fallback, background/resume behaviour, and dismissal before implementing them.
+- Follow [accepted product Q7–Q11](../../docs/product/requirements.md#planning-qa-accepted-decisions) for dismissal, device-credential fallback, authentication before approval, and background remasking. Reject needs no authentication; the native prompt alone must not invalidate authentication. Resolve the remaining operation-lifecycle decisions before implementing them.
 - Handle repeated authentication/decision taps explicitly. Never log sensitive payment data, authentication results, or raw plugin payloads.
 - Keep the required request-generation action available in reviewer builds; the word debug does not mean release builds may hide it.
 
