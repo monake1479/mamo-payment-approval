@@ -4,7 +4,7 @@
 
 Every slice is a runnable increment with a PR into `dev`. Verified increments reach `main` through separate promotion PRs from `dev`. PRs link decisions, criteria, tests, and evidence; no implementation goes directly into shared branches.
 
-The committed foundation contains the placeholder app, rules and project skills, native flavors, localization, bootstrap/error handling, router, push tooling, tests, and CI configuration. All payment behaviour below is planned. The current theme is a light placeholder; the accepted light/dark design has not been implemented.
+The shared `dev` base contains the placeholder app, rules and project skills, native flavors, localization, bootstrap/error handling, router, push tooling, tests, and CI configuration. The unmerged theme ancestor adds the accepted system-following light/dark themes. This feature branch adds the read-only Home, Payments, and decided-payment details increment; approval, authentication, and the debug action remain separate work.
 
 The current UI foundation increment adds system-following light/dark themes and centralized component/layout tokens. The owner authorized a theme PR and separate stacked feature worktrees on 2026-09-17, without merging into `dev`. [UI contract](product/ui-contract.md) and [implementation contracts](architecture/implementation-contract.md) govern that increment and resolve its previously open routine decisions under delegated authority. Their selections remain subject to owner review. No payment screen is claimed implemented by the theme increment.
 
@@ -23,6 +23,12 @@ An earlier version of the workflow received an [independent audit and targeted c
 Split slices further when useful. Domain/data/state/UI types arrive when the runnable increment needs them. Introduce native CI/build artifacts with platform delivery work.
 
 Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01`). Verify both appearances at compact/expanded widths and with large text as screens arrive. No manual theme selector is included. A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
+
+## Read-only payments screen increment
+
+The read-only increment implements `HOME-01..04`, `PAY-01..03`, `DETAIL-01/02`, `MONEY-01`, and the applicable `UI-01` states against the authoritative `PaymentsCubit` collection. Home shows an approved-only account-month summary and five recent decided payments. Payments shows all approved/rejected history, and branch-local pushed details preserve whether the user arrived from Home or Payments. Missing or pending identifiers render safe localized UI.
+
+Compact layouts use bottom navigation; expanded layouts use a rail. Loading, empty, typed-error/retry, success, light/dark, account-zone dates, fixed AED formatting, and 200% text are covered by widget tests. The app shell exposes a composition builder for the later global approval/debug layer but does not implement either feature in this increment. `maestro/payments_list.yaml` and `maestro/payment_details.yaml` cover the deterministic list, summary, details, and return journeys; native run evidence remains separate from Flutter tests.
 
 ## Native foundation increment
 
@@ -54,15 +60,14 @@ evidence independently from bootstrap tests.
 
 ## Navigation foundation increment
 
-The owner selected `go_router` for app navigation. Wire `MaterialApp.router` to one
-`GoRouter` registered and disposed by `getIt`; keep route declarations in app
-composition. The only current route is `/`, displaying the unchanged foundation
-page. Unknown paths use the existing localized safe error view without revealing
-the requested URI. Startup/build-error UI remains independent of router and DI.
-No placeholder feature routes, routing facade, code generation, or auth redirects.
-Verify the injected router, root/back behavior, preserved location on rebuild,
-unknown-route recovery, localization/layout, and native startup/resume. Future
-payment/details/overlay journeys arrive with their corresponding slices.
+The owner selected `go_router` for app navigation. `MaterialApp.router` uses one
+`GoRouter` registered and disposed by `getIt`; route declarations remain in app
+composition. `/home` and `/payments` are stateful shell branches with branch-local
+decided-payment detail routes. Unknown paths use the existing localized safe error
+view without revealing the requested URI. Startup/build-error UI remains
+independent of router and DI. There is no routing facade, code generation, or auth
+redirect. The app-level builder remains the explicit extension point for the later
+global approval overlay and draggable action.
 
 ## Localization foundation increment
 
