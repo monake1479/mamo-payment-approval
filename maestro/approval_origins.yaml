@@ -1,0 +1,34 @@
+appId: ${APP_ID}
+name: Approval overlay preserves Payments and details origins
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: navigation.destination.payments
+- assertVisible:
+    id: payments.page
+- tapOn:
+    id: debug.incomingRequest
+- assertVisible:
+    id: approval.overlay
+- tapOn:
+    id: approval.reject
+- assertNotVisible:
+    id: approval.overlay
+- assertVisible:
+    id: payments.page
+- tapOn:
+    id: payment.row.request-0001
+- assertVisible:
+    id: payment.details
+- tapOn:
+    id: debug.incomingRequest
+- assertVisible:
+    id: approval.overlay
+- tapOn:
+    id: approval.reject
+- assertNotVisible:
+    id: approval.overlay
+- assertVisible:
+    id: payment.details
+- takeScreenshot: approval-origins

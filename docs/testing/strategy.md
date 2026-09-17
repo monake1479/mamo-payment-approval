@@ -54,7 +54,7 @@ Keep a small set of critical journeys, introduced with their implementation slic
 
 The repository includes `maestro/foundation.yaml` (normal launch and resume,
 `RUNTIME-01/03`) and `maestro/configuration_failure.yaml` (safe mismatched-flavor
-rejection, `RUNTIME-01/03`), plus payment list/details, approval-rejection,
+rejection, `RUNTIME-01/03`), plus payment list/details, approval rejection/origin,
 native-approval preparation/verification, and draggable-action flows. The native
 approval pair brackets the real operating-system authentication event instead of
 bypassing it. The failure flow requires an Android build with
