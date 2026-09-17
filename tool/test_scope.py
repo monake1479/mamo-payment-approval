@@ -6,6 +6,54 @@ from pathlib import Path
 # Include every consumer test, not just a same-named unit test. Extend this map
 # alongside each vertical slice; CI remains the full-suite safety net.
 FLUTTER_TESTS = {
+    "lib/features/payments/data/in_memory_payments_repository.dart": [
+        "test/features/payments/data/in_memory_payments_repository_test.dart",
+    ],
+    "lib/features/payments/data/payment_record_codec.dart": [
+        "test/features/payments/data/in_memory_payments_repository_test.dart",
+        "test/features/payments/data/payment_record_codec_test.dart",
+    ],
+    "lib/features/payments/domain/payment.dart": [
+        "test/features/payments/data/in_memory_payments_repository_test.dart",
+        "test/features/payments/data/payment_record_codec_test.dart",
+        "test/features/payments/domain/payment_test.dart",
+        "test/features/payments/domain/payment_operations_test.dart",
+        "test/features/payments/presentation/cubit/payments_cubit_test.dart",
+    ],
+    "lib/features/payments/domain/payment_money.dart": [
+        "test/features/payments/data/in_memory_payments_repository_test.dart",
+        "test/features/payments/data/payment_record_codec_test.dart",
+        "test/features/payments/domain/payment_money_test.dart",
+        "test/features/payments/domain/payment_operations_test.dart",
+        "test/features/payments/domain/payment_test.dart",
+        "test/features/payments/presentation/cubit/payments_cubit_test.dart",
+    ],
+    "lib/features/payments/domain/payment_operations.dart": [
+        "test/features/payments/domain/payment_operations_test.dart",
+        "test/features/payments/presentation/cubit/payments_cubit_test.dart",
+    ],
+    "lib/features/payments/domain/payments_failure.dart": [
+        "test/features/payments/data/in_memory_payments_repository_test.dart",
+        "test/features/payments/data/payment_record_codec_test.dart",
+        "test/features/payments/domain/payment_money_test.dart",
+        "test/features/payments/domain/payment_operations_test.dart",
+        "test/features/payments/domain/payment_test.dart",
+        "test/features/payments/presentation/cubit/payments_cubit_test.dart",
+    ],
+    "lib/features/payments/domain/payments_repository.dart": [
+        "test/features/payments/data/in_memory_payments_repository_test.dart",
+        "test/features/payments/presentation/cubit/payments_cubit_test.dart",
+    ],
+    "lib/features/payments/domain/payments_result.dart": [
+        "test/features/payments/data/in_memory_payments_repository_test.dart",
+        "test/features/payments/data/payment_record_codec_test.dart",
+        "test/features/payments/domain/payment_money_test.dart",
+        "test/features/payments/domain/payment_operations_test.dart",
+        "test/features/payments/presentation/cubit/payments_cubit_test.dart",
+    ],
+    "lib/features/payments/presentation/cubit/payments_cubit.dart": [
+        "test/features/payments/presentation/cubit/payments_cubit_test.dart",
+    ],
     "lib/features/payments/presentation/pages/foundation_page.dart": [
         "test/app/app_failure_view_test.dart",
         "test/app/app_test.dart",
