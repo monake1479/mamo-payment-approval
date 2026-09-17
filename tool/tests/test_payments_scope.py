@@ -7,7 +7,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tool"))
-from test_scope import select_scope
+from test_scope import PAYMENTS_UI_TESTS, select_scope
 
 
 class PaymentsScopeTest(unittest.TestCase):
@@ -95,6 +95,15 @@ class PaymentsScopeTest(unittest.TestCase):
                 "test/mock_backend/payments/mock_payments_backend_test.dart",
             ],
         )
+
+    def test_payment_row_change_selects_all_screen_consumers(self):
+        scope = select_scope(
+            ["lib/features/payments/widgets/payment_row.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(scope["flutter_tests"], sorted(PAYMENTS_UI_TESTS))
+        self.assertFalse(scope["hook_tests"])
 
 
 if __name__ == "__main__":

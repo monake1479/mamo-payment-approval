@@ -88,11 +88,13 @@ class AppPageTransitionSwitcher extends StatefulWidget {
   const AppPageTransitionSwitcher({
     required this.child,
     required this.direction,
+    this.onTransitionCompleted,
     super.key,
   }) : assert(direction == -1 || direction == 1);
 
   final Widget child;
   final int direction;
+  final VoidCallback? onTransitionCompleted;
 
   @override
   State<AppPageTransitionSwitcher> createState() =>
@@ -123,6 +125,7 @@ class _AppPageTransitionSwitcherState extends State<AppPageTransitionSwitcher>
     if (_animationsDisabled && _outgoingChild != null) {
       _controller.value = 1;
       _outgoingChild = null;
+      widget.onTransitionCompleted?.call();
     }
   }
 
@@ -151,6 +154,7 @@ class _AppPageTransitionSwitcherState extends State<AppPageTransitionSwitcher>
       return;
     }
     setState(() => _outgoingChild = null);
+    widget.onTransitionCompleted?.call();
   }
 
   @override

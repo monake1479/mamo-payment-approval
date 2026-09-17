@@ -6,6 +6,9 @@ import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart'
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_status_colors.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
+
+import '../support/payments_test_support.dart';
 
 double contrast(Color first, Color second) {
   final double a = first.computeLuminance();
@@ -98,12 +101,21 @@ void main() {
         addTearDown(tester.view.resetDevicePixelRatio);
         final MamoPaymentRouter appRouter = MamoPaymentRouter();
         addTearDown(appRouter.dispose);
+        final backend = StubPaymentsBackend(
+          onLoad: () async => const <Payment>[],
+        );
+        final cubit = createPaymentsCubit(backend);
+        addTearDown(cubit.close);
         await tester.pumpWidget(
-          MamoPaymentApprovalApp(router: appRouter.router),
+          MamoPaymentApprovalApp(
+            router: appRouter.router,
+            paymentsCubit: cubit,
+          ),
         );
         await tester.pumpAndSettle();
         expect(
-          Theme.of(tester.element(find.byType(Scaffold))).brightness,
+          Theme.of(tester.element(find.bySemanticsIdentifier('home.page')))
+              .brightness,
           brightness,
         );
         expect(tester.takeException(), isNull);
