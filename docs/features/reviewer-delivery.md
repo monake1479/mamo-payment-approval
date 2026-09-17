@@ -23,16 +23,25 @@ The archive contains:
 - `source-commit.txt` — the exact source head used by the build;
 - `flutter-version.txt` — the Flutter and Dart versions actually used, checked against `.fvmrc`;
 - `apk-signature.txt` — `apksigner` verification output showing the Android debug certificate;
+- `apk-metadata.txt` — packaged application metadata, including the verified API 24 minimum;
 - `README.md` — short verification and installation instructions.
 
-To install after downloading and extracting the artifact:
+For the primary no-tooling installation path:
+
+1. Download the private artifact ZIP and extract it.
+2. Optionally verify the APK against `SHA256SUMS.txt` with a local checksum tool.
+3. Transfer `mamo-reviewer-prod-release-debug-signed.apk` to an Android API 24+ phone.
+4. Open the APK on the phone and approve installation from that file source when Android asks.
+5. Launch **Mamo**.
+
+For developers with Android platform tools, `adb` is an optional alternative after extracting the artifact:
 
 ```sh
 sha256sum -c SHA256SUMS.txt
 adb install -r mamo-reviewer-prod-release-debug-signed.apk
 ```
 
-Launch **Mamo** on the device. Android may require the user to approve installation through their chosen local transfer method; `adb` installation requires USB debugging and an authorized device.
+`adb` requires USB debugging and an authorized device. The CI runner uses an ephemeral Android debug key, so its signing certificate can differ between workflow runs. If Android rejects an update because an existing challenge installation has a different signature, manually uninstall that app in Android settings and install the downloaded APK again. Uninstalling resets the app's session-only demo data. The workflow never automates uninstall on a reviewer's device.
 
 ## Provenance and limitations
 
@@ -44,6 +53,6 @@ flutter gen-l10n
 flutter build apk --flavor prod -t lib/main_prod.dart --release
 ```
 
-The Android Gradle release configuration currently selects the debug signing config. The job also verifies the built APK with the Android SDK's `apksigner` and requires the signer certificate output to identify `Android Debug` before upload.
+The Android Gradle release configuration currently selects the debug signing config. The job verifies the built APK with the Android SDK's `apksigner` and requires the signer certificate output to identify `Android Debug` before upload. It also reads the packaged metadata with `aapt` and requires the declared minimum SDK to be API 24, matching the current pinned Flutter/native configuration.
 
 This artifact does not claim production signing, Play Store readiness, durable payment execution, or independent native-authentication evidence. Application data is session-only and resets when the OS process is terminated. CI compilation and signature verification do not replace device installation, critical-journey, or physical-device authentication checks; those remain separate delivery evidence when the corresponding features are integrated.
