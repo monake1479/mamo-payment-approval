@@ -14,6 +14,7 @@ class MamoPaymentApprovalApp extends StatelessWidget {
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       onGenerateTitle: (BuildContext context) =>

@@ -14,6 +14,7 @@ class AppFailureApp extends StatelessWidget {
   Widget build(BuildContext context) => MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: AppTheme.light,
+    darkTheme: AppTheme.dark,
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,

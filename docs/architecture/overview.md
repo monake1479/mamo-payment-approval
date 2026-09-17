@@ -6,7 +6,7 @@ The architecture makes the review conversation straightforward: each class has a
 
 ## Current versus planned implementation
 
-The foundation contains a shared bootstrap, process-wide `get_it` registrations, local error logging, a stateless app root, a light theme, and a placeholder page. Bootstrap and localization/layout tests cover the implemented foundation. Flutter UI copy comes from English ARB resources through generated `AppLocalizations` (ADR 0008). The payments shape below is planned; no business-state library or payment model exists yet.
+The foundation contains a shared bootstrap, process-wide `get_it` registrations, local error logging, a stateless app root, system-following light/dark themes, and a placeholder page. Bootstrap and localization/layout/theme tests cover the implemented foundation. Flutter UI copy comes from English ARB resources through generated `AppLocalizations` (ADR 0008). The payments shape below is planned; no business-state library or payment model exists yet. The [implementation contract](implementation-contract.md) records the delegated baseline choices for the feature increments.
 
 ## Runtime shape
 
@@ -23,6 +23,12 @@ App shell
 ```
 
 The first implementation will use an in-memory repository seeded with deterministic data. The repository boundary remains asynchronous so a remote API can replace it without changing widgets or domain rules.
+
+## Planned time contract
+
+Domain timestamps represent UTC instants; serialized records use ISO 8601 with a UTC `Z` suffix. Preserve creation and decision timestamps separately. History and monthly membership use decision time.
+
+Inject the account's IANA reporting-zone configuration; the demonstration account uses `Asia/Dubai`. Do not derive it from the device, currency, or language. Monthly reporting constructs calendar boundaries in that zone and converts them to UTC for an inclusive-start/exclusive-end comparison. Initial date display uses the same account zone. This keeps reports consistent for users of one account across countries without adding account-management UI or a persistent database. See [product Q6](../product/requirements.md#planning-qa-accepted-decisions).
 
 ## State ownership
 
@@ -52,7 +58,9 @@ Failures cross boundaries as typed outcomes with stable codes/slugs and safe par
 
 ## Native authentication and delivery
 
-iOS and Android use native authentication adapters; deterministic fakes are test dependencies. No Web target or production auth simulator is planned. Real native prompt verification supplements fake-based tests. Fallback and lifecycle policies remain open decisions.
+iOS and Android will use native authentication adapters allowing biometrics or the operating system's device PIN/passcode; deterministic fakes are test dependencies. No Web target or production auth simulator is planned. Real native prompt verification supplements fake-based tests.
+
+The planned approval controller permits approval only after successful authentication and disclosure for its active request, followed by an explicit approval action. Rejection needs no authentication. Actual backgrounding revokes reveal/approval authorization and remasks the still-open request; stale authentication completions cannot restore it. The native prompt's own transient inactive state must not be mistaken for backgrounding. This is separate from app-switcher privacy and does not introduce an app-wide lock or application PIN. See [product Q9–Q11](../product/requirements.md#planning-qa-accepted-decisions). Process termination and backgrounding during an already submitted decision remain open; invalidating disclosure must not silently replay an operation.
 
 Reviewer access uses an installable Android APK without compilation. iOS remains supported/tested but does not require TestFlight/store distribution. See ADR 0003.
 

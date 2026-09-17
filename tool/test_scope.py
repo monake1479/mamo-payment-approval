@@ -9,6 +9,7 @@ FLUTTER_TESTS = {
     "lib/features/payments/presentation/pages/foundation_page.dart": [
         "test/app/app_failure_view_test.dart",
         "test/app/app_test.dart",
+        "test/app/app_theme_test.dart",
     ],
 }
 
