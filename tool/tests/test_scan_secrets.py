@@ -3,14 +3,16 @@
 import contextlib
 import io
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
+import tomllib
 import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from scan_secrets import scan
+from scan_secrets import GITLEAKS_CONFIG, LOCAL_AUTH_DARWIN_PODSPEC_CHECKSUM, scan
 
 
 class SecretScanTest(unittest.TestCase):
@@ -59,6 +61,23 @@ class SecretScanTest(unittest.TestCase):
                 result, output = self.invoke()
                 self.assertEqual(result, 1)
                 self.assertNotIn("passed", output)
+
+    def test_allowlist_is_limited_to_the_reviewed_podspec_checksum_and_path(self):
+        parsed = tomllib.loads(GITLEAKS_CONFIG)
+        allowlist = parsed["allowlists"][0]
+
+        self.assertEqual(allowlist["targetRules"], ["generic-api-key"])
+        self.assertEqual(allowlist["condition"], "AND")
+        self.assertEqual(allowlist["regexTarget"], "secret")
+
+        checksum = re.compile(allowlist["regexes"][0])
+        path = re.compile(allowlist["paths"][0])
+        self.assertIsNotNone(checksum.fullmatch(LOCAL_AUTH_DARWIN_PODSPEC_CHECKSUM))
+        self.assertIsNone(checksum.fullmatch("d" * 40))
+        self.assertIsNotNone(path.search("ios/Podfile.lock"))
+        self.assertIsNotNone(path.search("snapshot/ios/Podfile.lock"))
+        self.assertIsNone(path.search("ios/Other.lock"))
+        self.assertIsNone(path.search("other/ios/Podfile.lock.backup"))
 
     def test_wrong_version_is_rejected(self):
         self.version = "0.0.0"
