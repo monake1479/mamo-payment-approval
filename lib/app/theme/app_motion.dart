@@ -125,7 +125,6 @@ class _AppPageTransitionSwitcherState extends State<AppPageTransitionSwitcher>
     if (_animationsDisabled && _outgoingChild != null) {
       _controller.value = 1;
       _outgoingChild = null;
-      widget.onTransitionCompleted?.call();
     }
   }
 
@@ -142,6 +141,7 @@ class _AppPageTransitionSwitcherState extends State<AppPageTransitionSwitcher>
     if (_animationsDisabled) {
       _outgoingChild = null;
       _controller.value = 1;
+      widget.onTransitionCompleted?.call();
     } else {
       _controller.forward(from: 0);
     }

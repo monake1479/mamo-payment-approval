@@ -137,7 +137,7 @@ class _PaymentBranchNavigatorContainerState
   }
 
   void _completeTransition() {
-    if (mounted) {
+    if (mounted && _outgoingIndex != null) {
       setState(() => _outgoingIndex = null);
     }
   }
@@ -157,7 +157,7 @@ class _PaymentBranchNavigatorContainerState
       children: <Widget>[
         for (final (int index, Widget child) in widget.children.indexed)
           if (index != widget.currentIndex && index != _outgoingIndex)
-            Offstage(offstage: true, child: child),
+            Offstage(child: child),
         AppPageTransitionSwitcher(
           direction: direction,
           onTransitionCompleted: _completeTransition,

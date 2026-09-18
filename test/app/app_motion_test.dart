@@ -212,6 +212,7 @@ void main() {
   ) async {
     late StateSetter updateState;
     int page = 0;
+    int completedTransitions = 0;
     await tester.pumpWidget(
       MaterialApp(
         home: StatefulBuilder(
@@ -219,6 +220,7 @@ void main() {
             updateState = setState;
             return AppPageTransitionSwitcher(
               direction: 1,
+              onTransitionCompleted: () => completedTransitions += 1,
               child: SizedBox(
                 key: ValueKey<int>(page),
                 child: Text('Page $page'),
@@ -269,6 +271,43 @@ void main() {
     );
     expect(find.text('Page 0'), findsNothing);
     expect(find.text('Page 1'), findsOneWidget);
+    expect(completedTransitions, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('page switcher completes immediately with reduced motion', (
+    WidgetTester tester,
+  ) async {
+    late StateSetter updateState;
+    int page = 0;
+    int completedTransitions = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              updateState = setState;
+              return AppPageTransitionSwitcher(
+                direction: 1,
+                onTransitionCompleted: () => completedTransitions += 1,
+                child: SizedBox(
+                  key: ValueKey<int>(page),
+                  child: Text('Page $page'),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    updateState(() => page = 1);
+    await tester.pump();
+
+    expect(find.text('Page 0'), findsNothing);
+    expect(find.text('Page 1'), findsOneWidget);
+    expect(completedTransitions, 1);
     expect(tester.takeException(), isNull);
   });
 }

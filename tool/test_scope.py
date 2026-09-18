@@ -32,31 +32,38 @@ FLUTTER_TESTS = {
         "test/common/data/payments/payments_repository_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/mock_backend/payments/mock_payments_backend.dart": [
         "test/mock_backend/payments/mock_payments_backend_test.dart",
         "test/common/data/payments/payments_repository_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/mock_backend/payments/payments_backend_client.dart": [
         "test/app/bootstrap_test.dart",
         "test/mock_backend/payments/mock_payments_backend_test.dart",
         "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/mock_backend/payments/payments_backend_exception.dart": [
         "test/mock_backend/payments/mock_payments_backend_test.dart",
         "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/dtos/payment_dto.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
         "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/converters/payment_amount_json_converter.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/converters/utc_datetime_json_converter.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/models/payment.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
@@ -65,20 +72,24 @@ FLUTTER_TESTS = {
         "test/common/data/payments/models/payments_collection_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/models/payments_collection.dart": [
         "test/common/data/payments/models/payments_collection_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/models/payment_mutation.dart": [
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/models/payment_summary.dart": [
         "test/common/data/payments/models/payments_collection_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/error_handling/payments_failure.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
@@ -86,6 +97,7 @@ FLUTTER_TESTS = {
         "test/common/data/payments/payments_repository_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/result/models/result.dart": [
         "test/common/result/models/result_test.dart",
@@ -93,37 +105,46 @@ FLUTTER_TESTS = {
         "test/common/data/payments/payments_repository_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/result/models/unit.dart": [
         "test/common/result/models/result_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/payments_repository.dart": [
         "test/common/data/payments/payments_repository_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/use_cases/create_payment_request_use_case.dart": [
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/use_cases/decide_payment_use_case.dart": [
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/use_cases/load_payments_use_case.dart": [
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/use_cases/refresh_payments_use_case.dart": [
         "test/app/bootstrap_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/features/payments/states/payments/payments_cubit.dart": [
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/features/payments/states/payments/payments_state.dart": [
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/app/app.dart": PAYMENTS_UI_TESTS,
     "lib/app/bootstrap.dart": PAYMENTS_UI_TESTS,

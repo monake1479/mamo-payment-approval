@@ -1,6 +1,6 @@
 # Read-only payment screens
 
-Status: implemented on the feature branch; rebased onto the accepted shared theme and navigation foundation.
+Status: implemented on the feature branch; rebased onto the accepted shared payments architecture, theme, and navigation foundation.
 
 ## Behaviour
 
