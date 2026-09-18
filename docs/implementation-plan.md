@@ -50,15 +50,17 @@ evidence independently from bootstrap tests.
 
 ## Navigation foundation increment
 
-The owner selected `go_router` for app navigation. Wire `MaterialApp.router` to one
-`GoRouter` registered and disposed by `getIt`; keep route declarations in app
-composition. The only current route is `/`, displaying the unchanged foundation
-page. Unknown paths use the existing localized safe error view without revealing
-the requested URI. Startup/build-error UI remains independent of router and DI.
-No placeholder feature routes, routing facade, code generation, or auth redirects.
-Verify the injected router, root/back behavior, preserved location on rebuild,
-unknown-route recovery, localization/layout, and native startup/resume. Future
-payment/details/overlay journeys arrive with their corresponding slices.
+The owner selected `go_router` for app navigation. A DI-owned
+`MamoPaymentRouter` owns and disposes one `GoRouter`; app composition injects its
+stable router into `MaterialApp.router`. Route declarations stay in that
+application-infrastructure class. The only current route is `/`, displaying the
+unchanged foundation page.
+Unknown paths use the existing localized safe error view without revealing the
+requested URI. Startup/build-error UI remains independent of router and DI. No
+placeholder feature routes, code generation, or auth redirects are introduced.
+Verify router ownership and identity, root/back behavior, preserved location on
+rebuild, unknown-route recovery, localization/layout, and native startup/resume.
+Future payment/details/overlay journeys arrive with their corresponding slices.
 
 ## Localization foundation increment
 

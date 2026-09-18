@@ -7,9 +7,13 @@ import 'package:mamo_payment_approval_challenge/features/payments/presentation/p
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 void main() {
+  late MamoPaymentRouter appRouter;
   late GoRouter router;
-  setUp(() => router = createAppRouter());
-  tearDown(() => router.dispose());
+  setUp(() {
+    appRouter = MamoPaymentRouter();
+    router = appRouter.router;
+  });
+  tearDown(() => appRouter.dispose());
 
   for (final Locale deviceLocale in <Locale>[
     const Locale('en'),

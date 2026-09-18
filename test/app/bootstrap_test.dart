@@ -4,13 +4,13 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/bootstrap.dart';
 import 'package:mamo_payment_approval_challenge/app/config/app_environment.dart';
 import 'package:mamo_payment_approval_challenge/app/di/configure_dependencies.dart';
 import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostics.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
+import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +23,11 @@ void main() {
       expect(getIt<AppEnvironment>(), environment);
       expect(getIt<LocalDiagnostics>().environment, environment);
       expect(getIt<LocalDiagnostics>(), same(getIt<LocalDiagnostics>()));
-      expect(getIt<GoRouter>(), same(getIt<GoRouter>()));
+      expect(getIt<MamoPaymentRouter>(), same(getIt<MamoPaymentRouter>()));
+      expect(
+        getIt<MamoPaymentRouter>().router,
+        same(getIt<MamoPaymentRouter>().router),
+      );
     });
   }
 
@@ -45,7 +49,7 @@ void main() {
     await bootstrap(mismatch);
     await tester.pumpAndSettle();
     expect(getIt.isRegistered<AppEnvironment>(), isFalse);
-    expect(getIt.isRegistered<GoRouter>(), isFalse);
+    expect(getIt.isRegistered<MamoPaymentRouter>(), isFalse);
     expect(find.text('Unable to continue'), findsOneWidget);
     expect(find.text('Payment approval'), findsNothing);
   });

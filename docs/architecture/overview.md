@@ -26,11 +26,13 @@ The first implementation will use an in-memory repository seeded with determinis
 
 ## State ownership
 
-Navigation is configured in `lib/app/navigation/app_router.dart`. The app receives
-one DI-owned `GoRouter` and uses `MaterialApp.router`; routes are not recreated in
-`build`. Only `/` exists today. Unknown locations show a localized fallback without
-exposing the URI. Startup/build failures use standalone `AppFailureApp`, outside
-normal navigation, so rendering them does not depend on successful DI initialization.
+Navigation is configured in `lib/app/navigation/app_router.dart`. One DI-owned
+`MamoPaymentRouter` constructs, exposes, and disposes the application `GoRouter`;
+the app injects that stable router into `MaterialApp.router`, so routes are not
+recreated in `build`. Only `/` exists today. Unknown locations show a localized
+fallback without exposing the URI. Startup/build failures use standalone
+`AppFailureApp`, outside normal navigation, so rendering them does not depend on
+successful DI initialization.
 
 - A payments state owner maintains the canonical collection, ordering, totals, and decisions.
 - A short-lived approval state owner coordinates masked/revealed UI state, authentication, and decision submission.
