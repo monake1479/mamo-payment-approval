@@ -1,10 +1,16 @@
 import 'package:flutter/services.dart';
+import 'package:injectable/injectable.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/data/authentication/local_auth_client.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/device_authenticator.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/local_auth_client.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
+import 'package:mamo_payment_approval_challenge/common/error_handling/device_authentication_failure.dart';
+import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
+import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
 
+@LazySingleton(as: DeviceAuthenticator)
 final class LocalAuthDeviceAuthenticator implements DeviceAuthenticator {
-  LocalAuthDeviceAuthenticator({LocalAuthClient? client})
+  LocalAuthDeviceAuthenticator({@ignoreParam LocalAuthClient? client})
     : _client = client ?? PluginLocalAuthClient();
 
   final LocalAuthClient _client;
@@ -15,7 +21,7 @@ final class LocalAuthDeviceAuthenticator implements DeviceAuthenticator {
   Future<DeviceAuthenticationCancellationResult>? _cancellationInProgress;
 
   @override
-  Future<DeviceAuthenticationResult> authenticate({
+  Future<Result<DeviceAuthenticationFailure, Unit>> authenticate({
     required String localizedReason,
   }) async {
     if (localizedReason.trim().isEmpty) {
@@ -26,7 +32,9 @@ final class LocalAuthDeviceAuthenticator implements DeviceAuthenticator {
       );
     }
     if (_inFlightAttempt != null || _cancellationInProgress != null) {
-      return const DeviceAuthenticationFailed();
+      return const Result<DeviceAuthenticationFailure, Unit>.failure(
+        DeviceAuthenticationFailure.failed(),
+      );
     }
 
     final attempt = ++_nextAttempt;
@@ -35,10 +43,14 @@ final class LocalAuthDeviceAuthenticator implements DeviceAuthenticator {
     try {
       final supported = await _client.isDeviceSupported();
       if (!_isCurrent(attempt)) {
-        return const DeviceAuthenticationCancelled();
+        return const Result<DeviceAuthenticationFailure, Unit>.failure(
+          DeviceAuthenticationFailure.cancelled(),
+        );
       }
       if (!supported) {
-        return const DeviceAuthenticationUnavailable();
+        return const Result<DeviceAuthenticationFailure, Unit>.failure(
+          DeviceAuthenticationFailure.unavailable(),
+        );
       }
 
       final authenticated = await _client.authenticate(
@@ -48,26 +60,40 @@ final class LocalAuthDeviceAuthenticator implements DeviceAuthenticator {
         persistAcrossBackgrounding: false,
       );
       if (!_isCurrent(attempt)) {
-        return const DeviceAuthenticationCancelled();
+        return const Result<DeviceAuthenticationFailure, Unit>.failure(
+          DeviceAuthenticationFailure.cancelled(),
+        );
       }
       return authenticated
-          ? const DeviceAuthenticationSucceeded()
-          : const DeviceAuthenticationFailed();
+          ? const Result<DeviceAuthenticationFailure, Unit>.success(unit)
+          : const Result<DeviceAuthenticationFailure, Unit>.failure(
+              DeviceAuthenticationFailure.failed(),
+            );
     } on LocalAuthException catch (exception) {
       if (!_isCurrent(attempt)) {
-        return const DeviceAuthenticationCancelled();
+        return const Result<DeviceAuthenticationFailure, Unit>.failure(
+          DeviceAuthenticationFailure.cancelled(),
+        );
       }
       return _mapException(exception.code);
     } on PlatformException {
       if (!_isCurrent(attempt)) {
-        return const DeviceAuthenticationCancelled();
+        return const Result<DeviceAuthenticationFailure, Unit>.failure(
+          DeviceAuthenticationFailure.cancelled(),
+        );
       }
-      return const DeviceAuthenticationFailed();
+      return const Result<DeviceAuthenticationFailure, Unit>.failure(
+        DeviceAuthenticationFailure.failed(),
+      );
     } on Exception {
       if (!_isCurrent(attempt)) {
-        return const DeviceAuthenticationCancelled();
+        return const Result<DeviceAuthenticationFailure, Unit>.failure(
+          DeviceAuthenticationFailure.cancelled(),
+        );
       }
-      return const DeviceAuthenticationFailed();
+      return const Result<DeviceAuthenticationFailure, Unit>.failure(
+        DeviceAuthenticationFailure.failed(),
+      );
     } finally {
       if (_isCurrent(attempt)) {
         _activeAttempt = null;
@@ -119,20 +145,28 @@ final class LocalAuthDeviceAuthenticator implements DeviceAuthenticator {
     }
   }
 
-  DeviceAuthenticationResult _mapException(LocalAuthExceptionCode code) {
+  Result<DeviceAuthenticationFailure, Unit> _mapException(
+    LocalAuthExceptionCode code,
+  ) {
     switch (code) {
       case LocalAuthExceptionCode.userCanceled:
       case LocalAuthExceptionCode.systemCanceled:
       case LocalAuthExceptionCode.timeout:
-        return const DeviceAuthenticationCancelled();
+        return const Result<DeviceAuthenticationFailure, Unit>.failure(
+          DeviceAuthenticationFailure.cancelled(),
+        );
       case LocalAuthExceptionCode.noCredentialsSet:
       case LocalAuthExceptionCode.noBiometricsEnrolled:
       case LocalAuthExceptionCode.noBiometricHardware:
       case LocalAuthExceptionCode.biometricHardwareTemporarilyUnavailable:
       case LocalAuthExceptionCode.uiUnavailable:
-        return const DeviceAuthenticationUnavailable();
+        return const Result<DeviceAuthenticationFailure, Unit>.failure(
+          DeviceAuthenticationFailure.unavailable(),
+        );
       default:
-        return const DeviceAuthenticationFailed();
+        return const Result<DeviceAuthenticationFailure, Unit>.failure(
+          DeviceAuthenticationFailure.failed(),
+        );
     }
   }
 }

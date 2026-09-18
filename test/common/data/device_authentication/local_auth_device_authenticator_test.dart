@@ -3,11 +3,44 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/data/authentication/local_auth_client.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/data/authentication/local_auth_device_authenticator.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/local_auth_client.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/local_auth_device_authenticator.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
+import 'package:mamo_payment_approval_challenge/common/error_handling/device_authentication_failure.dart';
+import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
+import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
+
+const Result<DeviceAuthenticationFailure, Unit> _succeeded =
+    Result<DeviceAuthenticationFailure, Unit>.success(unit);
+const Result<DeviceAuthenticationFailure, Unit> _cancelled =
+    Result<DeviceAuthenticationFailure, Unit>.failure(
+      DeviceAuthenticationFailure.cancelled(),
+    );
+const Result<DeviceAuthenticationFailure, Unit> _unavailable =
+    Result<DeviceAuthenticationFailure, Unit>.failure(
+      DeviceAuthenticationFailure.unavailable(),
+    );
+const Result<DeviceAuthenticationFailure, Unit> _failed =
+    Result<DeviceAuthenticationFailure, Unit>.failure(
+      DeviceAuthenticationFailure.failed(),
+    );
 
 void main() {
+  test('device authentication failures expose stable safe codes', () {
+    expect(
+      const DeviceAuthenticationFailure.cancelled().code,
+      'authentication.cancelled',
+    );
+    expect(
+      const DeviceAuthenticationFailure.unavailable().code,
+      'authentication.unavailable',
+    );
+    expect(
+      const DeviceAuthenticationFailure.failed().code,
+      'authentication.failed',
+    );
+  });
+
   group('LocalAuthDeviceAuthenticator', () {
     test(
       'allows biometrics or device credentials with a localized prompt',
@@ -19,7 +52,7 @@ void main() {
           localizedReason: 'Authenticate to reveal payment details.',
         );
 
-        expect(result, isA<DeviceAuthenticationSucceeded>());
+        expect(result, _succeeded);
         expect(client.authenticateCallCount, 1);
         expect(
           client.localizedReason,
@@ -41,7 +74,7 @@ void main() {
           localizedReason: 'Localized reason',
         );
 
-        expect(result, isA<DeviceAuthenticationUnavailable>());
+        expect(result, _unavailable);
         expect(client.authenticateCallCount, 0);
       },
     );
@@ -55,7 +88,7 @@ void main() {
         localizedReason: 'Localized reason',
       );
 
-      expect(result, isA<DeviceAuthenticationFailed>());
+      expect(result, _failed);
     });
 
     for (final code in <LocalAuthExceptionCode>[
@@ -72,7 +105,7 @@ void main() {
           localizedReason: 'Localized reason',
         );
 
-        expect(result, isA<DeviceAuthenticationCancelled>());
+        expect(result, _cancelled);
       });
     }
 
@@ -92,7 +125,7 @@ void main() {
           localizedReason: 'Localized reason',
         );
 
-        expect(result, isA<DeviceAuthenticationUnavailable>());
+        expect(result, _unavailable);
       });
     }
 
@@ -113,7 +146,7 @@ void main() {
           localizedReason: 'Localized reason',
         );
 
-        expect(result, isA<DeviceAuthenticationFailed>());
+        expect(result, _failed);
       });
     }
 
@@ -128,7 +161,7 @@ void main() {
         localizedReason: 'Localized reason',
       );
 
-      expect(result, isA<DeviceAuthenticationFailed>());
+      expect(result, _failed);
     });
 
     test('maps a missing plugin exception to failed', () async {
@@ -142,7 +175,7 @@ void main() {
         localizedReason: 'Localized reason',
       );
 
-      expect(result, isA<DeviceAuthenticationFailed>());
+      expect(result, _failed);
     });
 
     test('does not hide programmer errors from the plugin boundary', () async {
@@ -178,10 +211,10 @@ void main() {
         localizedReason: 'Second',
       );
 
-      expect(duplicate, isA<DeviceAuthenticationFailed>());
+      expect(duplicate, _failed);
       expect(client.authenticateCallCount, 1);
       completion.complete(true);
-      expect(await first, isA<DeviceAuthenticationSucceeded>());
+      expect(await first, _succeeded);
     });
 
     test(
@@ -196,7 +229,7 @@ void main() {
         final cancellation = await authenticator.cancel();
         completion.complete(true);
 
-        expect(await result, isA<DeviceAuthenticationCancelled>());
+        expect(await result, _cancelled);
         expect(
           cancellation,
           DeviceAuthenticationCancellationResult.promptStopped,
@@ -224,7 +257,7 @@ void main() {
           cancellation,
           DeviceAuthenticationCancellationResult.promptStopFailed,
         );
-        expect(await result, isA<DeviceAuthenticationCancelled>());
+        expect(await result, _cancelled);
       },
     );
 
@@ -247,7 +280,7 @@ void main() {
           cancellation,
           DeviceAuthenticationCancellationResult.promptStopFailed,
         );
-        expect(await result, isA<DeviceAuthenticationCancelled>());
+        expect(await result, _cancelled);
       },
     );
 
@@ -270,7 +303,7 @@ void main() {
           cancellation,
           DeviceAuthenticationCancellationResult.promptStopFailed,
         );
-        expect(await result, isA<DeviceAuthenticationCancelled>());
+        expect(await result, _cancelled);
       },
     );
 
@@ -293,7 +326,7 @@ void main() {
           cancellation,
           DeviceAuthenticationCancellationResult.promptStopFailed,
         );
-        expect(await result, isA<DeviceAuthenticationCancelled>());
+        expect(await result, _cancelled);
       },
     );
 
@@ -316,7 +349,7 @@ void main() {
           localizedReason: 'Overlapping',
         );
 
-        expect(overlapping, isA<DeviceAuthenticationFailed>());
+        expect(overlapping, _failed);
         expect(client.authenticateCallCount, 1);
         stopCompletion.complete(true);
         expect(
@@ -324,11 +357,45 @@ void main() {
           DeviceAuthenticationCancellationResult.promptStopped,
         );
         authenticationCompletion.complete(true);
-        expect(await first, isA<DeviceAuthenticationCancelled>());
+        expect(await first, _cancelled);
         client.authenticateCompletion = null;
         final next = await authenticator.authenticate(localizedReason: 'Next');
-        expect(next, isA<DeviceAuthenticationSucceeded>());
+        expect(next, _succeeded);
         expect(client.authenticateCallCount, 2);
+      },
+    );
+
+    test(
+      'shares one native stop across concurrent cancellation calls',
+      () async {
+        final authenticationCompletion = Completer<bool>();
+        final stopCompletion = Completer<bool>();
+        final client = _FakeLocalAuthClient(
+          authenticateCompletion: authenticationCompletion,
+          stopAuthenticationCompletion: stopCompletion,
+        );
+        final authenticator = LocalAuthDeviceAuthenticator(client: client);
+        final authentication = authenticator.authenticate(
+          localizedReason: 'Reason',
+        );
+        await client.authenticationStarted;
+
+        final firstCancellation = authenticator.cancel();
+        await client.stopAuthenticationStarted;
+        final secondCancellation = authenticator.cancel();
+        stopCompletion.complete(true);
+
+        expect(
+          await firstCancellation,
+          DeviceAuthenticationCancellationResult.promptStopped,
+        );
+        expect(
+          await secondCancellation,
+          DeviceAuthenticationCancellationResult.promptStopped,
+        );
+        expect(client.stopAuthenticationCallCount, 1);
+        authenticationCompletion.complete(true);
+        expect(await authentication, _cancelled);
       },
     );
 
@@ -352,17 +419,17 @@ void main() {
           localizedReason: 'Overlapping',
         );
 
-        expect(overlapping, isA<DeviceAuthenticationFailed>());
+        expect(overlapping, _failed);
         expect(client.authenticateCallCount, 1);
 
         firstCompletion.complete(true);
-        expect(await first, isA<DeviceAuthenticationCancelled>());
+        expect(await first, _cancelled);
         client.authenticateCompletion = null;
         final retry = await authenticator.authenticate(
           localizedReason: 'Retry',
         );
 
-        expect(retry, isA<DeviceAuthenticationSucceeded>());
+        expect(retry, _succeeded);
         expect(client.authenticateCallCount, 2);
       },
     );
@@ -384,15 +451,15 @@ void main() {
         localizedReason: 'Overlapping',
       );
 
-      expect(overlapping, isA<DeviceAuthenticationFailed>());
+      expect(overlapping, _failed);
       expect(client.authenticateCallCount, 1);
 
       firstCompletion.complete(true);
-      expect(await first, isA<DeviceAuthenticationCancelled>());
+      expect(await first, _cancelled);
       client.authenticateCompletion = null;
       final retry = await authenticator.authenticate(localizedReason: 'Retry');
 
-      expect(retry, isA<DeviceAuthenticationSucceeded>());
+      expect(retry, _succeeded);
       expect(client.authenticateCallCount, 2);
     });
 
@@ -414,15 +481,15 @@ void main() {
         localizedReason: 'Overlapping',
       );
 
-      expect(overlapping, isA<DeviceAuthenticationFailed>());
+      expect(overlapping, _failed);
       expect(client.authenticateCallCount, 1);
 
       firstCompletion.complete(true);
-      expect(await first, isA<DeviceAuthenticationCancelled>());
+      expect(await first, _cancelled);
       client.authenticateCompletion = null;
       final retry = await authenticator.authenticate(localizedReason: 'Retry');
 
-      expect(retry, isA<DeviceAuthenticationSucceeded>());
+      expect(retry, _succeeded);
       expect(client.authenticateCallCount, 2);
     });
 

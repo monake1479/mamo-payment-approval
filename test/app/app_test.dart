@@ -3,13 +3,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/app.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/pages/foundation_page.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/pages/foundation_page.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 void main() {
+  late MamoPaymentRouter appRouter;
   late GoRouter router;
-  setUp(() => router = createAppRouter());
-  tearDown(() => router.dispose());
+  setUp(() {
+    appRouter = MamoPaymentRouter();
+    router = appRouter.router;
+  });
+  tearDown(() => appRouter.dispose());
 
   for (final Locale deviceLocale in <Locale>[
     const Locale('en'),
@@ -41,7 +45,7 @@ void main() {
     });
   }
 
-  for (final Size size in <Size>[const Size(320, 640), const Size(1024, 768)]) {
+  for (final Size size in <Size>[const Size(320, 640), const Size(768, 1024)]) {
     testWidgets('localized foundation fits $size with large text', (
       WidgetTester tester,
     ) async {

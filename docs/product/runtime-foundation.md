@@ -16,7 +16,8 @@ there is no startup controller, fatal-state notifier, or synthetic environment a
 
 ## Failure screen
 
-Normal app composition uses the DI-owned `GoRouter` through `MaterialApp.router`.
+Normal app composition uses the `GoRouter` owned by the DI-registered
+`MamoPaymentRouter` through `MaterialApp.router`.
 The `/` route renders the existing foundation page. Unknown paths reuse the safe
 localized unexpected-error view, never raw route exceptions or URIs. Router
 identity and location survive root rebuilds. `AppFailureApp` renders startup/build
@@ -32,7 +33,7 @@ failures without requiring a router; no new layout or visual direction is introd
 - Appearance: existing light theme; centered icon/text column, 24-pixel padding,
   maximum width 520, gaps 24/12. Reuse these tokens on the foundation page.
 - Compact/expanded: safe area, width constraint, vertical scrolling; no breakpoint
-  needed for this single column. Verify 320x640 and 1024x768 at 200% text size.
+  needed for this single column. Verify 320x640 and 768x1024 portrait viewports at 200% text size.
 - Accessibility: readable text, non-colour error cue, live-region semantics with
   stable identifier `app.failure`. No tappable controls, focus trap, or animation.
 - Empty/data/submitting are not states of this terminal screen. Success continues

@@ -1,6 +1,6 @@
 # ADR 0010: Bootstrap and local error boundary
 
-- Status: Accepted
+- Status: Accepted; dependency registration amended by ADR 0011
 - Date: 2026-09-17
 
 ## Decision
@@ -10,12 +10,13 @@ and one bootstrap. This replaces ADR 0007's initial single-entrypoint arrangemen
 The entry point and Flutter's native `appFlavor` must agree at runtime, not only
 in assertions. Keep binding initialization and `runApp` in the same zone.
 
-Use `get_it` with manual registration in `configureDependencies`, receiving the
-selected environment. One process-wide `getIt` instance is configured once;
-composition resolves dependencies and consumers use constructor injection. Only
-the environment, local diagnostics, and app router exist today. Add per-environment adapters
-when actual capabilities differ, not three identical registration branches or
-code generation in anticipation of future services.
+Use one process-wide `getIt` instance configured by `configureDependencies`,
+receiving the selected environment. Runtime foundation objects remain manually
+registered. ADR 0011 adds generated `injectable` registration for the concrete
+shared data graph now that repositories, data sources, and use cases exist.
+Composition resolves dependencies and consumers use constructor injection. Add
+per-environment adapters when actual capabilities differ, not three identical
+registration branches.
 
 Startup is a linear sequence: initialize bindings, validate the environment,
 await `configureDependencies(environment)`, configure error handlers, then
@@ -42,10 +43,13 @@ crash SDK, diagnostic reference registry, or automatic operation replay.
   make launch intent visible in IDE/build commands. Runtime validation prevents
   their independent selectors from silently diverging.
 - The locator is confined to composition, not used from business methods.
-  Manual registration is sufficient; generated registration has no current benefit.
-- A universal `Result` wrapper and feature-wide failure hierarchy are unnecessary
-  before business operations exist. The current three codes describe real app
-  failures, exhaustively mapped to `AppLocalizations` in UI.
+  Manual registration remains appropriate for runtime-owned values; generated
+  registration prevents drift in the shared data/use-case graph introduced by
+  ADR 0011.
+- Runtime startup keeps its small operation-specific failure contract. Payment
+  operations now justify the shared `Result<Failure, T>` and `Unit` primitives
+  described by ADR 0011; they do not replace the runtime failure codes or their
+  exhaustive `AppLocalizations` mapping.
 - Sanitized diagnostics deliberately lose exception detail. Debug locally with a
   debugger; never loosen logging to include payment or authentication payloads.
 - A build-error widget is not a universal recovery mechanism or an automatic
