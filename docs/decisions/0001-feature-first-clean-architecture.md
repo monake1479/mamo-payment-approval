@@ -1,6 +1,6 @@
 # ADR 0001: Feature-first clean architecture
 
-- Status: Accepted
+- Status: Partially superseded by ADR 0011
 - Date: 2026-09-15
 
 ## Context
@@ -13,10 +13,12 @@ Use a feature-first structure. Within the payments feature, separate presentatio
 
 Use BLoC/Cubit for asynchronous or cross-screen state. Keep purely visual, ephemeral state local to a widget.
 
+ADR 0011 replaces the data-placement part of this decision with domain-grouped shared data under `lib/common/data/<domain>/`. Feature-local presentation remains under `lib/features/`.
+
 ## Consequences
 
 - Reviewers can follow one feature from UI to business rules and data.
-- The in-memory repository and native authentication adapters sit behind interfaces; tests provide deterministic fakes. The initial Web-simulator proposal was superseded by ADR 0003.
+- The concrete payment repository delegates through the production-shaped data source to the authoritative in-memory mock backend defined by ADR 0011. Native authentication uses its shared platform boundary. Tests provide deterministic collaborators. The initial Web-simulator proposal was superseded by ADR 0003.
 - Business rules can be covered by fast unit tests.
 - The project avoids a multi-package setup and speculative generic abstractions.
 - Some mapping and wiring code is accepted in exchange for explicit boundaries.

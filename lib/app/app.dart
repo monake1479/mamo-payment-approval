@@ -6,8 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
 import 'package:mamo_payment_approval_challenge/app/payment_flow_layer.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/device_authenticator.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 class MamoPaymentApprovalApp extends StatefulWidget {

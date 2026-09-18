@@ -6,11 +6,13 @@ approve a payment by itself and does not add a production authentication fake.
 
 ## Contract and integration
 
-`DeviceAuthenticator.authenticate(localizedReason:)` returns one of four domain
-outcomes: succeeded, cancelled, unavailable, or failed. Presentation obtains the
-reason from `AppLocalizations` and supplies it when composing the approval state
-owner; domain and data code do not import localization. Use wording equivalent to
-"Authenticate to reveal payment details." in the English ARB resource.
+`DeviceAuthenticator.authenticate(localizedReason:)` returns the shared
+`Result<DeviceAuthenticationFailure, Unit>` contract. Success carries `Unit`;
+the Freezed failure union distinguishes cancelled, unavailable, and failed.
+Presentation obtains the reason from `AppLocalizations` and supplies it when
+composing the approval state owner; the capability does not import localization.
+Use wording equivalent to "Authenticate to reveal payment details." in the
+English ARB resource.
 
 Call `cancel()` when the active request is invalidated, the approval state owner is
 disposed, or actual backgrounding revokes disclosure. Cancellation invalidates the
@@ -26,6 +28,12 @@ operation as sensitive, and does not persist authentication across backgrounding
 That leaves background-versus-native-prompt lifecycle policy with the approval
 state owner instead of letting the plugin automatically retry.
 
+The capability and adapter live under `lib/common/data/device_authentication/`,
+the typed failure lives under `lib/common/error_handling/`, and generated DI binds
+the production adapter as a lazy-singleton `DeviceAuthenticator`. Approval
+presentation calls this capability rather than a repository or data source. The
+adapter adds no feature-local theme, motion, navigation, or payment-status types.
+
 ## Native setup
 
 All Android flavors share `USE_BIOMETRIC`, `FlutterFragmentActivity`, and an
@@ -33,7 +41,8 @@ AppCompat DayNight launch theme. The existing Android recents-screenshot safegua
 remains in `MainActivity` on API 33 and newer. Older supported Android versions use
 `FLAG_SECURE`, which also disables ordinary screenshots and screen recording while
 the activity is visible. All iOS flavors share the Face ID usage description and
-retain the existing scene privacy cover.
+retain the existing scene privacy cover. The integrated application baseline locks
+Android, iOS, and Flutter composition to portrait-up.
 
 The implementation follows the official [`local_auth` 3.0.2 API](https://pub.dev/packages/local_auth)
 and its endorsed [Android](https://pub.dev/packages/local_auth_android) and

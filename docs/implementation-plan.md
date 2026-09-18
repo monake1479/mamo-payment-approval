@@ -4,13 +4,14 @@
 
 Every slice is a runnable increment with a PR into `dev`. Verified increments reach `main` through separate promotion PRs from `dev`. PRs link decisions, criteria, tests, and evidence; no implementation goes directly into shared branches.
 
-The shared `dev` base contains the accepted UI foundation. The unmerged feature
-ancestry delivers authoritative payment state,
+The shared `dev` base contains the accepted UI foundation and payment architecture.
+The unmerged feature ancestry delivers
 Home/Payments/details, native authentication, the approval overlay, lifecycle
 remasking, and the draggable request action. The integration branch is based on the
 tested approval head, reconciles it with the accepted theme/motion/orientation
-merge, and adds the private reviewer-APK workflow. None of those feature PRs is
-merged or promoted by this status statement.
+and shared payment-data/use-case/state merges, and adds the private reviewer-APK
+workflow. None of the remaining feature PRs is merged or promoted by this status
+statement.
 
 The [UI contract](product/ui-contract.md), [implementation contracts](architecture/implementation-contract.md),
 and feature notes under `docs/features/` describe the integrated behaviour. Their
@@ -23,7 +24,7 @@ An earlier version of the workflow received an [independent audit and targeted c
 | Slice | Scope and criteria | Decisions and evidence |
 |---|---|---|
 | 0. Rules and workflow | `.ai/`, docs, PR template, `dev`, CI; supports `DELIVERY-02` | ADRs 0003/0004; rule/link audit, local gate, CI logs |
-| 1. Read-only payments | Model, deterministic async repository, collection state, decided-payment list; `PAY-01/02`, `MONEY-01` | Implemented with accepted ADR 0002 semantics; AED-only, pending excluded from history; failures, ordering, loading/empty/error, compact/expanded tests; Maestro list flow |
+| 1. Read-only payments | Model, deterministic async repository, collection state, decided-payment list; `PAY-01/02`, `MONEY-01` | ADR 0002 fixes positive finite `double` amounts with at most two decimal places, configurable per-payment currency, same-currency totals, and no client-side maximum; the demo defaults to AED. Pending is excluded from history. Cover failures, ordering, loading/empty/error, compact/expanded layouts, the first Maestro list flow, and local Android/iOS harnesses. |
 | 2. Home and details | Approved-only summary, decided recent payments and details, origin back navigation; `HOME-01..04`, `PAY-03`, `DETAIL-01/02` | Decision time drives ordering and monthly membership in the account reporting zone (demo: `Asia/Dubai`); test pending/rejected exclusion, UTC-converted month boundaries, device-zone independence, navigation, and layout |
 | 3. Incoming request and rejection | Draggable global action, masked non-dismissible overlay, rejection, canonical update; `DEBUG-01..04`, `APPROVAL-01..03/05/07..09`, rejection part of `PAY-04` | Implemented with one active request, no queue/replacement, accepted masks/tie-breaker, and dismissal/drag/origin/duplicate coverage |
 | 4. Native authentication and approval | Real adapter, reveal, explicit approve, list navigation; `APPROVAL-04/05/06/08/10`, remaining `PAY-04` | Q9–Q11 accept biometrics/device credentials, authentication before approval, and remasking on actual backgrounding; test native-prompt lifecycle separately from leaving the app, stale completions, cancellation/unavailability, and rejection without authentication; fake contract tests plus native iOS/Android verification; no shipping fake success |
@@ -42,14 +43,18 @@ separate pending-payments screen remains a deferred extension.
 The read-only increment implements `HOME-01..04`, `PAY-01..03`, `DETAIL-01/02`, `MONEY-01`, and the applicable `UI-01` states against the authoritative `PaymentsCubit` collection. Home shows an approved-only account-month summary and five recent decided payments. Payments shows all approved/rejected history, and branch-local pushed details preserve whether the user arrived from Home or Payments. Missing or pending identifiers render safe localized UI.
 
 Compact layouts use bottom navigation; expanded layouts use a rail. Loading, empty,
-typed-error/retry, success, light/dark, account-zone dates, fixed AED formatting,
+typed-error/retry, success, light/dark, account-zone dates, currency-aware fixed English formatting,
 and 200% text are covered by widget tests. `PaymentFlowLayer` now composes the
 implemented global approval overlay and draggable action above the router.
 `maestro/payments_list.yaml` and `maestro/payment_details.yaml` cover the
 deterministic list, summary, details, and return journeys; native run evidence
 remains separate from Flutter tests.
 
-Local review follow-up for `MONEY-01` rejects any positive input that would normalize to zero fils, including values inside the binary-noise tolerance. Regression tests cover the shared validator and payment model. Date display delegates English month names to `intl` with an explicit locale, preserving the accepted format and account zone even when the device locale differs.
+Payment DTO validation rejects non-positive, non-finite, and greater-than-two-decimal
+amounts without a tolerance, hidden minor-unit model, or client-side maximum.
+Display uses each payment's currency with fixed English grouping and two decimals.
+Date display delegates English month names to `intl` with an explicit locale,
+preserving the accepted format and account zone when the device locale differs.
 
 ## Native foundation increment
 
@@ -58,13 +63,15 @@ The local foundation adds `dev`, `staging`, and `prod` on both platforms (ADR 00
 - Three thin Dart entry points share one bootstrap; native identifiers and launcher names distinguish installations (ADR 0010).
 - Commands name the matching entry point and native flavor explicitly; IDE configurations encode the pair.
 - Verify Android debug/release artifacts and iOS simulator/device compilation for each flavor, inspect packaged identifiers/names, and check all Xcode Debug/Profile/Release mappings. Run the Flutter gate and document any unrun installation, signing, or device checks separately.
-- No backend environments, signing provisioning, or authentication shortcuts are introduced. Deferred product decisions remain open.
+- No external or deployed backend environments, signing provisioning, or authentication shortcuts are introduced. Deferred product decisions remain open.
 
 ## Runtime foundation increment
 
-`RUNTIME-01..03` add shared bootstrap, manual `get_it` registration per environment,
+`RUNTIME-01..03` add shared bootstrap and one process-wide `get_it` per environment,
 runtime flavor validation, sanitized local diagnostics, and localized startup/build-error
-UI. Scope, state ownership, exclusions, and criterion-to-test mapping are in the
+UI. Runtime-owned values remain manually registered; the implemented shared
+payment data graph uses generated `injectable` lazy-singleton registration under
+ADR 0011. Scope, state ownership, exclusions, and criterion-to-test mapping are in the
 [runtime screen contract](product/runtime-foundation.md) and ADR 0010. No payment
 model or summary policy is encoded. The owner-selected startup is a linear function
 with one process-wide `getIt`, no startup controller, and a stateless app root.
@@ -129,13 +136,10 @@ Run affected journeys with each slice before completion/push. Each implemented c
 
 The slice questions below are historical planning gates resolved for the baseline by the delegated implementation contract unless explicitly marked as an extension or delivery-access dependency. Do not silently reinterpret them as permission to expand the scope.
 
-- ADR 0002 and the implementation contract resolve comparison, summation,
-  validation, and serialization while preserving the `double` domain amount.
-- Deterministic fixtures explicitly include pending items and prove their exclusion
-  from history; approved-only membership uses decision time and `Asia/Dubai`.
-- The overlay masks and stable ordering tie-breaker are implemented. Process
-  termination resets session state. A submitted decision may complete once in the
-  background, with its terminal UI effect consumed once after resume.
+- Before slice 1: ADR 0002 records the accepted `double` contract: positive finite DTO values with at most two decimal places, typed string conversion, no precision tolerance or client-side maximum, same-currency totals, and fixed English display (for example `AED 1,234.56`) independent of device locale.
+- Before slice 1: the minimum deterministic fixture contract. Pending requests are explicitly excluded from Home/Payments history; tests must prove the filter rather than relying only on decided fixtures.
+- Before slice 2: additional seed scenarios and date formatting. Approved-only membership, decision-time ordering, UTC/ISO 8601 storage, and account-level reporting zone are settled in Q6. The demo uses `Asia/Dubai`; no country/account management UI is required.
+- Before slices 3/4: masks, equal-decision-time tie-breaker, process termination, and backgrounding during an already submitted decision. Q7–Q11 settle non-dismissible approval, one active request without queue/replacement, native credential fallback, authentication before approval, rejection without authentication, and remasking after actual backgrounding without a global app lock.
 - Before slice 5: choose an original addition with user/reviewer value and manageable scope. Retain the [deferred app PIN and session-expiry request](product/extension-backlog.md#deferred-owner-request-app-pin-and-session-expiry); its timeout and security policy remain undecided, and recording it does not authorize implementation.
 - Before promotion: verify private artifact access, final source/binary provenance,
   Android/iOS journeys, and honest native-authentication limits. iOS distribution is

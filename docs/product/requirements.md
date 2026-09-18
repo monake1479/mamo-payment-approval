@@ -14,14 +14,14 @@ This document paraphrases the supplied challenge brief. The original attachment 
 
 ### Planning Q&A: accepted decisions
 
-These answers define the implementation scope; they do not claim that the behaviour is implemented. The visual direction is inspired by Mamo Business. On 2026-09-17 the owner delegated UI/theme selection and remaining implementation decisions for an overnight increment. The [UI contract](ui-contract.md) and [implementation contracts](../architecture/implementation-contract.md) record coordinator-selected details for subsequent owner review.
+These answers define the implementation scope; they do not claim that the behaviour is implemented. The visual direction is inspired by Mamo Business. On 2026-09-17 the owner delegated UI/theme selection and remaining implementation decisions for an overnight increment. The [UI contract](ui-contract.md) was accepted with its merge into `dev` on 2026-09-18; the remaining [implementation contracts](../architecture/implementation-contract.md) record coordinator-selected details for subsequent owner review.
 
 | Question | Accepted answer |
 |---|---|
 | Q1. Which appearance modes are required? | Both light and dark. The delegated UI contract selects system-following behaviour without a manual selector for the baseline. |
 | Q2. Which statuses contribute to the monthly summary? | Approved only, for both the amount total and payment count. Pending and rejected are excluded. |
 | Q3. Where are pending requests visible initially? | Only in the approval overlay. Home recent payments and Payments contain approved/rejected history. A dedicated pending-payments screen is deferred to the [extension backlog](extension-backlog.md#deferred-owner-request-pending-payments-screen). |
-| Q4. Which currencies are supported initially? | AED only, displayed with two decimal places. Q12–Q14 clarify valid precision, calculation scope, and display format; technical equality, totals, and serialization remain tracked in ADR 0002. |
+| Q4. Which currencies are supported initially? | The mock backend defaults to AED, but every payment carries its own validated currency code and the shared data flow supports another mock-backend account currency. Do not sum different currencies. |
 | Q5. Which timestamp drives history and monthly membership? | Decision time, newest first in history. An August request approved in September belongs to September's summary. Preserve creation time separately. |
 | Q6. How are timestamps stored and which time zone defines reporting? | UTC instants in the domain; ISO 8601 with a UTC `Z` suffix in serialized records. An account-level IANA `reportingTimeZone` defines monthly boundaries and initial date display. Use `Asia/Dubai` for the demonstration account, not a global business rule or a value inferred from currency/device settings. |
 | Q7. Can the approval overlay be dismissed without a decision? | No. Outside taps, swipe-to-dismiss, and Back do not close it or reject the request. Close only after a successful approve/reject operation. |
@@ -31,9 +31,9 @@ These answers define the implementation scope; they do not claim that the behavi
 | Q11. What happens to revealed data after leaving the app? | Actual backgrounding remasks the active request and revokes its reveal/approval authorization. Keep the overlay open and require fresh authentication before revealing or approving again. No global app lock on return. Merely presenting the native authentication prompt is not treated as leaving the app. |
 | Q12. Are payment amounts with fractional fils supported? | No. Incoming payment amounts are already expressed to whole fils (at most two decimal places). Excess business precision is invalid data, not a supported payment scenario or an invitation to silently round the requested amount. |
 | Q13. Which business rounding mode is required? | None in the initial scope. The app approves existing amounts and sums them for reporting; it does not calculate amounts requiring fractional-fils rounding. Floating-point handling for valid amounts remains a technical concern, not a new product feature. |
-| Q14. Which money display format is used? | Fixed English formatting, such as `AED 1,234.56`, independent of device locale: explicit currency code, comma grouping, decimal point, and exactly two decimal places. |
+| Q14. Which money display format is used? | Fixed English formatting, such as `AED 1,234.56`, independent of device locale: the payment's explicit currency code, comma grouping, decimal point, and exactly two decimal places. |
 
-For monthly reporting, determine the current calendar month in the account's reporting zone, convert the start of that month and the start of the next month to UTC, and filter `decidedAt` using an inclusive start and exclusive end. Device time zone changes must not change the account's report. Date formatting is separate from the reporting zone. This contract does not select a persistent database or add a time-zone settings screen; the initial repository remains in memory.
+For monthly reporting, determine the current calendar month in the account's reporting zone, convert the start of that month and the start of the next month to UTC, and filter `decidedAt` using an inclusive start and exclusive end. Device time zone changes must not change the account's report. Date formatting is separate from the reporting zone. This contract does not select a persistent database or add a time-zone settings screen; the authoritative demo backend remains in memory behind the data source and concrete repository.
 
 ## Core concepts
 
@@ -98,7 +98,7 @@ A payment request contains an identifier, counterparty, amount, reference, creat
 
 - `UI-01`: Support light and dark appearances across screens, overlays, and loading/empty/error states, with readable contrast and status cues that do not rely on colour alone.
 - `UI-02`: Run in portrait-up orientation on iOS and Android. Compact phones and expanded portrait tablets remain responsive; landscape layouts are outside the baseline.
-- `MONEY-01`: Use AED exclusively, with incoming amounts expressed to whole fils, and display amounts in the fixed English format `AED 1,234.56` regardless of device locale. Money remains represented as Dart `double`; no business rounding feature is in scope. Remaining technical semantics are tracked in ADR 0002.
+- `MONEY-01`: The demo source uses AED, while each payment carries a validated three-letter currency code. Incoming amounts use at most two decimal places and display in fixed English form such as `AED 1,234.56` regardless of device locale. Do not sum different currencies or impose a client-side transaction maximum. Money remains represented as Dart `double`; no precision tolerance, hidden minor-unit model, or business-rounding feature is in scope.
 
 ## Product invariants
 

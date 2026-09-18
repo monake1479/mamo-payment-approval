@@ -5,9 +5,9 @@ import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure_view.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/payment_navigation_shell.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/pages/home_page.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/pages/payment_details_page.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/pages/payments_page.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/pages/home_page.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/pages/payment_details_page.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/pages/payments_page.dart';
 
 abstract final class AppRoutes {
   static const String home = 'home';

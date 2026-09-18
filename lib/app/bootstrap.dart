@@ -9,8 +9,8 @@ import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart'
 import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
 import 'package:mamo_payment_approval_challenge/app/platform/app_orientation.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/device_authenticator.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
 
 Future<void> bootstrap(AppEnvironment environment) async {
   WidgetsFlutterBinding.ensureInitialized();

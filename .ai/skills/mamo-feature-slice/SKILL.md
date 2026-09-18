@@ -26,7 +26,8 @@ Inspect `git status --short` before editing and preserve existing work. Do not s
 
 ## Implement and verify
 
-- Build the smallest domain/data/state/UI path that makes the increment usable. Add only types needed by that path; the current foundation is not a precedent requiring pass-through layers or code generation.
+- Build the smallest shared-data/use-case/state/UI path that makes the increment usable. Group reusable models, DTOs, domain-specific converters, data sources, repositories, and application use cases by domain under `lib/common/data/<domain>/`; put general converters under `lib/common/converters/`, cross-layer typed failures under `lib/common/error_handling/`, and cross-domain result primitives under `lib/common/result/`. Keep transport/SDK exception translation beside its owning data boundary. Keep feature-specific state owners and widgets directly under `lib/features/<feature>/` without a redundant `presentation/` level. Put each state concern in its own `states/<state-name>/` directory, name that folder without `_cubit` or `_bloc`, and keep its controller, state, and event declarations in separate technology-specific files. Model immutable data classes and sealed unions with Freezed, keep one authored model per file, validate stored/transported data in DTOs, and use typed `JsonConverter` classes instead of parallel codecs. Shared data sources, repositories, and use cases use the generated lazy-singleton DI contract from ADR 0011.
+- For a demo without a real service, place the deterministic implementation under `lib/mock_backend/<domain>/` behind a narrow backend-client contract. It returns raw transport-shaped values and backend exceptions, while the normal remote data source owns DTO mapping and typed application failures. Register the mock in composition; repositories, use cases, Cubits, and UI must not know whether the backend is mocked.
 - Add focused tests as behaviour appears. Unit/widget tests own deterministic failures and async races; Maestro flows accompany executable journeys using the [Maestro workflow](../../workflows/maestro-e2e.md).
 - Keep docs consistent with the implementation. Update requirements only for an owner-agreed behaviour change, not to accommodate accidental implementation differences.
 - Use [mamo-verify](../mamo-verify/SKILL.md) to check the complete local change, including untracked sources, and retain results. When a fix changes a previously tested input, rerun the affected check and required gate.
@@ -41,7 +42,8 @@ If a teammate is authorized, give them the same concrete scope, the full spec pa
 
 - [App composition](../../../lib/app/app.dart)
 - [Payment flow composition](../../../lib/app/payment_flow_layer.dart)
-- [Home page](../../../lib/features/payments/presentation/pages/home_page.dart)
+- [Home page](../../../lib/features/payments/pages/home_page.dart)
+- [Payment collection state](../../../lib/features/payments/states/payments/payments_cubit.dart)
 - [App composition tests](../../../test/app/app_test.dart)
 - [Approval-flow tests](../../../test/app/approval_flow_test.dart)
 

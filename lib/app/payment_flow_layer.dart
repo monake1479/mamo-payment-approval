@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_result.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/approval_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/debug_action_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/widgets/approval_overlay.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/widgets/debug_payment_action.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/device_authenticator.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
+import 'package:mamo_payment_approval_challenge/common/error_handling/payments_failure.dart';
+import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/approval/approval_cubit.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/approval/approval_state.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/debug_action/debug_action_cubit.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_state.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/widgets/approval_overlay.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/widgets/debug_payment_action.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 class PaymentFlowLayer extends StatefulWidget {
@@ -165,10 +168,10 @@ class _PaymentFlowLayerState extends State<PaymentFlowLayer>
   }
 
   Future<void> _createRequest() async {
-    final PaymentsResult<Payment> result = await context
+    final Result<PaymentsFailure, Payment> result = await context
         .read<PaymentsCubit>()
         .createRequest();
-    if (!mounted || result is PaymentsSuccess<Payment>) {
+    if (!mounted || result is Success<PaymentsFailure, Payment>) {
       return;
     }
     ScaffoldMessenger.maybeOf(context)?.showSnackBar(

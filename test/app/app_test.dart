@@ -3,11 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/app.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payment_operations.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_result.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/pages/home_page.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
+import 'package:mamo_payment_approval_challenge/common/error_handling/payments_failure.dart';
+import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/pages/home_page.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 import '../support/payments_test_support.dart';
@@ -21,7 +21,7 @@ void main() {
 
   setUp(() {
     repository = StubPaymentsRepository(
-      onLoad: () async => PaymentsSuccess<List<Payment>>(<Payment>[
+      onLoad: () async => Success<PaymentsFailure, List<Payment>>(<Payment>[
         approvedPayment(),
         rejectedPayment(),
       ]),
@@ -175,14 +175,10 @@ void main() {
     );
     repository = StubPaymentsRepository(
       onLoad: () async =>
-          PaymentsSuccess<List<Payment>>(<Payment>[octoberPayment]),
+          Success<PaymentsFailure, List<Payment>>(<Payment>[octoberPayment]),
     );
     await cubit.close();
-    cubit = PaymentsCubit(
-      repository: repository,
-      operations: PaymentOperations(reportingTimeZone: 'Asia/Dubai'),
-      clock: () => now,
-    );
+    cubit = createPaymentsCubit(repository, clock: () => now);
 
     await tester.pumpWidget(
       MamoPaymentApprovalApp(

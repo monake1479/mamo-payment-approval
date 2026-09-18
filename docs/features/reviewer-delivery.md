@@ -70,12 +70,13 @@ sample; it does not execute a backend payment. Application data resets when the 
 process is terminated. CI compilation and signature verification do not replace
 device installation or critical-journey checks.
 
-The baseline deliberately uses an in-memory repository, English-only UI copy,
-fixed AED formatting, and account-zone reporting with `Asia/Dubai`; it does not add
-a backend, persistence, an account settings surface, or a production signing
-configuration. With more time, the next product decision would be whether the
-app should own a PIN or session-expiry policy. Technical follow-up would broaden
-the physical-device authentication matrix and automate native journeys. Backend
-idempotency and durable recovery would become necessary only if this in-memory
-sample were replaced with real payment execution. None of those follow-ups
-requires an authentication bypass.
+The baseline deliberately uses an authoritative session-only `MockPaymentsBackend`
+behind a production-shaped data source and concrete repository, English-only UI
+copy, currency-aware fixed English formatting, and account-zone reporting with
+`Asia/Dubai`. It does not add an external backend, persistence, an account settings
+surface, or production signing. With more time, the next product decision would be
+whether the app should own a PIN or session-expiry policy. Technical follow-up
+would broaden the physical-device authentication matrix and automate native
+journeys. Durable idempotency and recovery would become necessary only if this
+in-process sample were replaced with real payment execution. None of those
+follow-ups requires an authentication bypass.

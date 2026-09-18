@@ -8,12 +8,15 @@ import 'package:mamo_payment_approval_challenge/app/app.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_result.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/approval_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/device_authenticator.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
+import 'package:mamo_payment_approval_challenge/common/error_handling/device_authentication_failure.dart';
+import 'package:mamo_payment_approval_challenge/common/error_handling/payments_failure.dart';
+import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
+import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/approval/approval_cubit.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
 
 import '../support/payments_test_support.dart';
 
@@ -28,16 +31,14 @@ void main() {
   setUp(() {
     request = pendingPayment(counterparty: '👩‍💼 Vendor');
     decisions = <PaymentDecision>[];
-    authenticator = StubDeviceAuthenticator(
-      result: const DeviceAuthenticationSucceeded(),
-    );
+    authenticator = StubDeviceAuthenticator(result: authenticationSucceeded);
     repository = StubPaymentsRepository(
       onLoad: () async =>
-          PaymentsSuccess<List<Payment>>(<Payment>[approvedPayment()]),
-      onCreateRequest: () async => PaymentsSuccess<Payment>(request),
+          Success<PaymentsFailure, List<Payment>>(<Payment>[approvedPayment()]),
+      onCreateRequest: () async => Success<PaymentsFailure, Payment>(request),
       onDecide: (String paymentId, PaymentDecision decision) async {
         decisions.add(decision);
-        return PaymentsSuccess<Payment>(
+        return Success<PaymentsFailure, Payment>(
           request.copyWith(
             status: decision == PaymentDecision.approve
                 ? PaymentStatus.approved
@@ -187,7 +188,7 @@ void main() {
       await tester.pump();
 
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
-      controlled.complete(const DeviceAuthenticationSucceeded());
+      controlled.complete(authenticationSucceeded);
       await tester.pumpAndSettle();
 
       expect(controlled.cancelCalls, 0);
@@ -212,11 +213,12 @@ void main() {
   testWidgets('submitted decision finishes once and navigates after resume', (
     WidgetTester tester,
   ) async {
-    final Completer<PaymentsResult<Payment>> result =
-        Completer<PaymentsResult<Payment>>();
+    final Completer<Result<PaymentsFailure, Payment>> result =
+        Completer<Result<PaymentsFailure, Payment>>();
     repository = StubPaymentsRepository(
-      onLoad: () async => const PaymentsSuccess<List<Payment>>(<Payment>[]),
-      onCreateRequest: () async => PaymentsSuccess<Payment>(request),
+      onLoad: () async =>
+          const Success<PaymentsFailure, List<Payment>>(<Payment>[]),
+      onCreateRequest: () async => Success<PaymentsFailure, Payment>(request),
       onDecide: (String paymentId, PaymentDecision decision) {
         decisions.add(decision);
         return result.future;
@@ -237,7 +239,7 @@ void main() {
 
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
     result.complete(
-      PaymentsSuccess<Payment>(
+      Success<PaymentsFailure, Payment>(
         request.copyWith(status: PaymentStatus.approved, decidedAt: fixedNow),
       ),
     );
@@ -374,7 +376,7 @@ void main() {
   testWidgets('authentication failure stays masked and recoverable', (
     WidgetTester tester,
   ) async {
-    authenticator.result = const DeviceAuthenticationUnavailable();
+    authenticator.result = authenticationUnavailable;
     await pumpApp(tester);
     await openRequest(tester);
     await tester.tap(find.text('Reveal details'));
@@ -393,10 +395,11 @@ void main() {
   ) async {
     await paymentsCubit.close();
     repository = StubPaymentsRepository(
-      onLoad: () async => const PaymentsSuccess<List<Payment>>(<Payment>[]),
-      onCreateRequest: () async => PaymentsSuccess<Payment>(request),
+      onLoad: () async =>
+          const Success<PaymentsFailure, List<Payment>>(<Payment>[]),
+      onCreateRequest: () async => Success<PaymentsFailure, Payment>(request),
       onDecide: (String paymentId, PaymentDecision decision) async =>
-          const PaymentsError<Payment>(StorageFailure()),
+          const Failure<PaymentsFailure, Payment>(PaymentsUnavailableFailure()),
     );
     paymentsCubit = createPaymentsCubit(repository);
     await pumpApp(tester);
@@ -416,9 +419,10 @@ void main() {
     WidgetTester tester,
   ) async {
     repository = StubPaymentsRepository(
-      onLoad: () async => const PaymentsSuccess<List<Payment>>(<Payment>[]),
+      onLoad: () async =>
+          const Success<PaymentsFailure, List<Payment>>(<Payment>[]),
       onCreateRequest: () async =>
-          const PaymentsError<Payment>(StorageFailure()),
+          const Failure<PaymentsFailure, Payment>(PaymentsUnavailableFailure()),
     );
     await paymentsCubit.close();
     paymentsCubit = createPaymentsCubit(repository);
@@ -540,14 +544,15 @@ void main() {
 }
 
 final class _ControlledAuthenticator implements DeviceAuthenticator {
-  final Completer<DeviceAuthenticationResult> _result =
-      Completer<DeviceAuthenticationResult>();
+  final Completer<Result<DeviceAuthenticationFailure, Unit>> _result =
+      Completer<Result<DeviceAuthenticationFailure, Unit>>();
   int cancelCalls = 0;
 
-  void complete(DeviceAuthenticationResult result) => _result.complete(result);
+  void complete(Result<DeviceAuthenticationFailure, Unit> result) =>
+      _result.complete(result);
 
   @override
-  Future<DeviceAuthenticationResult> authenticate({
+  Future<Result<DeviceAuthenticationFailure, Unit>> authenticate({
     required String localizedReason,
   }) => _result.future;
 

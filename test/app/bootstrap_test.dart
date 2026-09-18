@@ -11,10 +11,16 @@ import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostic
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payment_operations.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_repository.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/device_authenticator.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/data_sources/payments_remote_data_source.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/payments_repository.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/create_payment_request_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/decide_payment_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/load_payments_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/refresh_payments_use_case.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/mock_backend/payments/mock_payments_backend.dart';
+import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_client.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -28,13 +34,35 @@ void main() {
       expect(getIt<LocalDiagnostics>().environment, environment);
       expect(getIt<LocalDiagnostics>(), same(getIt<LocalDiagnostics>()));
       expect(getIt<PaymentsRepository>(), same(getIt<PaymentsRepository>()));
-      expect(getIt<PaymentOperations>(), same(getIt<PaymentOperations>()));
       expect(getIt<DeviceAuthenticator>(), same(getIt<DeviceAuthenticator>()));
       expect(getIt<PaymentsCubit>(), same(getIt<PaymentsCubit>()));
       expect(getIt<MamoPaymentRouter>(), same(getIt<MamoPaymentRouter>()));
       expect(
         getIt<MamoPaymentRouter>().router,
         same(getIt<MamoPaymentRouter>().router),
+      );
+      expect(
+        getIt<PaymentsBackendClient>(),
+        same(getIt<PaymentsBackendClient>()),
+      );
+      expect(getIt<PaymentsBackendClient>(), isA<MockPaymentsBackend>());
+      expect(
+        getIt<PaymentsRemoteDataSource>(),
+        same(getIt<PaymentsRemoteDataSource>()),
+      );
+      expect(getIt<PaymentsRepository>(), same(getIt<PaymentsRepository>()));
+      expect(getIt<LoadPaymentsUseCase>(), same(getIt<LoadPaymentsUseCase>()));
+      expect(
+        getIt<CreatePaymentRequestUseCase>(),
+        same(getIt<CreatePaymentRequestUseCase>()),
+      );
+      expect(
+        getIt<DecidePaymentUseCase>(),
+        same(getIt<DecidePaymentUseCase>()),
+      );
+      expect(
+        getIt<RefreshPaymentsUseCase>(),
+        same(getIt<RefreshPaymentsUseCase>()),
       );
     });
   }

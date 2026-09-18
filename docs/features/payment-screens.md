@@ -1,6 +1,6 @@
 # Read-only payment screens
 
-Status: implemented and composed into the unmerged integration branch on top of the accepted `dev` UI baseline.
+Status: implemented and composed into the unmerged integration branch on top of the accepted `dev` UI and payment-data baselines.
 
 ## Behaviour
 
@@ -20,4 +20,4 @@ Loading does not present stale totals as current. A loaded empty collection show
 
 ## Verification
 
-Widget coverage includes fixed AED/account-zone formatting, status/row semantics, loading/empty/error/success, compact/expanded navigation, light/dark appearances, 200% text, missing identifiers, canonical live detail resolution, exact origin return, unknown routes, and resume-driven month rollover. Maestro flows cover deterministic list/summary and details-origin journeys; native evidence must identify the installed flavor and binary separately.
+Widget coverage includes currency-aware fixed English formatting, account-zone dates, status/row semantics, loading/empty/error/success, compact/expanded navigation, light/dark appearances, 200% text, missing identifiers, canonical live detail resolution, exact origin return, unknown routes, and resume-driven month rollover. Maestro flows cover deterministic list/summary and details-origin journeys; native evidence must identify the installed flavor and binary separately.

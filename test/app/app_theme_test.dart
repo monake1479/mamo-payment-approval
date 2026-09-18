@@ -7,8 +7,9 @@ import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart'
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_status_colors.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_result.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
+import 'package:mamo_payment_approval_challenge/common/error_handling/payments_failure.dart';
+import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
 
 import '../support/payments_test_support.dart';
 
@@ -116,7 +117,8 @@ void main() {
         final MamoPaymentRouter appRouter = MamoPaymentRouter();
         addTearDown(appRouter.dispose);
         final repository = StubPaymentsRepository(
-          onLoad: () async => const PaymentsSuccess<List<Payment>>(<Payment>[]),
+          onLoad: () async =>
+              const Success<PaymentsFailure, List<Payment>>(<Payment>[]),
         );
         final cubit = createPaymentsCubit(repository);
         addTearDown(cubit.close);

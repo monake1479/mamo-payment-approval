@@ -8,11 +8,13 @@ The architecture makes the review conversation straightforward: each class has a
 
 The integrated baseline contains the shared bootstrap, process-wide `get_it`
 registrations, sanitized local diagnostics, system-following light/dark themes,
-generated English localization, payment domain/data/state, Home, Payments,
+generated English localization, shared payment data/use cases/state, Home, Payments,
 decided-payment details, native device authentication, the incoming approval
 overlay, and the session-scoped draggable request action. The accepted shared
 design system, portrait-only platform contract, and motion primitives are inherited
-from `dev`; feature composition uses those primitives directly. The
+from `dev`; the accepted mock-backend, data-source, repository, use-case, Freezed,
+and generated-DI boundaries are inherited from the payments architecture increment.
+Feature composition uses those primitives directly. The
 [implementation contract](implementation-contract.md) records the boundaries that
 the delivered code follows.
 
@@ -24,15 +26,20 @@ Three thin flavor entry points call `bootstrap`: initialize Flutter bindings, va
 App shell
   |-- Router and theme
   |-- Session-scoped debug action
-  `-- Payments feature
-       |-- Presentation: pages, overlay, BLoC/Cubit
-       |-- Domain: payment rules, repository and authenticator contracts
-       `-- Data: deterministic in-memory repository and platform adapters
+  |-- Common data
+  |    |-- Device authentication capability and native adapter
+  |    `-- Payments
+  |         |-- Freezed domain models
+  |         |-- Freezed DTOs and JSON converters
+  |         |-- Use cases
+  |         |-- Payments repository
+  |         `-- Remote data source
+  |-- Common result primitives
+  |-- Mock backend: raw payment records and backend failures
+  `-- Payments feature: pages, overlay, widgets, BLoC/Cubit
 ```
 
-The implementation uses a deterministic in-memory repository. Its asynchronous
-domain contract supports explicit failures and testable races without claiming a
-remote API, persistent storage, or durable payment execution.
+The application composes `PaymentsRemoteDataSource` with an in-memory `MockPaymentsBackend`, which is the project's only backend. The mock is seeded with deterministic raw records and can reproduce every-nth-request backend failures without making the normal demo unreliable. It owns account reporting configuration, session persistence, latency, and atomic final-decision checks. The remote data source remains production-shaped: it consumes the backend-client contract, maps raw records through `PaymentDto`, and translates backend exceptions into `PaymentsFailure`. The concrete asynchronous `PaymentsRepository` delegates to that data source; a separate repository interface is unnecessary while there is only one repository implementation.
 
 ## Money and time contract
 
@@ -42,35 +49,38 @@ Inject the account's IANA reporting-zone configuration; the demonstration accoun
 
 ## State ownership
 
-Navigation is configured in `lib/app/navigation/app_router.dart`. The app receives
+Navigation is configured in `lib/app/navigation/app_router.dart`.
 `MamoPaymentRouter` constructs, exposes, and disposes the application `GoRouter`;
-the app injects that stable router into `MaterialApp.router`, so routes are not
-recreated in `build`. Stateful Home and Payments branches own pushed detail routes,
+the app receives that owner and injects its stable router into `MaterialApp.router`,
+so routes are not recreated in `build`. Stateful Home and Payments branches own pushed detail routes,
 preserving the route of origin. Detail pushes use `AppMotionPage`; branch changes
 use `AppPageTransitionSwitcher`. Unknown locations show a localized fallback
 without exposing the URI. Startup/build failures use standalone `AppFailureApp`,
 outside normal navigation, so rendering them does not depend on successful DI.
 
-- A payments state owner maintains the canonical collection, ordering, totals, and decisions.
+- A payments state owner emits the canonical collection and manages UI progress and stale completions. Injected use cases validate repository results, enforce business transitions, and project ordering and totals before returning ready-to-emit application data.
 - A short-lived approval state owner coordinates masked/revealed UI state, authentication, and decision submission.
 - A session-scoped debug-action state owner stores the position. Activation enters the feature's request-creation path through app composition; position state does not become a second payment collection.
 - The router controls navigation, while the approval UI is presented above the active route.
 
 Widgets may create scoped controllers with `BlocProvider` and access them through `BuildContext`. Controllers themselves do not accept context, show dialogs, or navigate. Constructor injection keeps dependencies explicit; `get_it` is confined to composition. Global logging does not own navigation or feature state; a normal widget class renders startup/build errors.
 
+Each state concern has a dedicated directory under `lib/features/<feature>/states/`, named after the concern without `_cubit` or `_bloc`; its controller, state, and events remain separate technology-specific files. Payment feature files live directly under `lib/features/payments/` in `states/`, `pages/`, and `widgets/`; there is no additional `presentation/` directory or shared feature-level `cubit/` bucket.
+
 The decision path is: approval action -> `ApprovalCubit` callback ->
-`PaymentsCubit.decide` -> repository result -> authoritative collection update ->
-terminal approval outcome -> `PaymentFlowLayer` closes the overlay and applies the
-one navigation effect. Failed decisions keep the overlay open. Details resolve a
-stable identifier against canonical state rather than retaining a stale payment
-copy.
+`PaymentsCubit.decide` -> decision use case -> repository -> data source -> backend
+client -> authoritative collection update -> terminal approval outcome ->
+`PaymentFlowLayer` closes the overlay and applies the one navigation effect. Failed
+decisions keep the overlay open. Details select a stable identifier against
+canonical state rather than retaining a stale payment copy.
 
 ## Security and privacy
 
-Failures cross boundaries as typed outcomes with stable codes/slugs and safe parameters. Only presentation maps them to text using `AppLocalizations`; repositories and controllers do not own user messages. The first concrete codes cover environment mismatch, failed startup, and unexpected runtime failures. Local diagnostics retain only fixed technical metadata and allowlisted app locations; no raw exception or remote crash service. Feature failures will be normalized at their own boundaries; see [failure boundaries](../../.ai/architecture/failures-and-boundaries.md).
+Failures cross boundaries through the local `Result<Failure, T>` contract, using `Unit` when success has no payload, with stable codes/slugs and safe parameters. Only presentation maps them to text using `AppLocalizations`; repositories and controllers do not own user messages. Local diagnostics retain only fixed technical metadata and allowlisted app locations; no raw exception or remote crash service. Data sources normalize infrastructure failures, repositories preserve them, and use cases add operation-level validation; see [failure boundaries](../../.ai/architecture/failures-and-boundaries.md).
 
 - Payment details begin masked in the approval overlay.
-- The platform authentication result crosses the app through a narrow interface.
+- The platform authentication result crosses the app through the shared
+  `Result<DeviceAuthenticationFailure, Unit>` capability contract.
 - Authentication errors are mapped to recoverable application states.
 - Logs and analytics must not contain counterparty names, references, complete amounts, or authentication payloads.
 
@@ -99,7 +109,7 @@ and ADR 0003.
 
 ## Deliberate limits
 
-- No backend is required for the challenge, so the data source is local and deterministic.
+- No external or deployed backend is planned for the challenge. `lib/mock_backend/` is the authoritative in-process backend behind the client/data-source boundary.
 - No general design-system package is created for a single application; tokens live under `lib/app/theme/`.
 - Code generation and dependency injection frameworks are added only if their value exceeds their setup cost.
 - Optimisation follows measurement. Narrow rebuilds are encouraged, but premature caching and repaint boundaries are not defaults.

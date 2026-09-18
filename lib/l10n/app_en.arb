@@ -112,15 +112,21 @@
   "@approvalAmountLabel": {"description": "Label for the protected incoming payment amount."},
   "approvalReferenceLabel": "Reference",
   "@approvalReferenceLabel": {"description": "Label for the visible incoming payment reference."},
-  "approvalMaskedAmount": "AED ••••.••",
-  "@approvalMaskedAmount": {"description": "Fixed mask shown instead of an incoming payment amount before authentication."},
+  "approvalMaskedAmount": "{currency} ••••.••",
+  "@approvalMaskedAmount": {
+    "description": "Fixed mask shown instead of an incoming payment amount before authentication.",
+    "placeholders": {"currency": {"type": "String"}}
+  },
   "approvalMaskedCounterpartySemantics": "Masked counterparty, {mask}",
   "@approvalMaskedCounterpartySemantics": {
     "description": "Accessible description of a masked incoming payment counterparty.",
     "placeholders": {"mask": {"type": "String"}}
   },
-  "approvalMaskedAmountSemantics": "Masked amount, AED hidden",
-  "@approvalMaskedAmountSemantics": {"description": "Accessible description of a masked incoming payment amount without disclosing it."},
+  "approvalMaskedAmountSemantics": "Masked amount, {currency} hidden",
+  "@approvalMaskedAmountSemantics": {
+    "description": "Accessible description of a masked incoming payment amount without disclosing it.",
+    "placeholders": {"currency": {"type": "String"}}
+  },
   "approvalRevealedCounterpartySemantics": "Counterparty, {counterparty}",
   "@approvalRevealedCounterpartySemantics": {
     "description": "Accessible description of an authenticated incoming payment counterparty.",

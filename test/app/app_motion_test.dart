@@ -271,6 +271,42 @@ void main() {
     expect(find.text('Page 1'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('indexed page switcher swaps immediately with reduced motion', (
+    WidgetTester tester,
+  ) async {
+    late StateSetter updateState;
+    int currentIndex = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              updateState = setState;
+              return AppPageTransitionSwitcher.indexed(
+                currentIndex: currentIndex,
+                children: const <Widget>[
+                  Text('Home branch'),
+                  Text('Payments branch'),
+                ],
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Home branch'), findsOneWidget);
+    expect(find.text('Payments branch'), findsNothing);
+
+    updateState(() => currentIndex = 1);
+    await tester.pump();
+
+    expect(find.text('Home branch'), findsNothing);
+    expect(find.text('Payments branch'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 Iterable<double> _staggeredOpacityValues(WidgetTester tester) => tester

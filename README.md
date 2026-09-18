@@ -5,9 +5,9 @@ A production-minded Flutter implementation of a payment approval flow.
 The application is intentionally small, but it is structured as code that could evolve safely: business rules are separated from Flutter widgets, external capabilities sit behind interfaces, and acceptance criteria are backed by focused tests.
 
 > Status: integrated baseline awaiting independent review. The accepted UI system
-> is merged into `dev`; payment state, screens, native authentication, approval
-> flow, draggable request action, and reviewer APK workflow remain on an unmerged
-> integration branch.
+> and shared payment architecture are merged into `dev`; screens, native
+> authentication, approval flow, draggable request action, and reviewer APK
+> workflow remain on an unmerged integration branch.
 
 ## Product scope
 
@@ -20,9 +20,12 @@ The app provides:
 - an explicit device-authentication step before sensitive data is revealed;
 - a draggable request action available on every screen to create one deterministic incoming payment request.
 
-Amounts remain Dart `double` values validated to whole fils and displayed as fixed
-English AED. The monthly summary includes approved payments only, uses decision
-timestamps, and applies the demonstration account's `Asia/Dubai` reporting zone.
+Amounts remain Dart `double` values validated as positive, finite, and limited to
+two decimal places at the DTO boundary. Every payment carries a validated currency
+code and displays with fixed English separators; the demo backend uses AED. The
+monthly summary includes approved payments in the configured reporting currency
+only, uses decision timestamps, and applies the demonstration account's
+`Asia/Dubai` reporting zone.
 All payment execution is an in-memory sample: terminating the process resets the
 deterministic data, and native authentication authorizes only local disclosure and
 confirmation in the current session.
@@ -34,11 +37,12 @@ See [the product requirements](docs/product/requirements.md) for the complete ac
 - Flutter for Android and iOS only.
 - Portrait-up runtime on phones and tablets, with compact and expanded layouts.
 - Shared light/dark theme, status chips, and reduced-motion-aware transitions.
-- Feature-first structure with domain, data, and presentation boundaries added when they earn their place.
+- Shared payment models, DTOs, converters, data sources, repository, and use cases grouped under `lib/common/data/payments/`.
+- One authoritative in-process mock backend behind a narrow client and production-shaped data source.
 - BLoC/Cubit for explicit state transitions and testable business logic.
 - `go_router` in app composition, passed to `MaterialApp.router`; feature routes arrive with their screens.
 - External capabilities, including device authentication, behind replaceable interfaces.
-- Dependency direction from presentation to domain contracts, never from domain code to Flutter.
+- Dependency direction from feature presentation through use cases, repository, data source, and backend client.
 - Tests chosen at the lowest useful level: Flutter unit tests for logic, widget tests for rendering and interaction, and Maestro for native E2E journeys.
 
 The architecture is described in [docs/architecture/overview.md](docs/architecture/overview.md). Decisions and unresolved trade-offs are recorded under [docs/decisions](docs/decisions).
@@ -134,11 +138,13 @@ See [the review loop](.ai/workflows/review-loop.md), [PR template](.github/pull_
 ```text
 lib/
   app/                         # Application composition, navigation, and theme
-  core/                        # Cross-feature primitives only when genuinely shared
+  common/                      # Shared payment/auth data, failures, converters, and results
+  mock_backend/payments/       # Authoritative session-only demo backend
   features/payments/
-    data/                      # Repository implementations and local/demo data source
-    domain/                    # Payment model, contracts, and business rules
-    presentation/             # Pages, widgets, and BLoC/Cubit state
+    formatters/                # Fixed English money/date presentation
+    pages/                     # Home, Payments, and details
+    states/                    # Payments, approval, and draggable-action state
+    widgets/                   # Payment and approval UI components
 docs/
   architecture/               # System boundaries and dependency rules
   decisions/                  # Small architecture decision records

@@ -22,7 +22,7 @@ This increment implements `APPROVAL-01..10`, `DEBUG-01..04`, and the incoming-de
 
 ## Verification mapping
 
-- `test/features/payments/presentation/cubit/approval_cubit_test.dart` covers authentication outcomes, authorization, duplicate actions, background cancellation/remasking, submitted-decision completion, recoverable failures, and disposal races.
+- `test/features/payments/states/approval/approval_cubit_test.dart` covers authentication outcomes, authorization, duplicate actions, background cancellation/remasking, submitted-decision completion, recoverable failures, and disposal races.
 - `test/app/approval_flow_test.dart` covers masking in visual and semantic content, non-dismissal, origin preservation, explicit approval navigation, canonical ordering, lifecycle distinction, deferred completion, draggable/clamped session position, reduced motion, failures, themes, compact/expanded layouts, and 200% text.
 - `maestro/approval_rejection.yaml`, `maestro/approval_origins.yaml`, and
   `maestro/debug_action.yaml` cover deterministic Home rejection,
