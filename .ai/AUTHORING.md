@@ -36,4 +36,4 @@ Duplicated requirements drift. Rules describe how contributors preserve contract
 
 - `AGENTS.md`
 - `.ai/INDEX.md`
-- `docs/decisions/0001-feature-first-clean-architecture.md`
+- `docs/decisions/0011-shared-data-and-use-case-layer.md`

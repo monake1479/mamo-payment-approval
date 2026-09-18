@@ -358,7 +358,7 @@ class PushGateTest(unittest.TestCase):
         (tests / "app_test.dart").write_text("fixture")
         (tests / "app_failure_view_test.dart").write_text("fixture")
         (tests / "app_theme_test.dart").write_text("fixture")
-        source = self.repo / "lib/features/payments/presentation/pages/foundation_page.dart"
+        source = self.repo / "lib/features/payments/pages/foundation_page.dart"
         source.parent.mkdir(parents=True)
         source.write_text("fixture")
         self.commit()
@@ -388,7 +388,7 @@ class PushGateTest(unittest.TestCase):
 
 class TestScopeTest(unittest.TestCase):
     def test_existing_foundation_mapping(self):
-        scope = select_scope(["lib/features/payments/presentation/pages/foundation_page.dart"], SOURCE)
+        scope = select_scope(["lib/features/payments/pages/foundation_page.dart"], SOURCE)
         self.assertEqual(scope["flutter_tests"], ["test/app/app_failure_view_test.dart", "test/app/app_test.dart", "test/app/app_theme_test.dart"])
 
     def test_unknown_shared_deleted_and_missing_inputs_fall_back(self):
@@ -397,7 +397,7 @@ class TestScopeTest(unittest.TestCase):
                 self.assertIsNone(select_scope([path], SOURCE)["flutter_tests"])
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            source = root / "lib/features/payments/presentation/pages/foundation_page.dart"
+            source = root / "lib/features/payments/pages/foundation_page.dart"
             source.parent.mkdir(parents=True)
             source.write_text("fixture")
             self.assertIsNone(select_scope([str(source.relative_to(root))], root)["flutter_tests"])

@@ -7,6 +7,7 @@ This is the routing document for AI-assisted work. Read `AGENTS.md` first, then 
 | Any code or documentation change | `.ai/principles/engineering-standards.md` |
 | Requirement ambiguity, architectural decision, dependency choice | `.ai/workflows/decision-gate.md`; [accepted product Q&A](../docs/product/requirements.md#planning-qa-accepted-decisions) |
 | Architecture, dependency, model, repository, or service change | `.ai/architecture/app-structure.md` |
+| Mock/fake backend, demo data service, simulated API latency, or backend failure simulation | `.ai/architecture/app-structure.md`; `.ai/principles/engineering-standards.md` |
 | Repository, adapter, validation, or failure handling | `.ai/architecture/failures-and-boundaries.md` |
 | BLoC, Cubit, async work, authentication, or side effect | `.ai/architecture/state-and-side-effects.md` |
 | Authentication, masking, payment disclosure, or logging | `.ai/architecture/authentication-and-sensitive-data.md` |

@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/app.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/pages/foundation_page.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/pages/foundation_page.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 void main() {
