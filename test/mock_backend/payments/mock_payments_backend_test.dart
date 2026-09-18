@@ -61,6 +61,32 @@ void main() {
       );
       expect(await backend.loadPayments(), hasLength(3));
     });
+
+    test('owns and validates account reporting configuration', () {
+      expect(
+        () => MockPaymentsBackend(
+          initialRecords: const <Map<String, Object?>>[],
+          reportingTimeZone: 'Invalid/Zone',
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => MockPaymentsBackend(
+          initialRecords: const <Map<String, Object?>>[],
+          currency: 'aed',
+        ),
+        throwsArgumentError,
+      );
+
+      final MockPaymentsBackend backend = MockPaymentsBackend(
+        initialRecords: const <Map<String, Object?>>[],
+        reportingTimeZone: 'America/New_York',
+        currency: 'USD',
+      );
+
+      expect(backend.reportingTimeZone, 'America/New_York');
+      expect(backend.currency, 'USD');
+    });
   });
 }
 

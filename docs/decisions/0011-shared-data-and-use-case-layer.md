@@ -5,7 +5,7 @@
 
 ## Context
 
-Payment models, repository operations, and use cases can be consumed by more than one feature surface. Keeping those contracts below `lib/features/payments/` would force unrelated features to import another feature's internal hierarchy. The application also needs production-shaped data-source code even though the demo has no deployed backend.
+Payment models, repository operations, and use cases can be consumed by more than one feature surface. Keeping those contracts below `lib/features/payments/` would force unrelated features to import another feature's internal hierarchy. The application also keeps its data-source boundary separate from the authoritative in-process mock backend.
 
 ## Decision
 
@@ -30,7 +30,7 @@ Repositories depend on data sources. The concrete `PaymentsRepository` owns sour
 
 Register data sources, repositories, and use cases with `injectable` as lazy singletons. Generated registration remains confined to app composition through the process-wide `getIt`; business code receives constructor-injected dependencies and never reads the service locator directly.
 
-The baseline supplies `PaymentsRemoteDataSource` and a narrow `PaymentsBackendClient` contract. Demo composition binds that contract to `MockPaymentsBackend` under `lib/mock_backend/payments/`; a future SDK/HTTP client can replace only that binding. The mock returns raw transport-shaped maps and backend exceptions. It must not import application DTOs, repositories, use cases, state, or UI. The remote data source remains responsible for DTO validation and typed failure mapping. Fallible application operations use `Result<Failure, T>` from `lib/common/result/models/`; payload-free success uses `Unit`.
+The baseline supplies `PaymentsRemoteDataSource` and a narrow `PaymentsBackendClient` contract. App composition binds that contract to the project's authoritative `MockPaymentsBackend` under `lib/mock_backend/payments/`. The mock owns account configuration and returns raw transport-shaped maps and backend exceptions. It must not import application DTOs, repositories, use cases, state, or UI. The remote data source remains responsible for DTO validation and typed failure mapping. Fallible application operations use `Result<Failure, T>` from `lib/common/result/models/`; payload-free success uses `Unit`.
 
 Immutable data classes and sealed unions use Freezed, with one authored model per file. `PaymentDto` owns generated JSON serialization and validates stored values before mapping them into `Payment`. Typed `JsonConverter` classes handle amount strings and UTC timestamps; no separate record codec mirrors the DTO. The remote data source maps generated deserialization and backend failures into typed payment failures. Behaviour-only services remain handwritten.
 

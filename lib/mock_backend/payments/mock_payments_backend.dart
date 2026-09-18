@@ -6,13 +6,31 @@ import 'package:timezone/data/latest.dart' as time_zone_data;
 import 'package:timezone/timezone.dart' as time_zone;
 
 final class MockPaymentsBackend implements PaymentsBackendClient {
-  MockPaymentsBackend({
+  factory MockPaymentsBackend({
     List<Map<String, Object?>>? initialRecords,
     DateTime Function()? clock,
-    this.operationDelay = _defaultOperationDelay,
-    this.reportingTimeZone = _defaultReportingTimeZone,
-    this.currency = _defaultCurrency,
-    this.simulatedFailureInterval = _defaultFailureInterval,
+    Duration operationDelay = _defaultOperationDelay,
+    String reportingTimeZone = _defaultReportingTimeZone,
+    String currency = _defaultCurrency,
+    int simulatedFailureInterval = _defaultFailureInterval,
+  }) {
+    return MockPaymentsBackend._(
+      initialRecords: initialRecords,
+      clock: clock,
+      operationDelay: operationDelay,
+      reportingTimeZone: _validateReportingTimeZone(reportingTimeZone),
+      currency: _validateCurrency(currency),
+      simulatedFailureInterval: simulatedFailureInterval,
+    );
+  }
+
+  MockPaymentsBackend._({
+    required List<Map<String, Object?>>? initialRecords,
+    required DateTime Function()? clock,
+    required this.operationDelay,
+    required this.reportingTimeZone,
+    required this.currency,
+    required this.simulatedFailureInterval,
   }) : assert(simulatedFailureInterval >= 0),
        clock = clock == null
            ? (() => DateTime.now().toUtc())
@@ -185,6 +203,23 @@ final class MockPaymentsBackend implements PaymentsBackendClient {
         decidedAt: previousDecision,
       ),
     ];
+  }
+
+  static String _validateReportingTimeZone(String value) {
+    time_zone_data.initializeTimeZones();
+    try {
+      time_zone.getLocation(value);
+    } on time_zone.LocationNotFoundException {
+      throw ArgumentError.value(value, 'reportingTimeZone');
+    }
+    return value;
+  }
+
+  static String _validateCurrency(String value) {
+    if (!RegExp(r'^[A-Z]{3}$').hasMatch(value)) {
+      throw ArgumentError.value(value, 'currency');
+    }
+    return value;
   }
 
   static Map<String, Object?> _record({

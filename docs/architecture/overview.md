@@ -28,7 +28,7 @@ App shell
   `-- Payments feature: pages, overlay, widgets, BLoC/Cubit
 ```
 
-The first implementation composes `PaymentsRemoteDataSource` with an in-memory `MockPaymentsBackend`. The mock is seeded with deterministic raw records and can reproduce every-nth-request backend failures without making the normal demo unreliable. It owns demo persistence, latency, and atomic final-decision checks. The remote data source remains production-shaped: it consumes the backend-client contract, maps raw records through `PaymentDto`, and translates backend exceptions into `PaymentsFailure`. The concrete asynchronous `PaymentsRepository` delegates to that data source; a separate repository interface is unnecessary while there is only one repository implementation.
+The application composes `PaymentsRemoteDataSource` with an in-memory `MockPaymentsBackend`, which is the project's only backend. The mock is seeded with deterministic raw records and can reproduce every-nth-request backend failures without making the normal demo unreliable. It owns account reporting configuration, session persistence, latency, and atomic final-decision checks. The remote data source remains production-shaped: it consumes the backend-client contract, maps raw records through `PaymentDto`, and translates backend exceptions into `PaymentsFailure`. The concrete asynchronous `PaymentsRepository` delegates to that data source; a separate repository interface is unnecessary while there is only one repository implementation.
 
 ## Planned time contract
 
@@ -76,7 +76,7 @@ Reviewer access uses an installable Android APK without compilation. iOS remains
 
 ## Deliberate limits
 
-- No deployed backend is required for the challenge. `lib/mock_backend/` provides only an in-process deterministic substitute behind the same client/data-source boundary a real service would use.
+- No external or deployed backend is planned for the challenge. `lib/mock_backend/` is the authoritative in-process backend behind the client/data-source boundary.
 - No general design-system package is created for a single application; tokens live under `lib/app/theme/`.
 - Code generation and dependency injection frameworks are added only if their value exceeds their setup cost.
 - Optimisation follows measurement. Narrow rebuilds are encouraged, but premature caching and repaint boundaries are not defaults.

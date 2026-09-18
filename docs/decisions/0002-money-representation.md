@@ -16,7 +16,7 @@ Incoming records still need a clear local boundary: amount values must be positi
 
 `PaymentDto` validates boundary values before mapping them into the domain model. `PaymentAmountJsonConverter` round-trips the amount as a string, while exactly two visible decimal places, grouping, and the explicit currency code are presentation concerns. For example, the demo UI renders `AED 1,234.56` independently of device locale.
 
-There is no `PaymentMoney` wrapper, precision tolerance, shadow integer-fils representation, client-side transaction maximum, or aggregate cap. If a backend or account configuration later supplies limits, its data source maps violations to typed failures and the relevant use case decides how the workflow responds.
+There is no `PaymentMoney` wrapper, precision tolerance, shadow integer-fils representation, client-side transaction maximum, or aggregate cap. If product scope adds account limits, `MockPaymentsBackend` owns and enforces them, its data source maps violations to typed failures, and the relevant use case decides how the workflow responds.
 
 ## Consequences and verification
 
