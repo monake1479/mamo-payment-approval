@@ -37,8 +37,8 @@ All demo state is session-only. OS process termination resets to the seed on the
 
 ## Branch and integration contract
 
-The UI/theme PR targets `dev` and remains unmerged. Feature workers use separate Git and Orca child worktrees based on its exact branch/commit. Each task owns a small feature branch and its tests. No worker merges PRs, enables auto-merge, force-pushes, or writes to `dev`/`main`.
+The accepted UI/theme increment is part of `dev` as of 2026-09-18. Feature workers use separate Git and Orca worktrees based on current `origin/dev`; branches that predate the merge must integrate that base without discarding their feature work. Each task owns a small feature branch and its tests. No worker merges PRs, enables auto-merge, force-pushes, or writes to `dev`/`main`.
 
-Workers may commit their tested local increments and publish feature PRs into `dev` with an explicit dependency link to the theme PR; until dependencies merge, these PRs include that ancestor. Coordinate shared dependency/ARB/router changes rather than assuming another branch already provides them. Integrate selected commits into a separate work branch with provenance and rerun the full gate. A green branch is not proof that the combined application works.
+Workers may commit their tested local increments and publish feature PRs into `dev` only when authorized. Coordinate shared dependency/ARB/router changes rather than assuming another branch already provides them. Integrate selected commits into a separate work branch with provenance and rerun the full gate. A green branch is not proof that the combined application works.
 
 The coordinator owns integration and emulator allocation. Do not run concurrent installs on the same simulator/emulator. Use separate devices or a requested exclusive lease. Every report identifies branch, commit, tests, evidence, and remaining gaps. A blocked native/manual check stays visible; no fake-auth release or test bypass is permitted.

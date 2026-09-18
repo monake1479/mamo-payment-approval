@@ -4,9 +4,9 @@
 
 Every slice is a runnable increment with a PR into `dev`. Verified increments reach `main` through separate promotion PRs from `dev`. PRs link decisions, criteria, tests, and evidence; no implementation goes directly into shared branches.
 
-The committed foundation contains the placeholder app, rules and project skills, native flavors, localization, bootstrap/error handling, router, push tooling, tests, and CI configuration. All payment behaviour below is planned. The current theme is a light placeholder; the accepted light/dark design has not been implemented.
+The committed foundation contains the placeholder app, rules and project skills, native flavors, localization, bootstrap/error handling, router, push tooling, tests, and CI configuration. All payment behaviour below is planned. The accepted system-following light/dark theme and shared UI tokens are implemented on `dev`.
 
-The current UI foundation increment adds system-following light/dark themes and centralized component/layout tokens. The owner authorized a theme PR and separate stacked feature worktrees on 2026-09-17, without merging into `dev`. [UI contract](product/ui-contract.md) and [implementation contracts](architecture/implementation-contract.md) govern that increment and resolve its previously open routine decisions under delegated authority. Their selections remain subject to owner review. No payment screen is claimed implemented by the theme increment.
+The UI foundation increment added system-following light/dark themes and centralized component/layout tokens and merged into `dev` on 2026-09-18. The owner accepted the [UI contract](product/ui-contract.md) with that merge. The remaining [implementation contracts](architecture/implementation-contract.md) resolve routine decisions under delegated authority and remain subject to owner review. No payment screen is claimed implemented by the theme increment.
 
 An earlier version of the workflow received an [independent audit and targeted correction check](testing/agent-workflow-review.md). That audit does not verify subsequent workflow or application changes. New planning decisions are recorded in the [product Q&A](product/requirements.md#planning-qa-accepted-decisions); accepted requirements are distinct from implemented behaviour.
 
@@ -22,7 +22,7 @@ An earlier version of the workflow received an [independent audit and targeted c
 
 Split slices further when useful. Domain/data/state/UI types arrive when the runnable increment needs them. Introduce native CI/build artifacts with platform delivery work.
 
-Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01`). Verify both appearances at compact/expanded widths and with large text as screens arrive. No manual theme selector is included. A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
+Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01/02`). Verify both appearances at compact/expanded portrait widths and with large text as screens arrive. No manual theme selector is included. A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
 
 ## Native foundation increment
 
@@ -54,15 +54,17 @@ evidence independently from bootstrap tests.
 
 ## Navigation foundation increment
 
-The owner selected `go_router` for app navigation. Wire `MaterialApp.router` to one
-`GoRouter` registered and disposed by `getIt`; keep route declarations in app
-composition. The only current route is `/`, displaying the unchanged foundation
-page. Unknown paths use the existing localized safe error view without revealing
-the requested URI. Startup/build-error UI remains independent of router and DI.
-No placeholder feature routes, routing facade, code generation, or auth redirects.
-Verify the injected router, root/back behavior, preserved location on rebuild,
-unknown-route recovery, localization/layout, and native startup/resume. Future
-payment/details/overlay journeys arrive with their corresponding slices.
+The owner selected `go_router` for app navigation. A DI-owned
+`MamoPaymentRouter` owns and disposes one `GoRouter`; app composition injects its
+stable router into `MaterialApp.router`. Route declarations stay in that
+application-infrastructure class. The only current route is `/`, displaying the
+unchanged foundation page.
+Unknown paths use the existing localized safe error view without revealing the
+requested URI. Startup/build-error UI remains independent of router and DI. No
+placeholder feature routes, code generation, or auth redirects are introduced.
+Verify router ownership and identity, root/back behavior, preserved location on
+rebuild, unknown-route recovery, localization/layout, and native startup/resume.
+Future payment/details/overlay journeys arrive with their corresponding slices.
 
 ## Localization foundation increment
 

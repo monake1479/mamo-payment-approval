@@ -22,7 +22,7 @@ The Cubit applies a successful create or decision to its canonical collection be
 
 ## Boundaries and exclusions
 
-The storage implementation is session-only and resets to deterministic seed data after process termination. No backend, database, navigation, screen, authentication adapter, or approval-disclosure state is introduced here. The UI/theme ancestor remains a required unmerged dependency for downstream integration.
+The storage implementation is session-only and resets to deterministic seed data after process termination. No backend, database, navigation, screen, authentication adapter, or approval-disclosure state is introduced here. The accepted UI/theme contract is now provided by the `dev` base; this slice adds no theme-dependent UI.
 
 ## Verification
 

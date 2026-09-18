@@ -29,7 +29,7 @@ Rules define constraints; skills define how to carry out a matching assignment. 
 | Task | Required skill |
 |---|---|
 | Plan or implement a feature/behavioural fix | [mamo-feature-slice](skills/mamo-feature-slice/SKILL.md) |
-| Specify, implement, or verify visible Flutter UI | [mamo-flutter-ui](skills/mamo-flutter-ui/SKILL.md) |
+| Specify, implement, or verify visible Flutter UI, shared theme, motion, or accessibility | [mamo-flutter-ui](skills/mamo-flutter-ui/SKILL.md) |
 | Select/run tests, verify a change, or close a local quality gate | [mamo-verify](skills/mamo-verify/SKILL.md) |
 | Review local changes or inspect/address PR feedback | [mamo-review-round](skills/mamo-review-round/SKILL.md) |
 

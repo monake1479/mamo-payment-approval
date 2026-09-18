@@ -14,7 +14,7 @@ This document paraphrases the supplied challenge brief. The original attachment 
 
 ### Planning Q&A: accepted decisions
 
-These answers define the implementation scope; they do not claim that the behaviour is implemented. The visual direction is inspired by Mamo Business. On 2026-09-17 the owner delegated UI/theme selection and remaining implementation decisions for an overnight increment. The [UI contract](ui-contract.md) and [implementation contracts](../architecture/implementation-contract.md) record coordinator-selected details for subsequent owner review.
+These answers define the implementation scope; they do not claim that the behaviour is implemented. The visual direction is inspired by Mamo Business. On 2026-09-17 the owner delegated UI/theme selection and remaining implementation decisions for an overnight increment. The [UI contract](ui-contract.md) was accepted with its merge into `dev` on 2026-09-18; the remaining [implementation contracts](../architecture/implementation-contract.md) record coordinator-selected details for subsequent owner review.
 
 | Question | Accepted answer |
 |---|---|
@@ -97,6 +97,7 @@ A payment request contains an identifier, counterparty, amount, reference, creat
 ### Appearance and money display
 
 - `UI-01`: Support light and dark appearances across screens, overlays, and loading/empty/error states, with readable contrast and status cues that do not rely on colour alone.
+- `UI-02`: Run in portrait-up orientation on iOS and Android. Compact phones and expanded portrait tablets remain responsive; landscape layouts are outside the baseline.
 - `MONEY-01`: Use AED exclusively, with incoming amounts expressed to whole fils, and display amounts in the fixed English format `AED 1,234.56` regardless of device locale. Money remains represented as Dart `double`; no business rounding feature is in scope. Remaining technical semantics are tracked in ADR 0002.
 
 ## Product invariants

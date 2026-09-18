@@ -1,5 +1,4 @@
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/config/app_environment.dart';
 import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostics.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
@@ -11,8 +10,8 @@ Future<void> configureDependencies(AppEnvironment environment) async {
   getIt.registerLazySingleton<LocalDiagnostics>(
     () => LocalDiagnostics(environment: environment),
   );
-  getIt.registerSingleton<GoRouter>(
-    createAppRouter(),
+  getIt.registerSingleton<MamoPaymentRouter>(
+    MamoPaymentRouter(),
     dispose: (router) => router.dispose(),
   );
   await getIt.allReady();
