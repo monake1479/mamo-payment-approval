@@ -17,6 +17,7 @@ PAYMENTS_UI_TESTS = [
     "test/features/payments/presentation/pages/payments_page_test.dart",
     "test/features/payments/presentation/widgets/payment_row_test.dart",
     "test/features/payments/presentation/widgets/payment_state_views_test.dart",
+    "test/features/payments/presentation/widgets/payment_status_chip_test.dart",
 ]
 
 AUTHENTICATION_TESTS = [
@@ -32,6 +33,9 @@ FLUTTER_TESTS = {
     "lib/app/di/configure_dependencies.dart": PAYMENTS_UI_TESTS,
     "lib/app/navigation/app_router.dart": PAYMENTS_UI_TESTS,
     "lib/app/navigation/payment_navigation_shell.dart": PAYMENTS_UI_TESTS,
+    "lib/app/platform/app_orientation.dart": ["test/app/app_orientation_test.dart"],
+    "lib/app/theme/app_motion.dart": ["test/app/app_motion_test.dart", *PAYMENTS_UI_TESTS],
+    "lib/app/theme/app_status_colors.dart": ["test/app/app_theme_test.dart", *PAYMENTS_UI_TESTS],
     "lib/app/theme/app_theme.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/data/in_memory_payments_repository.dart": [
         "test/features/payments/data/in_memory_payments_repository_test.dart",
@@ -115,7 +119,7 @@ FLUTTER_TESTS = {
     "lib/features/payments/presentation/widgets/payment_page_scaffold.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/presentation/widgets/payment_row.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/presentation/widgets/payment_state_views.dart": PAYMENTS_UI_TESTS,
-    "lib/features/payments/presentation/widgets/payment_status_badge.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/presentation/widgets/payment_status_chip.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/presentation/widgets/recent_payments_section.dart": PAYMENTS_UI_TESTS,
 }
 

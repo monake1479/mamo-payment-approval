@@ -34,7 +34,7 @@ class _PaymentFlowLayerState extends State<PaymentFlowLayer>
     with WidgetsBindingObserver {
   late final DebugActionCubit _debugActionCubit;
   ApprovalCubit? _approvalCubit;
-  ApprovalOverlayRoute? _approvalRoute;
+  Route<void>? _approvalRoute;
   StreamSubscription<ApprovalState>? _approvalSubscription;
   bool _foreground = true;
   bool _completionInProgress = false;
@@ -109,14 +109,22 @@ class _PaymentFlowLayerState extends State<PaymentFlowLayer>
                 decision: decision,
               ),
     );
-    final ApprovalOverlayRoute route = ApprovalOverlayRoute(
+    final NavigatorState? navigator =
+        widget.router.routerDelegate.navigatorKey.currentState;
+    if (navigator == null) {
+      unawaited(cubit.close());
+      return;
+    }
+    final Route<void> route = createApprovalOverlayRoute(
+      context: context,
+      navigatorContext: navigator.context,
       approvalCubit: cubit,
       semanticLabel: AppLocalizations.of(context).approvalModalLabel,
     );
     _approvalCubit = cubit;
     _approvalRoute = route;
     _approvalSubscription = cubit.stream.listen(_approvalStateChanged);
-    widget.router.routerDelegate.navigatorKey.currentState?.push(route);
+    unawaited(navigator.push(route));
   }
 
   void _approvalStateChanged(ApprovalState state) {
@@ -135,7 +143,7 @@ class _PaymentFlowLayerState extends State<PaymentFlowLayer>
       return;
     }
     _completionInProgress = true;
-    final ApprovalOverlayRoute? route = _approvalRoute;
+    final Route<void>? route = _approvalRoute;
     if (route?.isActive ?? false) {
       route!.navigator?.removeRoute(route);
     }

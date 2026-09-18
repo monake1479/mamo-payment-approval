@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/payment_navigation_shell.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 void main() {
-  for (final Size size in <Size>[const Size(320, 640), const Size(1024, 768)]) {
+  for (final Size size in <Size>[const Size(320, 640), const Size(768, 1024)]) {
     testWidgets('switches destinations at $size with large text', (
       WidgetTester tester,
     ) async {
@@ -41,6 +42,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Home content'), findsOneWidget);
+      expect(find.byType(AppPageTransitionSwitcher), findsOneWidget);
       final Finder paymentsDestination = expanded
           ? find.text('Payments')
           : find.bySemanticsIdentifier('navigation.destination.payments');
@@ -56,12 +58,17 @@ void main() {
 GoRouter _createRouter() => GoRouter(
   initialLocation: '/home',
   routes: <RouteBase>[
-    StatefulShellRoute.indexedStack(
+    StatefulShellRoute(
       builder: (
         BuildContext context,
         GoRouterState state,
         StatefulNavigationShell navigationShell,
       ) => PaymentNavigationShell(navigationShell: navigationShell),
+      navigatorContainerBuilder: (context, navigationShell, children) =>
+          AppPageTransitionSwitcher.indexed(
+            currentIndex: navigationShell.currentIndex,
+            children: children,
+          ),
       branches: <StatefulShellBranch>[
         StatefulShellBranch(
           routes: <RouteBase>[

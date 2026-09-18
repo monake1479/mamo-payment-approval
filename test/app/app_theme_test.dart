@@ -5,6 +5,7 @@ import 'package:mamo_payment_approval_challenge/app/app.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_status_colors.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_result.dart';
@@ -55,13 +56,51 @@ void main() {
             : Brightness.dark,
       );
       expect(theme.appBarTheme.systemOverlayStyle, systemUiStyle);
+      final InputDecorationThemeData fields = theme.inputDecorationTheme;
+      expect(fields.filled, isTrue);
+      expect(
+        (fields.enabledBorder! as OutlineInputBorder).borderRadius,
+        BorderRadius.circular(AppTheme.controlRadius),
+      );
+      expect(
+        (fields.focusedBorder! as OutlineInputBorder).borderSide,
+        BorderSide(color: colors.primary, width: 2),
+      );
+      expect(
+        (fields.focusedErrorBorder! as OutlineInputBorder).borderSide,
+        BorderSide(color: colors.error, width: 2),
+      );
+      expect(theme.chipTheme.shape, isA<RoundedRectangleBorder>());
+      expect(
+        theme.navigationRailTheme.backgroundColor,
+        colors.surfaceContainerLow,
+      );
+      expect(theme.navigationRailTheme.indicatorColor, colors.primaryContainer);
+      expect(theme.dividerTheme.color, colors.outlineVariant);
+      expect(theme.dividerTheme.thickness, 1);
+      expect(theme.snackBarTheme.behavior, SnackBarBehavior.fixed);
+      expect(theme.snackBarTheme.backgroundColor, colors.inverseSurface);
+      final AppStatusColors statusColors = theme.extension<AppStatusColors>()!;
+      expect(
+        contrast(statusColors.infoContainer, statusColors.onInfoContainer),
+        greaterThanOrEqualTo(4.5),
+      );
+      expect(statusColors.infoContainer, isNot(colors.primaryContainer));
+      expect(
+        contrast(
+          statusColors.pendingContainer,
+          statusColors.onPendingContainer,
+        ),
+        greaterThanOrEqualTo(4.5),
+      );
+      expect(statusColors.pendingContainer, isNot(colors.primaryContainer));
     });
   }
 
   for (final Brightness brightness in Brightness.values) {
     for (final Size size in <Size>[
       const Size(320, 640),
-      const Size(1024, 768),
+      const Size(768, 1024),
     ]) {
       testWidgets('system $brightness at $size with enlarged text', (
         tester,
@@ -74,8 +113,8 @@ void main() {
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
-        final router = createAppRouter();
-        addTearDown(router.dispose);
+        final MamoPaymentRouter appRouter = MamoPaymentRouter();
+        addTearDown(appRouter.dispose);
         final repository = StubPaymentsRepository(
           onLoad: () async => const PaymentsSuccess<List<Payment>>(<Payment>[]),
         );
@@ -83,7 +122,7 @@ void main() {
         addTearDown(cubit.close);
         await tester.pumpWidget(
           MamoPaymentApprovalApp(
-            router: router,
+            router: appRouter,
             paymentsCubit: cubit,
             deviceAuthenticator: StubDeviceAuthenticator(),
           ),

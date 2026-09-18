@@ -2,141 +2,143 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payment_money.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/approval_cubit.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
-class ApprovalOverlayRoute extends PopupRoute<void> {
-  ApprovalOverlayRoute({
-    required this.approvalCubit,
-    required this.semanticLabel,
-  });
-
-  final ApprovalCubit approvalCubit;
-  final String semanticLabel;
-
-  @override
-  bool get barrierDismissible => false;
-
-  @override
-  Color get barrierColor => Colors.black54;
-
-  @override
-  String get barrierLabel => semanticLabel;
-
-  @override
-  Duration get transitionDuration => const Duration(milliseconds: 180);
-
-  @override
-  Widget buildPage(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-  ) => BlocProvider<ApprovalCubit>.value(
-    value: approvalCubit,
-    child: const PopScope(canPop: false, child: ApprovalOverlay()),
+Route<void> createApprovalOverlayRoute({
+  required BuildContext context,
+  required BuildContext navigatorContext,
+  required ApprovalCubit approvalCubit,
+  required String semanticLabel,
+}) {
+  final bool expanded =
+      MediaQuery.sizeOf(context).width >= AppTheme.expandedBreakpoint;
+  final AnimationStyle animationStyle = AnimationStyle(
+    duration: AppMotion.resolve(context, AppMotion.standard),
+    reverseDuration: AppMotion.resolve(context, AppMotion.fast),
+    curve: AppMotion.enterCurve,
+    reverseCurve: AppMotion.exitCurve,
   );
+  Widget buildOverlay(BuildContext context) =>
+      BlocProvider<ApprovalCubit>.value(
+        value: approvalCubit,
+        child: PopScope(
+          canPop: false,
+          child: ApprovalOverlay(expanded: expanded),
+        ),
+      );
 
-  @override
-  Widget buildTransitions(
-    BuildContext context,
-    Animation<double> animation,
-    Animation<double> secondaryAnimation,
-    Widget child,
-  ) => MediaQuery.disableAnimationsOf(context)
-      ? child
-      : FadeTransition(opacity: animation, child: child);
-}
-
-class ApprovalOverlay extends StatelessWidget {
-  const ApprovalOverlay({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      type: MaterialType.transparency,
-      child: SafeArea(
-        child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            final bool expanded =
-                constraints.maxWidth >= AppTheme.expandedBreakpoint;
-            final Widget panel = ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: AppTheme.contentWidth,
-              ),
-              child: const _ApprovalPanel(),
-            );
-            return Align(
-              alignment: expanded ? Alignment.center : Alignment.bottomCenter,
-              child: Padding(
-                padding: EdgeInsets.all(
-                  expanded ? AppTheme.pagePadding : AppTheme.compactPadding,
-                ),
-                child: panel,
-              ),
-            );
-          },
+  if (expanded) {
+    return DialogRoute<void>(
+      context: navigatorContext,
+      barrierDismissible: false,
+      barrierLabel: semanticLabel,
+      animationStyle: animationStyle,
+      builder: (BuildContext context) => Dialog(
+        clipBehavior: Clip.antiAlias,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: AppTheme.contentWidth),
+          child: buildOverlay(context),
         ),
       ),
     );
   }
+
+  return ModalBottomSheetRoute<void>(
+    builder: buildOverlay,
+    barrierLabel: semanticLabel,
+    isDismissible: false,
+    enableDrag: false,
+    isScrollControlled: true,
+    useSafeArea: true,
+    clipBehavior: Clip.antiAlias,
+    constraints: const BoxConstraints(maxWidth: AppTheme.contentWidth),
+    sheetAnimationStyle: animationStyle,
+  );
+}
+
+class ApprovalOverlay extends StatelessWidget {
+  const ApprovalOverlay({required this.expanded, super.key});
+
+  final bool expanded;
+
+  @override
+  Widget build(BuildContext context) => _ApprovalPanel(expanded: expanded);
 }
 
 class _ApprovalPanel extends StatelessWidget {
-  const _ApprovalPanel();
+  const _ApprovalPanel({required this.expanded});
+
+  final bool expanded;
+
+  @override
+  Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    return BlocBuilder<ApprovalCubit, ApprovalState>(
+      builder: (BuildContext context, ApprovalState state) {
+        final List<Widget> groups = <Widget>[
+          const _ApprovalIntroduction(),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              _SensitiveRequestDetails(state: state),
+              const SizedBox(height: AppTheme.itemGap),
+              _ReferenceField(reference: state.request.reference),
+              if (state.failure case final failure?) ...<Widget>[
+                const SizedBox(height: AppTheme.itemGap),
+                _ApprovalError(failure: failure),
+              ],
+            ],
+          ),
+          _ApprovalActions(state: state),
+        ];
+        final Widget content = expanded
+            ? AppDialogStaggeredColumn(
+                spacing: AppTheme.sectionGap,
+                children: groups,
+              )
+            : AppBottomSheetStaggeredColumn(
+                spacing: AppTheme.sectionGap,
+                children: groups,
+              );
+        return Semantics(
+          identifier: 'approval.overlay',
+          container: true,
+          namesRoute: true,
+          label: l10n.approvalModalLabel,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(AppTheme.sectionGap),
+            child: content,
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ApprovalIntroduction extends StatelessWidget {
+  const _ApprovalIntroduction();
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final AppLocalizations l10n = AppLocalizations.of(context);
-    return Material(
-      color: theme.colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppTheme.cardRadius),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: BlocBuilder<ApprovalCubit, ApprovalState>(
-        builder: (BuildContext context, ApprovalState state) {
-          return Semantics(
-            identifier: 'approval.overlay',
-            container: true,
-            namesRoute: true,
-            label: l10n.approvalModalLabel,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppTheme.sectionGap),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    l10n.approvalTitle,
-                    style: theme.textTheme.headlineMedium,
-                  ),
-                  const SizedBox(height: AppTheme.smallGap),
-                  Text(
-                    l10n.approvalDescription,
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(height: AppTheme.sectionGap),
-                  _SensitiveRequestDetails(state: state),
-                  const SizedBox(height: AppTheme.itemGap),
-                  _ReferenceField(reference: state.request.reference),
-                  if (state.failure case final failure?) ...<Widget>[
-                    const SizedBox(height: AppTheme.itemGap),
-                    _ApprovalError(failure: failure),
-                  ],
-                  const SizedBox(height: AppTheme.sectionGap),
-                  _ApprovalActions(state: state),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Text(l10n.approvalTitle, style: theme.textTheme.headlineMedium),
+        const SizedBox(height: AppTheme.smallGap),
+        Text(
+          l10n.approvalDescription,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
     );
   }
 }

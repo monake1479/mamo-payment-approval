@@ -13,6 +13,7 @@ import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations
 import '../support/payments_test_support.dart';
 
 void main() {
+  late MamoPaymentRouter appRouter;
   late GoRouter router;
   late StubPaymentsRepository repository;
   late PaymentsCubit cubit;
@@ -27,10 +28,11 @@ void main() {
     );
     cubit = createPaymentsCubit(repository);
     authenticator = StubDeviceAuthenticator();
-    router = createAppRouter();
+    appRouter = MamoPaymentRouter();
+    router = appRouter.router;
   });
   tearDown(() async {
-    router.dispose();
+    appRouter.dispose();
     await cubit.close();
   });
 
@@ -47,7 +49,7 @@ void main() {
 
       await tester.pumpWidget(
         MamoPaymentApprovalApp(
-          router: router,
+          router: appRouter,
           paymentsCubit: cubit,
           deviceAuthenticator: authenticator,
         ),
@@ -72,7 +74,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MamoPaymentApprovalApp(
-        router: router,
+        router: appRouter,
         paymentsCubit: cubit,
         deviceAuthenticator: authenticator,
       ),
@@ -88,7 +90,7 @@ void main() {
 
     await tester.pumpWidget(
       MamoPaymentApprovalApp(
-        router: router,
+        router: appRouter,
         paymentsCubit: cubit,
         deviceAuthenticator: authenticator,
       ),
@@ -103,7 +105,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MamoPaymentApprovalApp(
-        router: router,
+        router: appRouter,
         paymentsCubit: cubit,
         deviceAuthenticator: authenticator,
       ),
@@ -137,7 +139,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       MamoPaymentApprovalApp(
-        router: router,
+        router: appRouter,
         paymentsCubit: cubit,
         deviceAuthenticator: authenticator,
       ),
@@ -149,7 +151,7 @@ void main() {
     expect(find.textContaining('PRIVATE_PAYLOAD'), findsNothing);
     await tester.pumpWidget(
       MamoPaymentApprovalApp(
-        router: router,
+        router: appRouter,
         paymentsCubit: cubit,
         deviceAuthenticator: authenticator,
       ),
@@ -184,7 +186,7 @@ void main() {
 
     await tester.pumpWidget(
       MamoPaymentApprovalApp(
-        router: router,
+        router: appRouter,
         paymentsCubit: cubit,
         deviceAuthenticator: authenticator,
       ),

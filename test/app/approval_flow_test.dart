@@ -4,9 +4,10 @@ import 'dart:ui' show SemanticsAction, Tristate;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/app.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payments_failure.dart';
@@ -17,7 +18,7 @@ import 'package:mamo_payment_approval_challenge/features/payments/presentation/c
 import '../support/payments_test_support.dart';
 
 void main() {
-  late GoRouter router;
+  late MamoPaymentRouter appRouter;
   late PaymentsCubit paymentsCubit;
   late StubPaymentsRepository repository;
   late StubDeviceAuthenticator authenticator;
@@ -47,18 +48,18 @@ void main() {
       },
     );
     paymentsCubit = createPaymentsCubit(repository);
-    router = createAppRouter();
+    appRouter = MamoPaymentRouter();
   });
 
   tearDown(() async {
-    router.dispose();
+    appRouter.dispose();
     await paymentsCubit.close();
   });
 
   Future<void> pumpApp(WidgetTester tester) async {
     await tester.pumpWidget(
       MamoPaymentApprovalApp(
-        router: router,
+        router: appRouter,
         paymentsCubit: paymentsCubit,
         deviceAuthenticator: authenticator,
       ),
@@ -175,7 +176,7 @@ void main() {
       authenticator = StubDeviceAuthenticator();
       await tester.pumpWidget(
         MamoPaymentApprovalApp(
-          router: router,
+          router: appRouter,
           paymentsCubit: paymentsCubit,
           deviceAuthenticator: controlled,
         ),
@@ -276,7 +277,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(tester.getTopLeft(action), dragged);
 
-    tester.view.physicalSize = const Size(640, 320);
+    tester.view.physicalSize = const Size(600, 900);
     tester.view.devicePixelRatio = 1;
     tester.view.padding = const FakeViewPadding(
       left: 24,
@@ -291,8 +292,8 @@ void main() {
     final Rect clamped = tester.getRect(action);
     expect(clamped.left, greaterThanOrEqualTo(32));
     expect(clamped.top, greaterThanOrEqualTo(40));
-    expect(clamped.right, lessThanOrEqualTo(616));
-    expect(clamped.bottom, lessThanOrEqualTo(284));
+    expect(clamped.right, lessThanOrEqualTo(576));
+    expect(clamped.bottom, lessThanOrEqualTo(864));
   });
 
   testWidgets('request action uses distinct enabled and disabled colors', (
@@ -344,7 +345,7 @@ void main() {
   );
 
   testWidgets(
-    'approval route removes its custom transition for reduced motion',
+    'approval route keeps its platform surface and final content for reduced motion',
     (WidgetTester tester) async {
       tester.platformDispatcher.accessibilityFeaturesTestValue =
           const FakeAccessibilityFeatures(disableAnimations: true);
@@ -354,12 +355,18 @@ void main() {
       await pumpApp(tester);
       await openRequest(tester);
 
+      expect(find.byType(Dialog), findsOneWidget);
+      expect(find.byType(AppDialogStaggeredColumn), findsOneWidget);
       expect(
-        find.ancestor(
-          of: find.bySemanticsIdentifier('approval.overlay'),
-          matching: find.byType(FadeTransition),
-        ),
-        findsNothing,
+        tester
+            .widgetList<Opacity>(
+              find.descendant(
+                of: find.byType(AppDialogStaggeredColumn),
+                matching: find.byType(Opacity),
+              ),
+            )
+            .map((Opacity widget) => widget.opacity),
+        everyElement(1),
       );
     },
   );
@@ -440,11 +447,16 @@ void main() {
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
         await pumpApp(tester);
-        await openRequest(tester);
-
         final Finder action = find.bySemanticsIdentifier(
           'debug.incomingRequest',
         );
+        await tester.drag(
+          action,
+          const Offset(0, AppTheme.compactNavigationHeight),
+        );
+        await tester.pumpAndSettle();
+        await openRequest(tester);
+
         expect(
           tester.getSemantics(action).flagsCollection.isEnabled,
           Tristate.isFalse,
@@ -494,7 +506,7 @@ void main() {
   for (final Brightness brightness in Brightness.values) {
     for (final Size size in <Size>[
       const Size(320, 640),
-      const Size(1024, 768),
+      const Size(768, 1024),
     ]) {
       testWidgets('overlay fits $brightness at $size with 200% text', (
         WidgetTester tester,
@@ -512,6 +524,15 @@ void main() {
         await openRequest(tester);
 
         expect(find.text('Incoming payment'), findsOneWidget);
+        if (size.width >= AppTheme.expandedBreakpoint) {
+          expect(find.byType(Dialog), findsOneWidget);
+          expect(find.byType(AppDialogStaggeredColumn), findsOneWidget);
+          expect(find.byType(BottomSheet), findsNothing);
+        } else {
+          expect(find.byType(BottomSheet), findsOneWidget);
+          expect(find.byType(AppBottomSheetStaggeredColumn), findsOneWidget);
+          expect(find.byType(Dialog), findsNothing);
+        }
         expect(tester.takeException(), isNull);
       });
     }

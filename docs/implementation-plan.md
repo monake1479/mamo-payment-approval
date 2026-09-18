@@ -4,12 +4,13 @@
 
 Every slice is a runnable increment with a PR into `dev`. Verified increments reach `main` through separate promotion PRs from `dev`. PRs link decisions, criteria, tests, and evidence; no implementation goes directly into shared branches.
 
-The shared `dev` base contains the application foundation. The unmerged feature
-ancestry now delivers system-following themes, authoritative payment state,
+The shared `dev` base contains the accepted UI foundation. The unmerged feature
+ancestry delivers authoritative payment state,
 Home/Payments/details, native authentication, the approval overlay, lifecycle
 remasking, and the draggable request action. The integration branch is based on the
-tested approval head and adds the private reviewer-APK workflow and documentation
-reconciliation. None of those PRs is merged or promoted by this status statement.
+tested approval head, reconciles it with the accepted theme/motion/orientation
+merge, and adds the private reviewer-APK workflow. None of those feature PRs is
+merged or promoted by this status statement.
 
 The [UI contract](product/ui-contract.md), [implementation contracts](architecture/implementation-contract.md),
 and feature notes under `docs/features/` describe the integrated behaviour. Their
@@ -31,7 +32,10 @@ An earlier version of the workflow received an [independent audit and targeted c
 
 Split slices further when useful. Domain/data/state/UI types arrive when the runnable increment needs them. Introduce native CI/build artifacts with platform delivery work.
 
-Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01`). Verify both appearances at compact/expanded widths and with large text as screens arrive. No manual theme selector is included. A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
+Parallel screen implementation follows the accepted UI contract and shared
+light/dark tokens (`UI-01/02`). Verify both appearances at compact/expanded
+portrait widths and with large text. No manual theme selector is included. A
+separate pending-payments screen remains a deferred extension.
 
 ## Read-only payments screen increment
 
@@ -78,9 +82,10 @@ remain deferred. Track native device evidence independently from bootstrap tests
 
 ## Navigation foundation increment
 
-The owner selected `go_router` for app navigation. `MaterialApp.router` uses one
-`GoRouter` registered and disposed by `getIt`; route declarations remain in app
-composition. `/home` and `/payments` are stateful shell branches with branch-local
+The owner selected `go_router` for app navigation. A DI-owned
+`MamoPaymentRouter` owns and disposes one `GoRouter`; app composition injects its
+stable router into `MaterialApp.router`. `/home` and `/payments` are stateful shell
+branches with branch-local
 decided-payment detail routes. Unknown paths use the existing localized safe error
 view without revealing the requested URI. Startup/build-error UI remains
 independent of router and DI. There is no routing facade, code generation, or auth

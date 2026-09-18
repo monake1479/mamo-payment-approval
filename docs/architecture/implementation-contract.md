@@ -46,13 +46,15 @@ All demo state is session-only. OS process termination resets to the seed on the
 
 ## Branch and integration contract
 
-The UI/theme PR targets `dev` and remains unmerged. Feature workers use separate Git and Orca child worktrees based on its exact branch/commit. Each task owns a small feature branch and its tests. No worker merges PRs, enables auto-merge, force-pushes, or writes to `dev`/`main`.
+The accepted UI/theme baseline is merged into `dev` through PR #1. Feature and
+integration work must preserve that ancestry and resolve composition against its
+shared theme, motion, orientation, and accessibility contracts. No worker merges
+PRs, enables auto-merge, force-pushes, or writes to `dev`/`main`.
 
 Workers may commit their tested local increments and publish feature PRs into `dev`
-with an explicit dependency link to the theme PR; until dependencies merge, these
-PRs include that ancestor. The integration branch is based on the tested approval
-head, which already contains the theme, data, authentication, and screen ancestors;
-it adds only the selected reviewer-delivery commits plus deliberate reconciliation.
+with explicit dependency links where required. The integration branch combines the
+tested data, authentication, screen, approval, and reviewer-delivery increments
+with the accepted `dev` ancestry through deliberate reconciliation.
 Shared ARB, composition, documentation, and workflow changes require a combined
 full gate and native journey evidence. A green feature branch alone is not proof
 that the integrated application works.

@@ -4,9 +4,10 @@ A production-minded Flutter implementation of a payment approval flow.
 
 The application is intentionally small, but it is structured as code that could evolve safely: business rules are separated from Flutter widgets, external capabilities sit behind interfaces, and acceptance criteria are backed by focused tests.
 
-> Status: integrated baseline awaiting independent review. The theme, payment state,
-> screens, native authentication, approval flow, draggable request action, and
-> reviewer APK workflow are implemented on an unmerged feature ancestry.
+> Status: integrated baseline awaiting independent review. The accepted UI system
+> is merged into `dev`; payment state, screens, native authentication, approval
+> flow, draggable request action, and reviewer APK workflow remain on an unmerged
+> integration branch.
 
 ## Product scope
 
@@ -31,6 +32,8 @@ See [the product requirements](docs/product/requirements.md) for the complete ac
 ## Engineering approach
 
 - Flutter for Android and iOS only.
+- Portrait-up runtime on phones and tablets, with compact and expanded layouts.
+- Shared light/dark theme, status chips, and reduced-motion-aware transitions.
 - Feature-first structure with domain, data, and presentation boundaries added when they earn their place.
 - BLoC/Cubit for explicit state transitions and testable business logic.
 - `go_router` in app composition, passed to `MaterialApp.router`; feature routes arrive with their screens.

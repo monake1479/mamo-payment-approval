@@ -1,6 +1,6 @@
 # Payments data and collection state
 
-Status: implemented and locally verified on the feature branch. Integration into app composition and user-facing screens remains outside this slice.
+Status: implemented, locally verified, and composed into the unmerged integration branch.
 
 ## Scope
 
@@ -22,7 +22,7 @@ The Cubit applies a successful create or decision to its canonical collection be
 
 ## Boundaries and exclusions
 
-The storage implementation is session-only and resets to deterministic seed data after process termination. No backend, database, navigation, screen, authentication adapter, or approval-disclosure state is introduced here. The UI/theme ancestor remains a required unmerged dependency for downstream integration.
+The storage implementation is session-only and resets to deterministic seed data after process termination. No backend or database is introduced. Navigation, screens, authentication, and approval disclosure remain separate layers composed above this slice. The accepted UI/theme baseline now comes from `dev`.
 
 ## Verification
 

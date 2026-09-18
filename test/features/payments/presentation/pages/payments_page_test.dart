@@ -105,6 +105,7 @@ void main() {
         child: PaymentsPage(onOpenPayment: (_) {}),
       ),
     );
+    await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('payments.error'), findsOneWidget);
     await tester.tap(find.text('Try again'));
     await tester.pumpAndSettle();

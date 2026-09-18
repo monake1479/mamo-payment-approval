@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
@@ -30,7 +31,7 @@ class HomePage extends StatelessWidget {
       semanticIdentifier: 'home.page',
       child: BlocBuilder<PaymentsCubit, PaymentsState>(
         builder: (BuildContext context, PaymentsState state) {
-          return switch (state.status) {
+          final Widget content = switch (state.status) {
             PaymentsLoadStatus.initial ||
             PaymentsLoadStatus.loading => const PaymentsLoadingView(),
             PaymentsLoadStatus.failure => PaymentsErrorView(
@@ -43,6 +44,12 @@ class HomePage extends StatelessWidget {
               onViewAll: onViewAll,
             ),
           };
+          return AppMotionSwitcher(
+            child: KeyedSubtree(
+              key: ValueKey<PaymentsLoadStatus>(state.status),
+              child: content,
+            ),
+          );
         },
       ),
     );
@@ -72,18 +79,22 @@ class _HomeContent extends StatelessWidget {
       key: const PageStorageKey<String>('home.content'),
       padding: const EdgeInsets.only(bottom: AppTheme.sectionGap),
       children: <Widget>[
-        MonthlySummaryCard(
-          amount: formatters.aed(state.summary.approvedAmount),
-          approvedCount: state.summary.approvedCount,
-          month: formatters.month(state.reportingPeriodStartUtc),
-          reportingTimeZone: state.reportingTimeZone,
-        ),
-        const SizedBox(height: AppTheme.sectionGap),
-        RecentPaymentsSection(
-          payments: recent,
-          formatters: formatters,
-          onOpenPayment: onOpenPayment,
-          onViewAll: onViewAll,
+        AppStaggeredColumn(
+          spacing: AppTheme.sectionGap,
+          children: <Widget>[
+            MonthlySummaryCard(
+              amount: formatters.aed(state.summary.approvedAmount),
+              approvedCount: state.summary.approvedCount,
+              month: formatters.month(state.reportingPeriodStartUtc),
+              reportingTimeZone: state.reportingTimeZone,
+            ),
+            RecentPaymentsSection(
+              payments: recent,
+              formatters: formatters,
+              onOpenPayment: onOpenPayment,
+              onViewAll: onViewAll,
+            ),
+          ],
         ),
       ],
     );

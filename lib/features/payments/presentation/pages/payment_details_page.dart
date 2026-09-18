@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/formatters/payment_formatters.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/widgets/payment_detail_field.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/widgets/payment_state_views.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/widgets/payment_status_badge.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/presentation/widgets/payment_status_chip.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 class PaymentDetailsPage extends StatelessWidget {
@@ -34,7 +35,7 @@ class PaymentDetailsPage extends StatelessWidget {
       body: SafeArea(
         child: BlocBuilder<PaymentsCubit, PaymentsState>(
           builder: (BuildContext context, PaymentsState state) {
-            return switch (state.status) {
+            final Widget content = switch (state.status) {
               PaymentsLoadStatus.initial ||
               PaymentsLoadStatus.loading => const PaymentsLoadingView(),
               PaymentsLoadStatus.failure => PaymentsErrorView(
@@ -48,6 +49,12 @@ class PaymentDetailsPage extends StatelessWidget {
                 ),
               ),
             };
+            return AppMotionSwitcher(
+              child: KeyedSubtree(
+                key: ValueKey<PaymentsLoadStatus>(state.status),
+                child: content,
+              ),
+            );
           },
         ),
       ),
@@ -97,29 +104,35 @@ class _PaymentDetailsContent extends StatelessWidget {
               ),
               child: Semantics(
                 identifier: 'payment.details',
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                child: AppStaggeredColumn(
+                  spacing: AppTheme.sectionGap,
                   children: <Widget>[
-                    Text(
-                      l10n.statusLabel,
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Text(
+                          l10n.statusLabel,
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: AppTheme.smallGap),
+                        Align(
+                          alignment: AlignmentDirectional.centerStart,
+                          child: PaymentStatusChip(
+                            status: resolvedPayment.status,
+                          ),
+                        ),
+                        const SizedBox(height: AppTheme.itemGap),
+                        Semantics(
+                          identifier: 'payment.details.amount',
+                          child: Text(
+                            formatters.aed(resolvedPayment.amount),
+                            style: theme.textTheme.headlineLarge,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: AppTheme.smallGap),
-                    Align(
-                      alignment: AlignmentDirectional.centerStart,
-                      child: PaymentStatusBadge(status: resolvedPayment.status),
-                    ),
-                    const SizedBox(height: AppTheme.itemGap),
-                    Semantics(
-                      identifier: 'payment.details.amount',
-                      child: Text(
-                        formatters.aed(resolvedPayment.amount),
-                        style: theme.textTheme.headlineLarge,
-                      ),
-                    ),
-                    const SizedBox(height: AppTheme.sectionGap),
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(AppTheme.compactPadding),

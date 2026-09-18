@@ -11,14 +11,17 @@ flavor must match before dependencies initialize, including release mode. Native
 launch UI remains visible during initialization; there is no artificial delay or
 second Flutter loading page. Bootstrap awaits configuration of one process-wide
 `getIt`, installs error handlers, and calls `runApp`. Dependencies are resolved in
-composition and passed to consumers through constructors. The app root is stateless;
-there is no startup controller, fatal-state notifier, or synthetic environment adapter.
+composition and passed to consumers through constructors. There is no startup
+controller, fatal-state notifier, or synthetic environment adapter. The integrated
+app root is stateful only to trigger the initial payment load and refresh derived
+account-month state on resume.
 
 ## Failure screen
 
-Normal app composition uses the DI-owned `GoRouter` through `MaterialApp.router`.
-The `/` route renders the existing foundation page. Unknown paths reuse the safe
-localized unexpected-error view, never raw route exceptions or URIs. Router
+Normal app composition uses the `GoRouter` owned by the DI-registered
+`MamoPaymentRouter` through `MaterialApp.router`. `/` redirects to Home; stateful
+Home and Payments branches own their pushed detail routes. Unknown paths reuse the
+safe localized unexpected-error view, never raw route exceptions or URIs. Router
 identity and location survive root rebuilds. `AppFailureApp` renders startup/build
 failures without requiring a router; no new layout or visual direction is introduced.
 
@@ -29,14 +32,14 @@ failures without requiring a router; no new layout or visual direction is introd
   No raw exception, stack, payment, or authentication data.
 - Exit: close and restart the app. No retry button or automatic operation replay;
   the screen does not assert whether a pending business operation succeeded.
-- Appearance: existing light theme; centered icon/text column, 24-pixel padding,
-  maximum width 520, gaps 24/12. Reuse these tokens on the foundation page.
+- Appearance: system-following shared light/dark themes; centered icon/text column,
+  24-pixel padding, maximum width 520, and shared 24/12-pixel gaps.
 - Compact/expanded: safe area, width constraint, vertical scrolling; no breakpoint
-  needed for this single column. Verify 320x640 and 1024x768 at 200% text size.
+  needed for this single column. Verify 320x640 and 768x1024 portrait viewports at 200% text size.
 - Accessibility: readable text, non-colour error cue, live-region semantics with
   stable identifier `app.failure`. No tappable controls, focus trap, or animation.
-- Empty/data/submitting are not states of this terminal screen. Success continues
-  to the existing foundation page without changing its product content.
+- Empty/data/submitting are not states of this terminal screen. Successful startup
+  continues to the Home route.
 
 ## Verification map
 

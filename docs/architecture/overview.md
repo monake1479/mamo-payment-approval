@@ -10,8 +10,9 @@ The integrated baseline contains the shared bootstrap, process-wide `get_it`
 registrations, sanitized local diagnostics, system-following light/dark themes,
 generated English localization, payment domain/data/state, Home, Payments,
 decided-payment details, native device authentication, the incoming approval
-overlay, and the session-scoped draggable request action. The feature ancestry and
-theme prerequisite remain unmerged while the integration PR is reviewed. The
+overlay, and the session-scoped draggable request action. The accepted shared
+design system, portrait-only platform contract, and motion primitives are inherited
+from `dev`; feature composition uses those primitives directly. The
 [implementation contract](implementation-contract.md) records the boundaries that
 the delivered code follows.
 
@@ -42,11 +43,13 @@ Inject the account's IANA reporting-zone configuration; the demonstration accoun
 ## State ownership
 
 Navigation is configured in `lib/app/navigation/app_router.dart`. The app receives
-one DI-owned `GoRouter` and uses `MaterialApp.router`; routes are not recreated in
-`build`. Stateful Home and Payments branches own pushed detail routes, preserving
-the route of origin. Unknown locations show a localized fallback without exposing
-the URI. Startup/build failures use standalone `AppFailureApp`, outside normal
-navigation, so rendering them does not depend on successful DI initialization.
+`MamoPaymentRouter` constructs, exposes, and disposes the application `GoRouter`;
+the app injects that stable router into `MaterialApp.router`, so routes are not
+recreated in `build`. Stateful Home and Payments branches own pushed detail routes,
+preserving the route of origin. Detail pushes use `AppMotionPage`; branch changes
+use `AppPageTransitionSwitcher`. Unknown locations show a localized fallback
+without exposing the URI. Startup/build failures use standalone `AppFailureApp`,
+outside normal navigation, so rendering them does not depend on successful DI.
 
 - A payments state owner maintains the canonical collection, ordering, totals, and decisions.
 - A short-lived approval state owner coordinates masked/revealed UI state, authentication, and decision submission.

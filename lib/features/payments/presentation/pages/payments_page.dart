@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
@@ -24,7 +25,7 @@ class PaymentsPage extends StatelessWidget {
       semanticIdentifier: 'payments.page',
       child: BlocBuilder<PaymentsCubit, PaymentsState>(
         builder: (BuildContext context, PaymentsState state) {
-          return switch (state.status) {
+          final Widget content = switch (state.status) {
             PaymentsLoadStatus.initial ||
             PaymentsLoadStatus.loading => const PaymentsLoadingView(),
             PaymentsLoadStatus.failure => PaymentsErrorView(
@@ -40,6 +41,12 @@ class PaymentsPage extends StatelessWidget {
               onOpenPayment: onOpenPayment,
             ),
           };
+          return AppMotionSwitcher(
+            child: KeyedSubtree(
+              key: ValueKey<PaymentsLoadStatus>(state.status),
+              child: content,
+            ),
+          );
         },
       ),
     );
@@ -87,17 +94,21 @@ class _PaymentsHistory extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        Semantics(
-          identifier: 'payments.reportingTimeZone',
-          child: Text(
-            l10n.paymentsReportingTimeZone(reportingTimeZone),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+        AppStaggeredColumn(
+          children: <Widget>[
+            Semantics(
+              identifier: 'payments.reportingTimeZone',
+              child: Text(
+                l10n.paymentsReportingTimeZone(reportingTimeZone),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
-          ),
+          ],
         ),
         const SizedBox(height: AppTheme.itemGap),
-        Expanded(child: history),
+        Expanded(child: AppMotionSwitcher(child: history)),
       ],
     );
   }

@@ -1,6 +1,6 @@
 # Read-only payment screens
 
-Status: implemented on the feature branch; dependent on the unmerged theme and payments-data ancestors.
+Status: implemented and composed into the unmerged integration branch on top of the accepted `dev` UI baseline.
 
 ## Behaviour
 
@@ -16,7 +16,7 @@ Status: implemented on the feature branch; dependent on the unmerged theme and p
 
 ## States and exclusions
 
-Loading does not present stale totals as current. A loaded empty collection shows `AED 0.00` and an empty recent/history explanation. Typed load failures map to safe localized copy and an explicit retry. Approval, authentication, incoming-request masking, and the draggable debug action are not implemented by this slice.
+Loading does not present stale totals as current. A loaded empty collection shows `AED 0.00` and an empty recent/history explanation. Typed load failures map to safe localized copy and an explicit retry. Approval, authentication, incoming-request masking, and the draggable debug action remain separate feature layers composed above these screens.
 
 ## Verification
 

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
+import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
 import 'package:mamo_payment_approval_challenge/app/payment_flow_layer.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
@@ -18,7 +18,7 @@ class MamoPaymentApprovalApp extends StatefulWidget {
     super.key,
   });
 
-  final GoRouter router;
+  final MamoPaymentRouter router;
   final PaymentsCubit paymentsCubit;
   final DeviceAuthenticator deviceAuthenticator;
 
@@ -69,7 +69,7 @@ class _MamoPaymentApprovalAppState extends State<MamoPaymentApprovalApp>
     return BlocProvider<PaymentsCubit>.value(
       value: widget.paymentsCubit,
       child: MaterialApp.router(
-        routerConfig: widget.router,
+        routerConfig: widget.router.router,
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         darkTheme: AppTheme.dark,
@@ -81,7 +81,7 @@ class _MamoPaymentApprovalAppState extends State<MamoPaymentApprovalApp>
           return AnnotatedRegion<SystemUiOverlayStyle>(
             value: AppTheme.systemUiOverlayStyle(Theme.of(context).colorScheme),
             child: PaymentFlowLayer(
-              router: widget.router,
+              router: widget.router.router,
               authenticator: widget.deviceAuthenticator,
               child: navigator!,
             ),

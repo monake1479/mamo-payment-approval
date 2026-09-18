@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/app.dart';
 import 'package:mamo_payment_approval_challenge/app/config/app_environment.dart';
 import 'package:mamo_payment_approval_challenge/app/di/configure_dependencies.dart';
@@ -8,12 +7,15 @@ import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostic
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
+import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
+import 'package:mamo_payment_approval_challenge/app/platform/app_orientation.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/authentication/device_authenticator.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/cubit/payments_cubit.dart';
 
 Future<void> bootstrap(AppEnvironment environment) async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
+    await configureAppOrientation();
     validateAppEnvironment(environment, appFlavor);
     await configureDependencies(environment);
   } on AppEnvironmentMismatch {
@@ -32,7 +34,7 @@ Future<void> bootstrap(AppEnvironment environment) async {
   configureErrorHandling(getIt<LocalDiagnostics>());
   runApp(
     MamoPaymentApprovalApp(
-      router: getIt<GoRouter>(),
+      router: getIt<MamoPaymentRouter>(),
       paymentsCubit: getIt<PaymentsCubit>(),
       deviceAuthenticator: getIt<DeviceAuthenticator>(),
     ),

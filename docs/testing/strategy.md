@@ -41,7 +41,7 @@ Use widget tests for:
 - masked and revealed content;
 - Approve unavailable before authenticated disclosure and after background remasking, Reject available without authentication, and remasking covering semantics/copyable content without closing the overlay or adding an app-wide lock;
 - debug-action visibility, dragging, and session position;
-- compact and expanded layouts, semantics, loading, empty, error, and success states in both implemented light and dark appearances (`UI-01`).
+- compact and expanded portrait layouts, semantics, loading, empty, error, and success states in both implemented light and dark appearances (`UI-01/02`).
 
 ## Maestro end-to-end tests
 

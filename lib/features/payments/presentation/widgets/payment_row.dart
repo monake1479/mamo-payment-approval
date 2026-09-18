@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/domain/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/presentation/formatters/payment_formatters.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/presentation/widgets/payment_status_badge.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/presentation/widgets/payment_status_chip.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 class PaymentRow extends StatelessWidget {
@@ -59,7 +59,7 @@ class PaymentRow extends StatelessWidget {
                   runSpacing: AppTheme.smallGap,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: <Widget>[
-                    PaymentStatusBadge(status: payment.status),
+                    PaymentStatusChip(status: payment.status),
                     Text(
                       date,
                       style: theme.textTheme.bodyMedium?.copyWith(
