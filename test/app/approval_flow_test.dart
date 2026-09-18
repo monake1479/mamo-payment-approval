@@ -295,6 +295,32 @@ void main() {
     expect(clamped.bottom, lessThanOrEqualTo(284));
   });
 
+  testWidgets('request action uses distinct enabled and disabled colors', (
+    WidgetTester tester,
+  ) async {
+    await pumpApp(tester);
+    final Finder action = find.bySemanticsIdentifier('debug.incomingRequest');
+    final Finder floatingAction = find.descendant(
+      of: action,
+      matching: find.byType(FloatingActionButton),
+    );
+    final ThemeData theme = Theme.of(tester.element(action));
+
+    FloatingActionButton actionWidget = tester.widget<FloatingActionButton>(
+      floatingAction,
+    );
+    expect(actionWidget.backgroundColor, theme.colorScheme.primary);
+    expect(actionWidget.foregroundColor, theme.colorScheme.onPrimary);
+
+    await openRequest(tester);
+    actionWidget = tester.widget<FloatingActionButton>(floatingAction);
+    expect(
+      actionWidget.backgroundColor,
+      theme.colorScheme.surfaceContainerHighest,
+    );
+    expect(actionWidget.foregroundColor, theme.disabledColor);
+  });
+
   testWidgets(
     'default action clears compact navigation but drag uses safe bounds',
     (WidgetTester tester) async {

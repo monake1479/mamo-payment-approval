@@ -73,7 +73,9 @@ device installation or critical-journey checks.
 The baseline deliberately uses an in-memory repository, English-only UI copy,
 fixed AED formatting, and account-zone reporting with `Asia/Dubai`; it does not add
 a backend, persistence, an account settings surface, or a production signing
-configuration. With more time, the next work would be reviewer-approved product
-scope such as a deliberately selected backlog addition, broader physical-device
-authentication coverage, and automated native-journey evidence—not speculative
-framework layers or an authentication bypass.
+configuration. With more time, the next product decision would be whether the
+app should own a PIN or session-expiry policy. Technical follow-up would broaden
+the physical-device authentication matrix and automate native journeys. Backend
+idempotency and durable recovery would become necessary only if this in-memory
+sample were replaced with real payment execution. None of those follow-ups
+requires an authentication bypass.

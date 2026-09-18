@@ -1,8 +1,8 @@
 appId: ${APP_ID}
 name: Verify explicit approval after native authentication
 ---
-- assertVisible: Crescent Supplies
-- assertVisible: AED 125.75
+- assertVisible: Counterparty, Crescent Supplies
+- assertVisible: Amount, AED 125.75
 - assertVisible:
     id: approval.overlay
 - tapOn:
@@ -19,4 +19,14 @@ name: Verify explicit approval after native authentication
     id: payment.details
 - assertVisible:
     id: payment.status.approved
+- tapOn:
+    id: payment.details.back
+- assertVisible:
+    id: payments.page
+- tapOn:
+    id: navigation.destination.home
+- assertVisible:
+    id: home.page
+- assertVisible: AED 1,366.25
+- assertVisible: 2 approved payments
 - takeScreenshot: approval-approved

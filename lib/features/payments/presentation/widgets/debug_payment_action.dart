@@ -23,6 +23,7 @@ class DebugPaymentAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final ThemeData theme = Theme.of(context);
     return BlocBuilder<DebugActionCubit, DebugActionPosition?>(
       bloc: positionCubit,
       builder: (BuildContext context, DebugActionPosition? savedPosition) {
@@ -94,6 +95,12 @@ class DebugPaymentAction extends StatelessWidget {
                         label: l10n.debugIncomingRequestLabel,
                         onTap: enabled ? () => unawaited(onPressed()) : null,
                         child: FloatingActionButton(
+                          backgroundColor: enabled
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.surfaceContainerHighest,
+                          foregroundColor: enabled
+                              ? theme.colorScheme.onPrimary
+                              : theme.disabledColor,
                           onPressed: enabled
                               ? () => unawaited(onPressed())
                               : null,
