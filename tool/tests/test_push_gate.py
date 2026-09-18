@@ -64,6 +64,10 @@ class PushGateTest(unittest.TestCase):
             "command = ' '.join(sys.argv[1:])\n"
             "with open(os.environ['FIXTURE_CALLS'], 'a') as stream:\n"
             "    stream.write(command + '\\n')\n"
+            "if os.environ.get('FIXTURE_REJECT_GIT_CONTEXT') and any(\n"
+            "    key in os.environ for key in ('GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE')\n"
+            "):\n"
+            "    sys.exit(92)\n"
             "if os.environ.get('FIXTURE_MUTATE') == command:\n"
             "    pathlib.Path('source.txt').write_text('changed during checks')\n"
             "sys.exit(1 if os.environ.get('FIXTURE_FAIL') == command else 0)\n"
@@ -369,6 +373,16 @@ class PushGateTest(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.commands()[-1], "flutter test")
         self.assertIsNone(self.records()[1]["base"])
+
+    def test_checks_do_not_inherit_hook_repository_context(self):
+        result = self.gate(extra={
+            "GIT_DIR": str(self.repo / ".git"),
+            "GIT_WORK_TREE": str(self.repo),
+            "GIT_INDEX_FILE": str(self.repo / ".git/index"),
+            "FIXTURE_REJECT_GIT_CONTEXT": "1",
+        })
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.commands()[-1], "flutter test")
 
 
 class TestScopeTest(unittest.TestCase):

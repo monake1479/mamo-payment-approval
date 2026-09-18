@@ -16,7 +16,8 @@ there is no startup controller, fatal-state notifier, or synthetic environment a
 
 ## Failure screen
 
-Normal app composition uses the DI-owned `GoRouter` through `MaterialApp.router`.
+Normal app composition uses the `GoRouter` owned by the DI-registered
+`MamoPaymentRouter` through `MaterialApp.router`.
 The `/` route renders the existing foundation page. Unknown paths reuse the safe
 localized unexpected-error view, never raw route exceptions or URIs. Router
 identity and location survive root rebuilds. `AppFailureApp` renders startup/build
