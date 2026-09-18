@@ -48,7 +48,7 @@ Use separate widget classes for meaningful subtrees. Navigation belongs to app c
 - Authentication: disable duplicate reveal/decision taps while active; cancellation/unavailability keeps masks and offers retry or Reject. No authentication bypass or shipping fake.
 - Submitting: disable decisions and keep overlay until repository success. On failure, keep it open with retry. Successful approval updates canonical state before closing and selecting Payments; rejection updates state before closing over the unchanged route.
 - Background: remask the request and revoke pending disclosure authorization; distinguish native-auth prompt inactivity from actual background. No global lock on resume.
-- Masked recipient: first grapheme followed by four bullets (empty input uses bullets only). Masked amount: `AED ••••.••`, independent of the actual amount's length. Reference stays visible. Semantics and copyable content must not contain the hidden full values.
+- Masked recipient: first grapheme followed by four bullets (empty input uses bullets only). Masked amount: `<currency> ••••.••` (for example `AED ••••.••` for the demo source), independent of the actual amount's length. Reference stays visible. Semantics and copyable content must not contain the hidden full values.
 
 ## Verification
 

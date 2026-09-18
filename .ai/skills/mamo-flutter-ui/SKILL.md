@@ -29,7 +29,7 @@ Get owner agreement for a new visual direction or unresolved behaviour. Implemen
 
 ## Implement against the contract
 
-1. Reuse the [app theme](../../../lib/app/theme/app_theme.dart), [shared motion](../../../lib/app/theme/app_motion.dart), and existing meaningful widget classes. Use [PaymentStatusChip](../../../lib/features/payments/presentation/widgets/payment_status_chip.dart) for payment status and the dedicated dialog/bottom-sheet motion primitives for modal content. Add feature-local components before extracting cross-feature infrastructure; do not create feature-local copies of shared tokens or transitions.
+1. Reuse the [app theme](../../../lib/app/theme/app_theme.dart), [shared motion](../../../lib/app/theme/app_motion.dart), and existing meaningful widget classes. Use [PaymentStatusChip](../../../lib/features/payments/widgets/payment_status_chip.dart) for payment status and the dedicated dialog/bottom-sheet motion primitives for modal content. Add feature-local components before extracting cross-feature infrastructure; do not create feature-local copies of shared tokens or transitions.
 2. Keep repositories/authentication out of widgets. Access providers through context in UI; never pass context into controllers. Add subscriptions at the smallest useful boundary rather than applying selectors or caching mechanically.
 3. Implement every affected state and interaction, then tests. Test explicit failures and repeated actions rather than showing a success-only preview.
 4. Add stable, non-sensitive semantics identifiers for Maestro; widget keys alone are insufficient. Inspect the resulting native tree, including masking. Preserve readable accessible labels rather than speaking test IDs.

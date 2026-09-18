@@ -4,7 +4,7 @@
 
 Every slice is a runnable increment with a PR into `dev`. Verified increments reach `main` through separate promotion PRs from `dev`. PRs link decisions, criteria, tests, and evidence; no implementation goes directly into shared branches.
 
-The committed foundation contains the placeholder app, rules and project skills, native flavors, localization, bootstrap/error handling, router, push tooling, tests, and CI configuration. All payment behaviour below is planned. The accepted system-following light/dark theme and shared UI tokens are implemented on `dev`.
+The committed foundation contains the placeholder app, rules and project skills, native flavors, localization, bootstrap/error handling, router, push tooling, tests, and CI configuration. The payment data/use-case/Cubit slice is implemented locally on its feature branch; payment screens, approval UI, and native authentication remain planned. The accepted system-following light/dark theme and shared UI tokens are implemented on `dev`.
 
 The UI foundation increment added system-following light/dark themes and centralized component/layout tokens and merged into `dev` on 2026-09-18. The owner accepted the [UI contract](product/ui-contract.md) with that merge. The remaining [implementation contracts](architecture/implementation-contract.md) resolve routine decisions under delegated authority and remain subject to owner review. No payment screen is claimed implemented by the theme increment.
 
@@ -13,7 +13,7 @@ An earlier version of the workflow received an [independent audit and targeted c
 | Slice | Scope and criteria | Decisions and evidence |
 |---|---|---|
 | 0. Rules and workflow | `.ai/`, docs, PR template, `dev`, CI; supports `DELIVERY-02` | ADRs 0003/0004; rule/link audit, local gate, CI logs |
-| 1. Read-only payments | Model, deterministic async repository, collection state, decided-payment list; `PAY-01/02`, `MONEY-01` | Resolve remaining money semantics in ADR 0002 and fixture contract; AED-only, pending excluded from history; failures, ordering, loading/empty/error, compact/expanded tests; first Maestro list flow and local Android/iOS harness |
+| 1. Read-only payments | Model, deterministic async repository, collection state, decided-payment list; `PAY-01/02`, `MONEY-01` | ADR 0002 fixes positive finite `double` amounts with at most two decimal places, configurable per-payment currency, same-currency totals, and no client-side maximum; the demo defaults to AED. Pending is excluded from history. Cover failures, ordering, loading/empty/error, compact/expanded layouts, the first Maestro list flow, and local Android/iOS harnesses. |
 | 2. Home and details | Approved-only summary, decided recent payments and details, origin back navigation; `HOME-01..04`, `PAY-03`, `DETAIL-01/02` | Decision time drives ordering and monthly membership in the account reporting zone (demo: `Asia/Dubai`); test pending/rejected exclusion, UTC-converted month boundaries, device-zone independence, navigation, and layout |
 | 3. Incoming request and rejection | Draggable global action, masked non-dismissible overlay, rejection, canonical update; `DEBUG-01..04`, `APPROVAL-01..03/05/07..09`, rejection part of `PAY-04` | One active request, no queue/replacement; agree masks and equal-timestamp tie-breaker; test dismissal blocking, disabled creation, safe drag, origin preservation, duplicate/stale operations |
 | 4. Native authentication and approval | Real adapter, reveal, explicit approve, list navigation; `APPROVAL-04/05/06/08/10`, remaining `PAY-04` | Q9–Q11 accept biometrics/device credentials, authentication before approval, and remasking on actual backgrounding; test native-prompt lifecycle separately from leaving the app, stale completions, cancellation/unavailability, and rejection without authentication; fake contract tests plus native iOS/Android verification; no shipping fake success |
@@ -35,9 +35,11 @@ The local foundation adds `dev`, `staging`, and `prod` on both platforms (ADR 00
 
 ## Runtime foundation increment
 
-`RUNTIME-01..03` add shared bootstrap, manual `get_it` registration per environment,
+`RUNTIME-01..03` add shared bootstrap and one process-wide `get_it` per environment,
 runtime flavor validation, sanitized local diagnostics, and localized startup/build-error
-UI. Scope, state ownership, exclusions, and criterion-to-test mapping are in the
+UI. Runtime-owned values remain manually registered; the implemented shared
+payment data graph uses generated `injectable` lazy-singleton registration under
+ADR 0011. Scope, state ownership, exclusions, and criterion-to-test mapping are in the
 [runtime screen contract](product/runtime-foundation.md) and ADR 0010. No payment
 model or summary policy is encoded. The owner-selected startup is a linear function
 with one process-wide `getIt`, no startup controller, and a stateless app root.
@@ -92,7 +94,7 @@ Run affected journeys with each slice before completion/push. Each implemented c
 
 The slice questions below are historical planning gates resolved for the baseline by the delegated implementation contract unless explicitly marked as an extension or delivery-access dependency. Do not silently reinterpret them as permission to expand the scope.
 
-- Before slice 1: remaining `double` comparison, summation, boundary parsing/validation, and serialization details in ADR 0002. Q12–Q14 settle whole-fils incoming amounts, no business-rounding feature, and fixed English display (`AED 1,234.56`) independent of device locale.
+- Before slice 1: ADR 0002 records the accepted `double` contract: positive finite DTO values with at most two decimal places, typed string conversion, no precision tolerance or client-side maximum, same-currency totals, and fixed English display (for example `AED 1,234.56`) independent of device locale.
 - Before slice 1: the minimum deterministic fixture contract. Pending requests are explicitly excluded from Home/Payments history; tests must prove the filter rather than relying only on decided fixtures.
 - Before slice 2: additional seed scenarios and date formatting. Approved-only membership, decision-time ordering, UTC/ISO 8601 storage, and account-level reporting zone are settled in Q6. The demo uses `Asia/Dubai`; no country/account management UI is required.
 - Before slices 3/4: masks, equal-decision-time tie-breaker, process termination, and backgrounding during an already submitted decision. Q7–Q11 settle non-dismissible approval, one active request without queue/replacement, native credential fallback, authentication before approval, rejection without authentication, and remasking after actual backgrounding without a global app lock.

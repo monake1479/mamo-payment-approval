@@ -16,7 +16,7 @@ Use unit tests for:
 
 - payment status transitions and repeated-action protection;
 - current-month approved-only totals/counts, excluding pending and rejected payments;
-- valid whole-fils `double` amounts and fixed English AED formatting (for example `AED 1,234.56`) independent of device locale; after the remaining ADR 0002 details are agreed, test boundary validation and comparison/summation without visible floating-point artefacts. Do not add a business-rounding feature to cover hypothetical fractional-fils payments;
+- positive finite `double` amounts with at most two decimal places at the DTO boundary; configurable three-letter currencies; no client-side maximum; same-currency approved-only totals; and fixed English formatting such as `AED 1,234.56` independent of device locale. Do not add precision tolerances, hidden minor-unit storage, or a business-rounding feature;
 - pending-request exclusion from Home recent items and Payments history;
 - newest-decision-first history/recent-payment ordering, including older requests decided now; monthly membership by decision time, distinct from creation time;
 - UTC/ISO 8601 round trips; account-zone month/year boundaries (inclusive start, exclusive end); unchanged totals after device-zone changes; alternate IANA zones including a daylight-saving transition to detect a hardcoded Dubai offset;
