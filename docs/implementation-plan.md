@@ -22,7 +22,7 @@ An earlier version of the workflow received an [independent audit and targeted c
 
 Split slices further when useful. Domain/data/state/UI types arrive when the runnable increment needs them. Introduce native CI/build artifacts with platform delivery work.
 
-Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01`). Verify both appearances at compact/expanded widths and with large text as screens arrive. No manual theme selector is included. A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
+Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01/02`). Verify both appearances at compact/expanded portrait widths and with large text as screens arrive. No manual theme selector is included. A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
 
 ## Native foundation increment
 

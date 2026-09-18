@@ -20,16 +20,16 @@ Include the following where affected; mark irrelevant dimensions with a reason:
 - criteria and route entry/exit, including origin-preserving back navigation and overlay placement;
 - state-to-content/action mapping: loading, empty, data, error/retry, and intermediate states such as submitting or refreshing;
 - composition and app-owned colour/spacing/type tokens, with reuse versus new-token rationale;
-- compact/expanded layout behaviour, breakpoint source, orientation/safe areas, long content, large text, and scroll behaviour;
+- compact/expanded portrait layout behaviour, breakpoint source, safe areas, long content, large text, and scroll behaviour; the app is portrait-up only and feature work must not add landscape-specific layouts;
 - controller inputs and outcomes, who owns/disposes it, and which widget listeners perform navigation;
 - readable English copy, semantic labels and identifiers, non-colour status cues, focus, touch targets, and any reduced-motion behaviour;
-- deterministic examples, widget assertions, Maestro checkpoints, and required rendered evidence.
+- deterministic test data, widget assertions, Maestro checkpoints, and required rendered evidence.
 
 Get owner agreement for a new visual direction or unresolved behaviour. Implement routine details within an approved contract without repeated approval requests. A mockup cannot silently override security or accepted product decisions.
 
 ## Implement against the contract
 
-1. Reuse the [app theme](../../../lib/app/theme/app_theme.dart) and existing meaningful widget classes. Add feature-local components before extracting cross-feature infrastructure.
+1. Reuse the [app theme](../../../lib/app/theme/app_theme.dart), [shared motion](../../../lib/app/theme/app_motion.dart), and existing meaningful widget classes. Use [PaymentStatusChip](../../../lib/features/payments/presentation/widgets/payment_status_chip.dart) for payment status and the dedicated dialog/bottom-sheet motion primitives for modal content. Add feature-local components before extracting cross-feature infrastructure; do not create feature-local copies of shared tokens or transitions.
 2. Keep repositories/authentication out of widgets. Access providers through context in UI; never pass context into controllers. Add subscriptions at the smallest useful boundary rather than applying selectors or caching mechanically.
 3. Implement every affected state and interaction, then tests. Test explicit failures and repeated actions rather than showing a success-only preview.
 4. Add stable, non-sensitive semantics identifiers for Maestro; widget keys alone are insufficient. Inspect the resulting native tree, including masking. Preserve readable accessible labels rather than speaking test IDs.
@@ -37,7 +37,7 @@ Get owner agreement for a new visual direction or unresolved behaviour. Implemen
 
 ## Verify rendered behaviour
 
-Use [mamo-verify](../mamo-verify/SKILL.md) and the [Maestro workflow](../../workflows/maestro-e2e.md). Compare the running app against the agreed contract on materially different compact/expanded layouts, relevant orientation/safe-area changes, and large text. A screenshot proves appearance at that checkpoint, not navigation, state transitions, or accessibility behaviour.
+Use [mamo-verify](../mamo-verify/SKILL.md) and the [Maestro workflow](../../workflows/maestro-e2e.md). Compare the running app against the agreed contract on materially different compact/expanded portrait layouts, safe-area changes, and large text. Verify that native and Flutter composition retain the portrait-up lock; do not add landscape review scenarios. A screenshot proves appearance at that checkpoint, not navigation, state transitions, or accessibility behaviour.
 
 Report each material gap with file/location, expected versus observed behaviour, reproduction, and proposed fix. Retest corrected states on the same configurations. If app launch, a device, or an interaction tool is unavailable, identify the unverified dimension; code inspection does not replace rendered evidence.
 

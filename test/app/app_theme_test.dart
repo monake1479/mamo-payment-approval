@@ -4,6 +4,7 @@ import 'package:mamo_payment_approval_challenge/app/app.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_status_colors.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 
 double contrast(Color first, Color second) {
@@ -38,13 +39,51 @@ void main() {
         theme.filledButtonTheme.style!.minimumSize!.resolve(<WidgetState>{}),
         const Size(48, 48),
       );
+      final InputDecorationThemeData fields = theme.inputDecorationTheme;
+      expect(fields.filled, isTrue);
+      expect(
+        (fields.enabledBorder! as OutlineInputBorder).borderRadius,
+        BorderRadius.circular(AppTheme.controlRadius),
+      );
+      expect(
+        (fields.focusedBorder! as OutlineInputBorder).borderSide,
+        BorderSide(color: colors.primary, width: 2),
+      );
+      expect(
+        (fields.focusedErrorBorder! as OutlineInputBorder).borderSide,
+        BorderSide(color: colors.error, width: 2),
+      );
+      expect(theme.chipTheme.shape, isA<RoundedRectangleBorder>());
+      expect(
+        theme.navigationRailTheme.backgroundColor,
+        colors.surfaceContainerLow,
+      );
+      expect(theme.navigationRailTheme.indicatorColor, colors.primaryContainer);
+      expect(theme.dividerTheme.color, colors.outlineVariant);
+      expect(theme.dividerTheme.thickness, 1);
+      expect(theme.snackBarTheme.behavior, SnackBarBehavior.fixed);
+      expect(theme.snackBarTheme.backgroundColor, colors.inverseSurface);
+      final AppStatusColors statusColors = theme.extension<AppStatusColors>()!;
+      expect(
+        contrast(statusColors.infoContainer, statusColors.onInfoContainer),
+        greaterThanOrEqualTo(4.5),
+      );
+      expect(statusColors.infoContainer, isNot(colors.primaryContainer));
+      expect(
+        contrast(
+          statusColors.pendingContainer,
+          statusColors.onPendingContainer,
+        ),
+        greaterThanOrEqualTo(4.5),
+      );
+      expect(statusColors.pendingContainer, isNot(colors.primaryContainer));
     });
   }
 
   for (final Brightness brightness in Brightness.values) {
     for (final Size size in <Size>[
       const Size(320, 640),
-      const Size(1024, 768),
+      const Size(768, 1024),
     ]) {
       testWidgets('system $brightness at $size with enlarged text', (
         tester,

@@ -97,6 +97,7 @@ A payment request contains an identifier, counterparty, amount, reference, creat
 ### Appearance and money display
 
 - `UI-01`: Support light and dark appearances across screens, overlays, and loading/empty/error states, with readable contrast and status cues that do not rely on colour alone.
+- `UI-02`: Run in portrait-up orientation on iOS and Android. Compact phones and expanded portrait tablets remain responsive; landscape layouts are outside the baseline.
 - `MONEY-01`: Use AED exclusively, with incoming amounts expressed to whole fils, and display amounts in the fixed English format `AED 1,234.56` regardless of device locale. Money remains represented as Dart `double`; no business rounding feature is in scope. Remaining technical semantics are tracked in ADR 0002.
 
 ## Product invariants

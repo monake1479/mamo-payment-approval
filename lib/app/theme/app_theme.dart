@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_status_colors.dart';
 
 abstract final class AppTheme {
   static const double compactPadding = 16;
@@ -41,7 +42,24 @@ abstract final class AppTheme {
     final RoundedRectangleBorder controlShape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(controlRadius),
     );
+    final OutlineInputBorder inputBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(controlRadius),
+      borderSide: BorderSide(color: colors.outline),
+    );
+    final AppStatusColors statusColors = AppStatusColors(
+      infoContainer: isDark ? const Color(0xFF17365D) : const Color(0xFFD6E4FF),
+      onInfoContainer: isDark
+          ? const Color(0xFFD6E4FF)
+          : const Color(0xFF001B3E),
+      pendingContainer: isDark
+          ? const Color(0xFF5B4300)
+          : const Color(0xFFFFDEA1),
+      onPendingContainer: isDark
+          ? const Color(0xFFFFDEA1)
+          : const Color(0xFF271900),
+    );
     return base.copyWith(
+      extensions: <ThemeExtension<dynamic>>[statusColors],
       scaffoldBackgroundColor: colors.surface,
       textTheme: base.textTheme.copyWith(
         headlineLarge: base.textTheme.headlineLarge?.copyWith(
@@ -102,10 +120,66 @@ abstract final class AppTheme {
           shape: controlShape,
         ),
       ),
+      inputDecorationTheme: InputDecorationThemeData(
+        filled: true,
+        fillColor: colors.surfaceContainerLow,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: compactPadding,
+          vertical: compactPadding,
+        ),
+        border: inputBorder,
+        enabledBorder: inputBorder,
+        disabledBorder: inputBorder.copyWith(
+          borderSide: BorderSide(color: colors.outlineVariant),
+        ),
+        focusedBorder: inputBorder.copyWith(
+          borderSide: BorderSide(color: colors.primary, width: 2),
+        ),
+        errorBorder: inputBorder.copyWith(
+          borderSide: BorderSide(color: colors.error),
+        ),
+        focusedErrorBorder: inputBorder.copyWith(
+          borderSide: BorderSide(color: colors.error, width: 2),
+        ),
+      ),
+      chipTheme: base.chipTheme.copyWith(
+        backgroundColor: colors.surfaceContainerLow,
+        selectedColor: colors.primaryContainer,
+        disabledColor: colors.surfaceContainerHighest,
+        side: BorderSide(color: colors.outlineVariant),
+        shape: controlShape,
+        padding: const EdgeInsets.symmetric(horizontal: smallGap),
+      ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: colors.surfaceContainerLow,
         indicatorColor: colors.primaryContainer,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      ),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: colors.surfaceContainerLow,
+        indicatorColor: colors.primaryContainer,
+        selectedIconTheme: IconThemeData(color: colors.onPrimaryContainer),
+        unselectedIconTheme: IconThemeData(color: colors.onSurfaceVariant),
+        selectedLabelTextStyle: base.textTheme.labelMedium?.copyWith(
+          color: colors.onSurface,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelTextStyle: base.textTheme.labelMedium?.copyWith(
+          color: colors.onSurfaceVariant,
+        ),
+      ),
+      dividerTheme: DividerThemeData(
+        color: colors.outlineVariant,
+        space: 1,
+        thickness: 1,
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.fixed,
+        backgroundColor: colors.inverseSurface,
+        contentTextStyle: base.textTheme.bodyMedium?.copyWith(
+          color: colors.onInverseSurface,
+        ),
+        actionTextColor: colors.inversePrimary,
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: colors.surfaceContainerLow,

@@ -11,7 +11,7 @@ import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handl
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 void main() {
-  for (final Size size in <Size>[const Size(320, 640), const Size(1024, 768)]) {
+  for (final Size size in <Size>[const Size(320, 640), const Size(768, 1024)]) {
     for (final AppFailureCode code in AppFailureCode.values) {
       testWidgets('$code is localized at $size with large text', (
         tester,
