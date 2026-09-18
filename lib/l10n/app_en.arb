@@ -19,5 +19,11 @@
   "foundationDescription": "The project foundation is ready. The complete payment flow will replace this temporary screen.",
   "@foundationDescription": {
     "description": "Explanation shown until the payment flow is implemented."
-  }
+  },
+  "paymentStatusApproved": "Approved",
+  "@paymentStatusApproved": {"description": "Label for an approved payment."},
+  "paymentStatusPending": "Pending",
+  "@paymentStatusPending": {"description": "Label for a payment awaiting a decision."},
+  "paymentStatusRejected": "Rejected",
+  "@paymentStatusRejected": {"description": "Label for a rejected payment."}
 }

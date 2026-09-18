@@ -4,13 +4,21 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/bootstrap.dart';
 import 'package:mamo_payment_approval_challenge/app/config/app_environment.dart';
 import 'package:mamo_payment_approval_challenge/app/di/configure_dependencies.dart';
 import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostics.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
+import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/data_sources/payments_remote_data_source.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/payments_repository.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/create_payment_request_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/decide_payment_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/load_payments_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/refresh_payments_use_case.dart';
+import 'package:mamo_payment_approval_challenge/mock_backend/payments/mock_payments_backend.dart';
+import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_client.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +31,34 @@ void main() {
       expect(getIt<AppEnvironment>(), environment);
       expect(getIt<LocalDiagnostics>().environment, environment);
       expect(getIt<LocalDiagnostics>(), same(getIt<LocalDiagnostics>()));
-      expect(getIt<GoRouter>(), same(getIt<GoRouter>()));
+      expect(getIt<MamoPaymentRouter>(), same(getIt<MamoPaymentRouter>()));
+      expect(
+        getIt<MamoPaymentRouter>().router,
+        same(getIt<MamoPaymentRouter>().router),
+      );
+      expect(
+        getIt<PaymentsBackendClient>(),
+        same(getIt<PaymentsBackendClient>()),
+      );
+      expect(getIt<PaymentsBackendClient>(), isA<MockPaymentsBackend>());
+      expect(
+        getIt<PaymentsRemoteDataSource>(),
+        same(getIt<PaymentsRemoteDataSource>()),
+      );
+      expect(getIt<PaymentsRepository>(), same(getIt<PaymentsRepository>()));
+      expect(getIt<LoadPaymentsUseCase>(), same(getIt<LoadPaymentsUseCase>()));
+      expect(
+        getIt<CreatePaymentRequestUseCase>(),
+        same(getIt<CreatePaymentRequestUseCase>()),
+      );
+      expect(
+        getIt<DecidePaymentUseCase>(),
+        same(getIt<DecidePaymentUseCase>()),
+      );
+      expect(
+        getIt<RefreshPaymentsUseCase>(),
+        same(getIt<RefreshPaymentsUseCase>()),
+      );
     });
   }
 
@@ -39,13 +74,22 @@ void main() {
   testWidgets('invalid startup shows safe UI before registering dependencies', (
     tester,
   ) async {
+    final TestDefaultBinaryMessenger messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (MethodCall call) async => null,
+    );
+    addTearDown(
+      () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+    );
     final AppEnvironment mismatch = appFlavor == 'dev'
         ? AppEnvironment.prod
         : AppEnvironment.dev;
     await bootstrap(mismatch);
     await tester.pumpAndSettle();
     expect(getIt.isRegistered<AppEnvironment>(), isFalse);
-    expect(getIt.isRegistered<GoRouter>(), isFalse);
+    expect(getIt.isRegistered<MamoPaymentRouter>(), isFalse);
     expect(find.text('Unable to continue'), findsOneWidget);
     expect(find.text('Payment approval'), findsNothing);
   });

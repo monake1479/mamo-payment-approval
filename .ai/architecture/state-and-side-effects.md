@@ -1,6 +1,7 @@
 # State and Side Effects
 
 - Use BLoC/Cubit for business state that spans widgets, screens, or asynchronous work.
+- Keep each feature state concern in its own `states/<state-name>/` directory. The folder name describes the concern without `_cubit` or `_bloc`; the files identify the implementation technology. Use `<name>_cubit.dart` plus `<name>_state.dart` for a Cubit, and `<name>_bloc.dart`, `<name>_event.dart`, plus `<name>_state.dart` for a BLoC. Do not collect unrelated controllers in one feature-level `cubit/` or `bloc/` directory.
 - Use local widget state only for ephemeral visual behaviour with no business meaning.
 - Model idle, in-progress, success, cancellation, and failure states explicitly when an operation can produce them.
 - Keep payment decisions atomic from the UI's perspective. Repeated approve or reject actions must not create duplicate transitions.
