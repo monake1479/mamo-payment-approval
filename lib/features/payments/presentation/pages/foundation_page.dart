@@ -26,10 +26,7 @@ class FoundationPage extends StatelessWidget {
                     const SizedBox(height: AppTheme.sectionGap),
                     Text(
                       l10n.foundationTitle,
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      style: Theme.of(context).textTheme.headlineLarge,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: AppTheme.itemGap),

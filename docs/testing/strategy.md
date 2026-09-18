@@ -15,10 +15,15 @@ For native flavor changes, follow the compilation and packaged-identity checks i
 Use unit tests for:
 
 - payment status transitions and repeated-action protection;
-- current-month totals and rejection exclusion;
-- newest-first and recent-payment ordering;
+- current-month approved-only totals/counts, excluding pending and rejected payments;
+- valid whole-fils `double` amounts and fixed English AED formatting (for example `AED 1,234.56`) independent of device locale; after the remaining ADR 0002 details are agreed, test boundary validation and comparison/summation without visible floating-point artefacts. Do not add a business-rounding feature to cover hypothetical fractional-fils payments;
+- pending-request exclusion from Home recent items and Payments history;
+- newest-decision-first history/recent-payment ordering, including older requests decided now; monthly membership by decision time, distinct from creation time;
+- UTC/ISO 8601 round trips; account-zone month/year boundaries (inclusive start, exclusive end); unchanged totals after device-zone changes; alternate IANA zones including a daylight-saving transition to detect a hardcoded Dubai offset;
 - masking and reveal state;
 - successful, failed, unavailable, and cancelled authentication;
+- approval blocked before authenticated disclosure, authentication alone causing no decision, and rejection requiring no authentication (`APPROVAL-04/05`);
+- actual backgrounding revoking reveal/approval authorization; stale authentication completion after backgrounding or disposal remaining ineffective; fresh authentication restoring disclosure, distinct from transient inactivity caused by the native prompt (`APPROVAL-10`);
 - BLoC/Cubit transitions and stale or repeated actions.
 - Normalization of external error codes and presentation mapping of every concrete failure to `AppLocalizations`, including safe unknown-code fallback and allowlisted parameters. These tests arrive with the first failure-producing operation.
 
@@ -31,16 +36,19 @@ Use widget tests for:
 - navigation back to the originating screen;
 - foundation `go_router` injection, root stack behavior, location retention across rebuilds, and safe unknown-route recovery; startup/build errors render without router initialization;
 - the approval overlay remaining above the active route;
+- outside tap, swipe, and Back leaving the approval overlay/request intact; failed decisions remaining open for recovery;
+- the FAB staying visible but unable to create, queue, or replace a request while another is active;
 - masked and revealed content;
+- Approve unavailable before authenticated disclosure and after background remasking, Reject available without authentication, and remasking covering semantics/copyable content without closing the overlay or adding an app-wide lock;
 - debug-action visibility, dragging, and session position;
-- compact and expanded layouts, semantics, loading, empty, and error states.
+- compact and expanded portrait layouts, semantics, loading, empty, and error states in both light and dark appearances as implemented (`UI-01/02`; the current foundation has only a light placeholder).
 
 ## Maestro end-to-end tests
 
 Keep a small set of critical journeys, introduced with their implementation slices:
 
 1. Generate a request, authenticate, approve, and verify the list and monthly summary.
-2. Generate a request, reject it, and verify return navigation and excluded totals.
+2. Generate a request, reject it without authentication, and verify return navigation and excluded totals.
 3. Navigate between screens and verify the debug action retains its position.
 4. Open decided-payment details from Home and Payments and return to the originating screen.
 
@@ -59,7 +67,9 @@ Use Android emulators and iOS simulators for repeatable local runs, with determi
 
 Keep deterministic authentication fakes in unit/widget tests and exercise the native adapter in full-app journeys. Do not silently bypass authentication for Maestro. Simulator/emulator authentication input, where supported, must be labelled as simulated rather than real-device biometric evidence.
 
-Separately verify real authentication success, cancellation, failure/unavailability, and lifecycle behaviour on iOS and Android devices. Record hardware, OS, setup, and limitations. Current Maestro iOS execution targets simulators; real iOS-device checks are manual. If a native step cannot be automated, report it as manual or blocked, not a passing automated flow. Native fallback and lifecycle policy remain owner decisions.
+Separately verify real authentication success, cancellation, failure/unavailability, and lifecycle behaviour on iOS and Android devices. Cover biometrics and the operating system's device PIN/passcode fallback, including no available credential. Verify that the native prompt's own lifecycle transitions do not invalidate a successful result, while actually switching away remasks the request and prevents a late authentication result from revealing it. Return must preserve the overlay, require fresh authentication for disclosure/approval, and impose no global app lock. Confirm that successful authentication still requires a separate Approve action. These are planned checks for Q9–Q11, not existing coverage.
+
+Record hardware, OS, setup, and limitations without capturing credentials. Current Maestro iOS execution targets simulators; real iOS-device checks are manual. If a native step cannot be automated, report it as manual or blocked, not a passing automated flow. Process termination and backgrounding during an already submitted decision remain owner decisions.
 
 ## Local push tooling
 

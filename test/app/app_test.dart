@@ -45,7 +45,7 @@ void main() {
     });
   }
 
-  for (final Size size in <Size>[const Size(320, 640), const Size(1024, 768)]) {
+  for (final Size size in <Size>[const Size(320, 640), const Size(768, 1024)]) {
     testWidgets('localized foundation fits $size with large text', (
       WidgetTester tester,
     ) async {

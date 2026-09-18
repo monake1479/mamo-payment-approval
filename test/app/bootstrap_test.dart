@@ -43,6 +43,15 @@ void main() {
   testWidgets('invalid startup shows safe UI before registering dependencies', (
     tester,
   ) async {
+    final TestDefaultBinaryMessenger messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(
+      SystemChannels.platform,
+      (MethodCall call) async => null,
+    );
+    addTearDown(
+      () => messenger.setMockMethodCallHandler(SystemChannels.platform, null),
+    );
     final AppEnvironment mismatch = appFlavor == 'dev'
         ? AppEnvironment.prod
         : AppEnvironment.dev;

@@ -24,3 +24,11 @@ Recorded on 2026-09-17. Status: retained for future planning; not implemented an
 - App-entry authentication is distinct from the device authentication required to reveal sensitive payment data under `APPROVAL-04`. A future app PIN must not silently replace that requirement.
 - Before implementation, agree on PIN setup/change/recovery, secure verification/storage, failed-attempt limits, absolute versus inactivity-based expiry, and session behaviour across backgrounding and process restarts.
 - Define locked/expired-session behaviour, accessibility, deterministic clock-based tests, and native end-to-end scenarios with that slice. Do not persist sensitive data or add storage dependencies merely to prepare for it.
+
+## Deferred owner request: pending payments screen
+
+Status: retained for a later increment, not part of the initial payment approval flow.
+
+- Add a dedicated screen for requests still awaiting a decision. Initially, pending requests are visible only in the approval overlay; Home and Payments show decided history.
+- Before implementation, agree on entry/navigation, masking and authentication, reopening a request, ordering, and behaviour across session/process termination.
+- Keep the same authoritative payment collection. This request does not authorize a second store, persistence, or a new status such as processing/settling after approval.

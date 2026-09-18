@@ -5,7 +5,7 @@ This is the routing document for AI-assisted work. Read `AGENTS.md` first, then 
 | Trigger | Required rule |
 |---|---|
 | Any code or documentation change | `.ai/principles/engineering-standards.md` |
-| Requirement ambiguity, architectural decision, dependency choice | `.ai/workflows/decision-gate.md` |
+| Requirement ambiguity, architectural decision, dependency choice | `.ai/workflows/decision-gate.md`; [accepted product Q&A](../docs/product/requirements.md#planning-qa-accepted-decisions) |
 | Architecture, dependency, model, repository, or service change | `.ai/architecture/app-structure.md` |
 | Repository, adapter, validation, or failure handling | `.ai/architecture/failures-and-boundaries.md` |
 | BLoC, Cubit, async work, authentication, or side effect | `.ai/architecture/state-and-side-effects.md` |
@@ -29,7 +29,7 @@ Rules define constraints; skills define how to carry out a matching assignment. 
 | Task | Required skill |
 |---|---|
 | Plan or implement a feature/behavioural fix | [mamo-feature-slice](skills/mamo-feature-slice/SKILL.md) |
-| Specify, implement, or verify visible Flutter UI | [mamo-flutter-ui](skills/mamo-flutter-ui/SKILL.md) |
+| Specify, implement, or verify visible Flutter UI, shared theme, motion, or accessibility | [mamo-flutter-ui](skills/mamo-flutter-ui/SKILL.md) |
 | Select/run tests, verify a change, or close a local quality gate | [mamo-verify](skills/mamo-verify/SKILL.md) |
 | Review local changes or inspect/address PR feedback | [mamo-review-round](skills/mamo-review-round/SKILL.md) |
 
