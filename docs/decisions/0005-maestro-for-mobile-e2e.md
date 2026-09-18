@@ -25,6 +25,13 @@ No Maestro Cloud subscription or additional Dart package is required by this dec
 
 ## Adoption status and verification
 
-This change records the choice and workflow only. No Maestro flows, native E2E runner, or Maestro CI job exist yet. The installed CLI reports version 2.7.0; that is a local observation, not a validated project pin. Pin the version after the first Android/iOS smoke runs succeed.
+Nine repository-owned Maestro flows now cover launch/resume, configuration
+failure, payment history/details, approval rejection/origins, native approval
+preparation/verification, and the draggable action. Source-specific runs have
+been executed locally on Android emulators and iOS simulators, with generated
+evidence retained outside version control. There is still no Maestro CI job, and
+physical-device authentication remains separate owner verification. The
+installed CLI reports version 2.7.0; that is a local observation, not a
+validated project pin.
 
 Verify adoption through the criterion-to-flow map, passing runs on both platforms, retained reports, and the absence of an authentication bypass in reviewer builds.

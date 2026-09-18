@@ -70,6 +70,21 @@ void main() {
         const InvalidPaymentFailure(InvalidPaymentReason.invalidAmount),
       );
     });
+
+    test('invalid payment equality remains reflexive by identity', () {
+      final Payment invalid = _payment(
+        status: PaymentStatus.pending,
+        amount: 1.001,
+      );
+      final Payment distinctInvalid = _payment(
+        status: PaymentStatus.pending,
+        amount: 1.001,
+      );
+
+      expect(invalid == invalid, isTrue);
+      expect(<Payment>{invalid}.contains(invalid), isTrue);
+      expect(invalid == distinctInvalid, isFalse);
+    });
   });
 }
 

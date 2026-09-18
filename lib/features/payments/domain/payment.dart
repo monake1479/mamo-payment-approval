@@ -72,14 +72,15 @@ final class Payment {
 
   @override
   bool operator ==(Object other) {
-    return other is Payment &&
-        other.id == id &&
-        other.counterparty == counterparty &&
-        PaymentMoney.equivalent(other.amount, amount) &&
-        other.reference == reference &&
-        other.createdAt == createdAt &&
-        other.status == status &&
-        other.decidedAt == decidedAt;
+    return identical(this, other) ||
+        other is Payment &&
+            other.id == id &&
+            other.counterparty == counterparty &&
+            PaymentMoney.equivalent(other.amount, amount) &&
+            other.reference == reference &&
+            other.createdAt == createdAt &&
+            other.status == status &&
+            other.decidedAt == decidedAt;
   }
 
   @override

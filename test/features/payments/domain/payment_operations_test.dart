@@ -213,6 +213,23 @@ void main() {
       );
     });
   });
+
+  group('PaymentSummary equality', () {
+    test('invalid summary equality remains reflexive by identity', () {
+      final PaymentSummary invalid = PaymentSummary(
+        approvedAmount: 1.001,
+        approvedCount: 1,
+      );
+      final PaymentSummary distinctInvalid = PaymentSummary(
+        approvedAmount: 1.001,
+        approvedCount: 1,
+      );
+
+      expect(invalid == invalid, isTrue);
+      expect(<PaymentSummary>{invalid}.contains(invalid), isTrue);
+      expect(invalid == distinctInvalid, isFalse);
+    });
+  });
 }
 
 Payment _payment({

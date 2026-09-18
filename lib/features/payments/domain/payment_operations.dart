@@ -20,9 +20,10 @@ final class PaymentSummary {
 
   @override
   bool operator ==(Object other) =>
+      identical(this, other) ||
       other is PaymentSummary &&
-      PaymentMoney.equivalentOrZero(other.approvedAmount, approvedAmount) &&
-      other.approvedCount == approvedCount;
+          PaymentMoney.equivalentOrZero(other.approvedAmount, approvedAmount) &&
+          other.approvedCount == approvedCount;
 
   @override
   int get hashCode =>
