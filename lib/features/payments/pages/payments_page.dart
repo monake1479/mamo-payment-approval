@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
@@ -25,22 +26,32 @@ class PaymentsPage extends StatelessWidget {
       semanticIdentifier: 'payments.page',
       child: BlocBuilder<PaymentsCubit, PaymentsState>(
         builder: (BuildContext context, PaymentsState state) {
-          return switch (state.status) {
-            PaymentsLoadStatus.initial ||
-            PaymentsLoadStatus.loading => const PaymentsLoadingView(),
-            PaymentsLoadStatus.failure => PaymentsErrorView(
-              failure: state.failure!,
-              onRetry: () => unawaited(context.read<PaymentsCubit>().load()),
-            ),
-            PaymentsLoadStatus.success => _PaymentsHistory(
-              payments: state.decidedPayments,
-              reportingTimeZone: state.reportingTimeZone,
-              formatters: PaymentFormatters(
-                reportingTimeZone: state.reportingTimeZone,
+          return AppMotionSwitcher(
+            child: switch (state.status) {
+              PaymentsLoadStatus.initial ||
+              PaymentsLoadStatus.loading => const PaymentsLoadingView(
+                key: ValueKey<PaymentsLoadStatus>(PaymentsLoadStatus.loading),
               ),
-              onOpenPayment: onOpenPayment,
-            ),
-          };
+              PaymentsLoadStatus.failure => PaymentsErrorView(
+                key: const ValueKey<PaymentsLoadStatus>(
+                  PaymentsLoadStatus.failure,
+                ),
+                failure: state.failure!,
+                onRetry: () => unawaited(context.read<PaymentsCubit>().load()),
+              ),
+              PaymentsLoadStatus.success => _PaymentsHistory(
+                key: const ValueKey<PaymentsLoadStatus>(
+                  PaymentsLoadStatus.success,
+                ),
+                payments: state.decidedPayments,
+                reportingTimeZone: state.reportingTimeZone,
+                formatters: PaymentFormatters(
+                  reportingTimeZone: state.reportingTimeZone,
+                ),
+                onOpenPayment: onOpenPayment,
+              ),
+            },
+          );
         },
       ),
     );
@@ -53,6 +64,7 @@ class _PaymentsHistory extends StatelessWidget {
     required this.reportingTimeZone,
     required this.formatters,
     required this.onOpenPayment,
+    super.key,
   });
 
   final List<Payment> payments;

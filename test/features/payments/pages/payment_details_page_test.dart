@@ -5,6 +5,7 @@ import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/pages/payment_details_page.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/widgets/payment_status_chip.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 import '../../../support/payments_test_support.dart';
@@ -13,7 +14,7 @@ void main() {
   for (final Brightness brightness in Brightness.values) {
     for (final Size size in <Size>[
       const Size(320, 640),
-      const Size(1024, 768),
+      const Size(768, 1024),
     ]) {
       testWidgets('renders complete decided details at $size in $brightness', (
         WidgetTester tester,
@@ -50,6 +51,7 @@ void main() {
         expect(find.text(payment.counterparty), findsOneWidget);
         expect(find.text(payment.reference), findsOneWidget);
         expect(find.text('Approved'), findsOneWidget);
+        expect(find.byType(PaymentStatusChip), findsOneWidget);
         await tester.ensureVisible(
           find.bySemanticsIdentifier('payment.details.decided'),
         );

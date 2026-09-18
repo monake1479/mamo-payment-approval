@@ -1,6 +1,6 @@
 # Read-only payment screens
 
-Status: implemented on the feature branch; dependent on the unmerged theme and payments-data ancestors.
+Status: implemented on the feature branch; rebased onto the accepted shared theme and navigation foundation.
 
 ## Behaviour
 
@@ -9,6 +9,7 @@ Status: implemented on the feature branch; dependent on the unmerged theme and p
 - Selecting a row pushes decided-payment details within the active Home or Payments branch, so Back returns to the exact origin.
 - Details resolve the stable identifier against live canonical collection state. Missing, invalid, or pending identifiers show localized safe UI.
 - Compact widths use bottom navigation; widths at or above 720 logical pixels use a rail. Both use the shared light/dark themes and support 200% text without fixed-height payment cards.
+- Shared motion drives indexed Home/Payments switches, pushed details routes, and loading-to-content entrances; reduced-motion settings render final states immediately.
 - The app composition owns initial loading, dependency wiring, account-month refresh on resume, and a root builder reserved for the later approval/debug layer.
 - Date formatting uses `intl` with an explicit English locale after conversion to the account zone; month names are not a second hand-maintained text catalogue.
 

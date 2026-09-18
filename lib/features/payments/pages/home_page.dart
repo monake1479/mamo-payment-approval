@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
@@ -31,19 +32,29 @@ class HomePage extends StatelessWidget {
       semanticIdentifier: 'home.page',
       child: BlocBuilder<PaymentsCubit, PaymentsState>(
         builder: (BuildContext context, PaymentsState state) {
-          return switch (state.status) {
-            PaymentsLoadStatus.initial ||
-            PaymentsLoadStatus.loading => const PaymentsLoadingView(),
-            PaymentsLoadStatus.failure => PaymentsErrorView(
-              failure: state.failure!,
-              onRetry: () => unawaited(context.read<PaymentsCubit>().load()),
-            ),
-            PaymentsLoadStatus.success => _HomeContent(
-              state: state,
-              onOpenPayment: onOpenPayment,
-              onViewAll: onViewAll,
-            ),
-          };
+          return AppMotionSwitcher(
+            child: switch (state.status) {
+              PaymentsLoadStatus.initial ||
+              PaymentsLoadStatus.loading => const PaymentsLoadingView(
+                key: ValueKey<PaymentsLoadStatus>(PaymentsLoadStatus.loading),
+              ),
+              PaymentsLoadStatus.failure => PaymentsErrorView(
+                key: const ValueKey<PaymentsLoadStatus>(
+                  PaymentsLoadStatus.failure,
+                ),
+                failure: state.failure!,
+                onRetry: () => unawaited(context.read<PaymentsCubit>().load()),
+              ),
+              PaymentsLoadStatus.success => _HomeContent(
+                key: const ValueKey<PaymentsLoadStatus>(
+                  PaymentsLoadStatus.success,
+                ),
+                state: state,
+                onOpenPayment: onOpenPayment,
+                onViewAll: onViewAll,
+              ),
+            },
+          );
         },
       ),
     );
@@ -55,6 +66,7 @@ class _HomeContent extends StatelessWidget {
     required this.state,
     required this.onOpenPayment,
     required this.onViewAll,
+    super.key,
   });
 
   final PaymentsState state;
@@ -73,21 +85,25 @@ class _HomeContent extends StatelessWidget {
       key: const PageStorageKey<String>('home.content'),
       padding: const EdgeInsets.only(bottom: AppTheme.sectionGap),
       children: <Widget>[
-        MonthlySummaryCard(
-          amount: formatters.money(
-            state.summary.approvedAmount,
-            state.reportingCurrency,
-          ),
-          approvedCount: state.summary.approvedCount,
-          month: formatters.month(state.reportingPeriodStartUtc),
-          reportingTimeZone: state.reportingTimeZone,
-        ),
-        const SizedBox(height: AppTheme.sectionGap),
-        RecentPaymentsSection(
-          payments: recent,
-          formatters: formatters,
-          onOpenPayment: onOpenPayment,
-          onViewAll: onViewAll,
+        AppStaggeredColumn(
+          spacing: AppTheme.sectionGap,
+          children: <Widget>[
+            MonthlySummaryCard(
+              amount: formatters.money(
+                state.summary.approvedAmount,
+                state.reportingCurrency,
+              ),
+              approvedCount: state.summary.approvedCount,
+              month: formatters.month(state.reportingPeriodStartUtc),
+              reportingTimeZone: state.reportingTimeZone,
+            ),
+            RecentPaymentsSection(
+              payments: recent,
+              formatters: formatters,
+              onOpenPayment: onOpenPayment,
+              onViewAll: onViewAll,
+            ),
+          ],
         ),
       ],
     );

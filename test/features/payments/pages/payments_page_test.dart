@@ -107,6 +107,7 @@ void main() {
         child: PaymentsPage(onOpenPayment: (_) {}),
       ),
     );
+    await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('payments.error'), findsOneWidget);
     await tester.tap(find.text('Try again'));
     await tester.pumpAndSettle();
@@ -123,11 +124,10 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
     addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
-    final StubPaymentsRepository repository = StubPaymentsRepository(
-      onLoad: () async =>
-          PaymentsSuccess<List<Payment>>(<Payment>[approvedPayment()]),
+    final StubPaymentsBackend backend = StubPaymentsBackend(
+      onLoad: () async => <Payment>[approvedPayment()],
     );
-    final PaymentsCubit cubit = createPaymentsCubit(repository);
+    final PaymentsCubit cubit = createPaymentsCubit(backend);
     addTearDown(cubit.close);
     await cubit.load();
 

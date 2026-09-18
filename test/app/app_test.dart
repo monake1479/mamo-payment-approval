@@ -3,8 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mamo_payment_approval_challenge/app/app.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/pages/home_page.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/pages/payment_details_page.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
@@ -94,6 +96,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('payment.details'), findsOneWidget);
+    final BuildContext detailsContext = tester.element(
+      find.byType(PaymentDetailsPage),
+    );
+    expect(ModalRoute.of(detailsContext)!.settings, isA<AppMotionPage<void>>());
     await tester.tap(find.bySemanticsIdentifier('payment.details.back'));
     await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('home.page'), findsOneWidget);
@@ -109,6 +115,34 @@ void main() {
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
+  });
+
+  testWidgets('indexed navigation preserves a branch-local details route', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.bySemanticsIdentifier('payment.row.approved-payment'),
+    );
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payment.details'), findsOneWidget);
+
+    await tester.tap(find.text('Payments'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
+
+    await tester.tap(find.text('Home'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payment.details'), findsOneWidget);
+
+    await tester.tap(find.bySemanticsIdentifier('payment.details.back'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('home.page'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('unknown paths stay safe across rebuilds and can return Home', (

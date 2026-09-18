@@ -4,6 +4,7 @@ import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/formatters/payment_formatters.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/widgets/payment_row.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/widgets/payment_status_chip.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 void main() {
@@ -68,6 +69,7 @@ void main() {
       expect(find.text('A long synthetic counterparty name'), findsOneWidget);
       expect(find.text('AED 1,234.50'), findsOneWidget);
       expect(find.text('Approved'), findsOneWidget);
+      expect(find.byType(PaymentStatusChip), findsOneWidget);
       expect(find.text('02 Sep 2026, 14:00'), findsOneWidget);
       await tester.tap(find.bySemanticsIdentifier('payment.row.payment-1'));
       expect(taps, 1);
@@ -103,5 +105,6 @@ void main() {
     );
     expect(find.text('Rejected'), findsOneWidget);
     expect(find.byIcon(Icons.cancel_outlined), findsOneWidget);
+    expect(find.byType(PaymentStatusChip), findsOneWidget);
   });
 }

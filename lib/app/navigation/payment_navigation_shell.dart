@@ -109,8 +109,8 @@ class PaymentNavigationShell extends StatelessWidget {
   }
 }
 
-class PaymentBranchContainer extends StatefulWidget {
-  const PaymentBranchContainer({
+class PaymentBranchNavigatorContainer extends StatefulWidget {
+  const PaymentBranchNavigatorContainer({
     required this.currentIndex,
     required this.children,
     super.key,
@@ -120,14 +120,16 @@ class PaymentBranchContainer extends StatefulWidget {
   final List<Widget> children;
 
   @override
-  State<PaymentBranchContainer> createState() => _PaymentBranchContainerState();
+  State<PaymentBranchNavigatorContainer> createState() =>
+      _PaymentBranchNavigatorContainerState();
 }
 
-class _PaymentBranchContainerState extends State<PaymentBranchContainer> {
+class _PaymentBranchNavigatorContainerState
+    extends State<PaymentBranchNavigatorContainer> {
   int? _outgoingIndex;
 
   @override
-  void didUpdateWidget(PaymentBranchContainer oldWidget) {
+  void didUpdateWidget(PaymentBranchNavigatorContainer oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.currentIndex != widget.currentIndex) {
       _outgoingIndex = oldWidget.currentIndex;

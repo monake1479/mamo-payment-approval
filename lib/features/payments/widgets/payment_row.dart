@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/payment_status_presentation.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/formatters/payment_formatters.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/payment_status_presentation.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/widgets/payment_status_chip.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
@@ -60,7 +60,10 @@ class PaymentRow extends StatelessWidget {
                   runSpacing: AppTheme.smallGap,
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: <Widget>[
-                    PaymentStatusChip(status: payment.status.visual),
+                    Semantics(
+                      identifier: 'payment.status.${payment.status.name}',
+                      child: PaymentStatusChip(status: payment.status.visual),
+                    ),
                     Text(
                       date,
                       style: theme.textTheme.bodyMedium?.copyWith(

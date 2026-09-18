@@ -13,7 +13,7 @@ void main() {
   for (final Brightness brightness in Brightness.values) {
     for (final Size size in <Size>[
       const Size(320, 640),
-      const Size(1024, 768),
+      const Size(768, 1024),
     ]) {
       testWidgets(
         'renders current summary and recent history at $size $brightness',

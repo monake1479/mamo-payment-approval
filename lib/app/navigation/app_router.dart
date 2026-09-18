@@ -26,7 +26,7 @@ final class MamoPaymentRouter {
             builder: (context, state, navigationShell) =>
                 PaymentNavigationShell(navigationShell: navigationShell),
             navigatorContainerBuilder: (context, navigationShell, children) =>
-                PaymentBranchContainer(
+                PaymentBranchNavigatorContainer(
                   currentIndex: navigationShell.currentIndex,
                   children: children,
                 ),
