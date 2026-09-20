@@ -1,0 +1,128 @@
+name: Android reviewer build
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-reviewer-build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-reviewer-apk:
+    name: Build private reviewer APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out source head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up pinned Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version-file: .fvmrc
+          cache: true
+
+      - name: Verify source and Flutter provenance
+        env:
+          EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          actual_source_sha="$(git rev-parse HEAD)"
+          pinned_flutter_version="$(python3 -c 'import json; print(json.load(open(".fvmrc", encoding="utf-8"))["flutter"])')"
+          actual_flutter_version="$(flutter --version --machine | python3 -c 'import json, sys; print(json.load(sys.stdin)["frameworkVersion"])')"
+          test "$actual_source_sha" = "$EXPECTED_SOURCE_SHA"
+          test "$actual_flutter_version" = "$pinned_flutter_version"
+
+      - name: Install locked dependencies
+        run: flutter pub get --enforce-lockfile
+
+      - name: Generate localizations
+        run: flutter gen-l10n
+
+      - name: Build prod release APK
+        run: flutter build apk --flavor prod -t lib/main_prod.dart --release
+
+      - name: Prepare reviewer package
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          source_apk="build/app/outputs/flutter-apk/app-prod-release.apk"
+          delivery_dir="build/reviewer-delivery"
+          apk_name="mamo-reviewer-prod-release-debug-signed.apk"
+          mkdir -p "$delivery_dir"
+          cp "$source_apk" "$delivery_dir/$apk_name"
+
+          android_sdk_root="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          test -n "$android_sdk_root"
+          apksigner="$(find "$android_sdk_root/build-tools" -type f -name apksigner -print | sort -V | tail -n 1)"
+          test -n "$apksigner"
+          "$apksigner" verify --verbose --print-certs "$delivery_dir/$apk_name" \
+            | tee "$delivery_dir/apk-signature.txt"
+          grep -F "Android Debug" "$delivery_dir/apk-signature.txt"
+
+          badging_tool="$(find "$android_sdk_root/build-tools" -type f -name aapt2 -print | sort -V | tail -n 1)"
+          if [ -z "$badging_tool" ]; then
+            badging_tool="$(find "$android_sdk_root/build-tools" -type f -name aapt -print | sort -V | tail -n 1)"
+          fi
+          test -n "$badging_tool"
+          "$badging_tool" dump badging "$delivery_dir/$apk_name" \
+            | tee "$delivery_dir/apk-metadata.txt"
+          grep -E "(minSdkVersion|sdkVersion):'24'" "$delivery_dir/apk-metadata.txt"
+
+          printf '%s\n' "$SOURCE_SHA" > "$delivery_dir/source-commit.txt"
+          flutter --version > "$delivery_dir/flutter-version.txt"
+          dart --version >> "$delivery_dir/flutter-version.txt" 2>&1
+          (
+            cd "$delivery_dir"
+            sha256sum "$apk_name" > SHA256SUMS.txt
+          )
+          {
+            printf '# Mamo reviewer APK\n\n'
+            printf -- '- Flavor: `prod`\n'
+            printf -- '- Build mode: `release`\n'
+            printf -- '- Signing: Android debug key generated for this CI runner; not store-ready or production-signed\n'
+            printf -- '- Source commit: `%s`\n\n' "$SOURCE_SHA"
+            printf '1. Download this private Actions artifact and extract the ZIP.\n'
+            printf '2. Optionally verify the APK with `sha256sum -c SHA256SUMS.txt`.\n'
+            printf '3. Transfer `%s` to an Android API 24+ phone.\n' "$apk_name"
+            printf '4. Open the APK on the phone and approve installation from that file source when Android asks.\n'
+            printf '5. Launch **Mamo**.\n\n'
+            printf 'As an optional developer path, install with `adb install -r %s`.\n' "$apk_name"
+            printf 'This runner uses an ephemeral debug key that can differ between builds. If Android reports a signature conflict, manually uninstall the existing challenge app in Android settings and retry; uninstalling resets its demo session data. Do not automate uninstall on a personal device.\n'
+            printf 'Repository access is required to download the artifact. It expires after 30 days.\n'
+          } > "$delivery_dir/README.md"
+
+      - name: Upload private reviewer artifact
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: mamo-reviewer-apk-${{ github.run_id }}-${{ github.run_attempt }}
+          path: build/reviewer-delivery/
+          retention-days: 30
+          if-no-files-found: error
+          compression-level: 0
+
+      - name: Publish run summary
+        env:
+          ARTIFACT_URL: ${{ steps.upload.outputs.artifact-url }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          {
+            printf '## Private Android reviewer build\n\n'
+            printf -- '- [Download artifact](%s) (repository access required)\n' "$ARTIFACT_URL"
+            printf -- '- Source commit: `%s`\n' "$SOURCE_SHA"
+            printf -- '- Variant: `prodRelease`, release mode, debug-key signed\n'
+            printf -- '- Retention: 30 days\n'
+          } >> "$GITHUB_STEP_SUMMARY"
