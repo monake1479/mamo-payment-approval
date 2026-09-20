@@ -1,0 +1,38 @@
+appId: ${APP_ID}
+name: Decided payments list and monthly summary
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: home.page
+- assertVisible:
+    id: home.summary.amount
+- assertVisible:
+    id: home.summary.count
+- assertVisible:
+    id: payment.row.seed-approved-current
+- swipe:
+    direction: LEFT
+    duration: 400
+- assertVisible:
+    id: payments.page
+- assertVisible:
+    id: payments.reportingTimeZone
+- assertVisible:
+    id: payment.row.seed-approved-current
+- assertVisible:
+    id: payment.row.seed-rejected-current
+- scrollUntilVisible:
+    element:
+      id: payment.row.seed-approved-previous
+    direction: DOWN
+- assertVisible:
+    id: payment.row.seed-approved-previous
+- assertNotVisible:
+    id: payment.status.pending
+- takeScreenshot: decided-payments
+- swipe:
+    direction: RIGHT
+    duration: 400
+- assertVisible:
+    id: home.page

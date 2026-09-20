@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_status_colors.dart';
 
 abstract final class AppTheme {
@@ -16,6 +18,18 @@ abstract final class AppTheme {
 
   static ThemeData get light => _create(Brightness.light);
   static ThemeData get dark => _create(Brightness.dark);
+
+  static SystemUiOverlayStyle systemUiOverlayStyle(ColorScheme colors) {
+    final Brightness backgroundBrightness =
+        ThemeData.estimateBrightnessForColor(colors.surface);
+    return SystemUiOverlayStyle(
+      statusBarColor: colors.surface,
+      statusBarBrightness: backgroundBrightness,
+      statusBarIconBrightness: backgroundBrightness == Brightness.dark
+          ? Brightness.light
+          : Brightness.dark,
+    );
+  }
 
   static ThemeData _create(Brightness brightness) {
     final bool isDark = brightness == Brightness.dark;
@@ -60,6 +74,16 @@ abstract final class AppTheme {
     );
     return base.copyWith(
       extensions: <ThemeExtension<dynamic>>[statusColors],
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: <TargetPlatform, PageTransitionsBuilder>{
+          TargetPlatform.android: AppPageTransitionsBuilder(),
+          TargetPlatform.fuchsia: AppPageTransitionsBuilder(),
+          TargetPlatform.iOS: AppCupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: AppCupertinoPageTransitionsBuilder(),
+          TargetPlatform.linux: AppPageTransitionsBuilder(),
+          TargetPlatform.windows: AppPageTransitionsBuilder(),
+        },
+      ),
       scaffoldBackgroundColor: colors.surface,
       textTheme: base.textTheme.copyWith(
         headlineLarge: base.textTheme.headlineLarge?.copyWith(
@@ -81,6 +105,7 @@ abstract final class AppTheme {
         backgroundColor: colors.surface,
         foregroundColor: colors.onSurface,
         surfaceTintColor: Colors.transparent,
+        systemOverlayStyle: systemUiOverlayStyle(colors),
         elevation: 0,
         centerTitle: false,
       ),

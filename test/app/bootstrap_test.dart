@@ -19,6 +19,7 @@ import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/c
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/decide_payment_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/load_payments_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/refresh_payments_use_case.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
 import 'package:mamo_payment_approval_challenge/mock_backend/payments/mock_payments_backend.dart';
 import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_client.dart';
 
@@ -63,6 +64,7 @@ void main() {
       );
       expect(getIt<DeviceAuthenticator>(), same(getIt<DeviceAuthenticator>()));
       expect(getIt<DeviceAuthenticator>(), isA<LocalAuthDeviceAuthenticator>());
+      expect(getIt<PaymentsCubit>(), same(getIt<PaymentsCubit>()));
     });
   }
 
@@ -94,8 +96,9 @@ void main() {
     await tester.pumpAndSettle();
     expect(getIt.isRegistered<AppEnvironment>(), isFalse);
     expect(getIt.isRegistered<MamoPaymentRouter>(), isFalse);
+    expect(getIt.isRegistered<PaymentsCubit>(), isFalse);
     expect(find.text('Unable to continue'), findsOneWidget);
-    expect(find.text('Payment approval'), findsNothing);
+    expect(find.text('Home'), findsNothing);
   });
 
   test('framework and platform handlers log safely without navigating', () {

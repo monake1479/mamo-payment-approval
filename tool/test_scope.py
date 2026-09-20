@@ -5,6 +5,19 @@ from pathlib import Path
 
 # Include every consumer test, not just a same-named unit test. Extend this map
 # alongside each vertical slice; CI remains the full-suite safety net.
+PAYMENTS_UI_TESTS = [
+    "test/app/app_test.dart",
+    "test/app/app_theme_test.dart",
+    "test/app/bootstrap_test.dart",
+    "test/app/payment_navigation_shell_test.dart",
+    "test/features/payments/formatters/payment_formatters_test.dart",
+    "test/features/payments/pages/home_page_test.dart",
+    "test/features/payments/pages/payment_details_page_test.dart",
+    "test/features/payments/pages/payments_page_test.dart",
+    "test/features/payments/widgets/payment_row_test.dart",
+    "test/features/payments/widgets/payment_state_views_test.dart",
+]
+
 FLUTTER_TESTS = {
     "lib/common/data/device_authentication/device_authenticator.dart": [
         "test/app/bootstrap_test.dart",
@@ -36,31 +49,38 @@ FLUTTER_TESTS = {
         "test/common/data/payments/payments_repository_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/mock_backend/payments/mock_payments_backend.dart": [
         "test/mock_backend/payments/mock_payments_backend_test.dart",
         "test/common/data/payments/payments_repository_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/mock_backend/payments/payments_backend_client.dart": [
         "test/app/bootstrap_test.dart",
         "test/mock_backend/payments/mock_payments_backend_test.dart",
         "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/mock_backend/payments/payments_backend_exception.dart": [
         "test/mock_backend/payments/mock_payments_backend_test.dart",
         "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/dtos/payment_dto.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
         "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/converters/payment_amount_json_converter.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/converters/utc_datetime_json_converter.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/models/payment.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
@@ -69,20 +89,24 @@ FLUTTER_TESTS = {
         "test/common/data/payments/models/payments_collection_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/models/payments_collection.dart": [
         "test/common/data/payments/models/payments_collection_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/models/payment_mutation.dart": [
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/models/payment_summary.dart": [
         "test/common/data/payments/models/payments_collection_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/error_handling/payments_failure.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
@@ -90,6 +114,7 @@ FLUTTER_TESTS = {
         "test/common/data/payments/payments_repository_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/result/models/result.dart": [
         "test/common/result/models/result_test.dart",
@@ -97,43 +122,63 @@ FLUTTER_TESTS = {
         "test/common/data/payments/payments_repository_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/result/models/unit.dart": [
         "test/common/result/models/result_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/payments_repository.dart": [
         "test/common/data/payments/payments_repository_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/use_cases/create_payment_request_use_case.dart": [
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/use_cases/decide_payment_use_case.dart": [
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/use_cases/load_payments_use_case.dart": [
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/use_cases/refresh_payments_use_case.dart": [
         "test/app/bootstrap_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/features/payments/states/payments/payments_cubit.dart": [
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
     "lib/features/payments/states/payments/payments_state.dart": [
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *PAYMENTS_UI_TESTS,
     ],
-    "lib/features/payments/pages/foundation_page.dart": [
-        "test/app/app_failure_view_test.dart",
-        "test/app/app_test.dart",
-        "test/app/app_theme_test.dart",
-    ],
+    "lib/app/app.dart": PAYMENTS_UI_TESTS,
+    "lib/app/bootstrap.dart": PAYMENTS_UI_TESTS,
+    "lib/app/di/configure_dependencies.dart": PAYMENTS_UI_TESTS,
+    "lib/app/navigation/app_router.dart": PAYMENTS_UI_TESTS,
+    "lib/app/navigation/payment_navigation_shell.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/payment_status_presentation.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/formatters/payment_formatters.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/pages/home_page.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/pages/payment_details_page.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/pages/payments_page.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/widgets/monthly_summary_card.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/widgets/payment_detail_field.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/widgets/payment_page_scaffold.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/widgets/payment_row.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/widgets/payment_state_views.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/widgets/recent_payments_section.dart": PAYMENTS_UI_TESTS,
 }
 
 for generated, source in {

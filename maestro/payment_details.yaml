@@ -1,0 +1,43 @@
+appId: ${APP_ID}
+name: Payment details preserve Home and Payments origins
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: payment.row.seed-approved-current
+- assertVisible:
+    id: payment.details
+- assertNotVisible:
+    id: navigation.compact
+- assertVisible:
+    id: payment.details.reference
+- assertVisible:
+    id: payment.details.amount
+- assertVisible:
+    id: payment.status.approved
+- takeScreenshot: payment-details-home
+- tapOn:
+    id: payment.details.back
+- assertVisible:
+    id: home.page
+- tapOn:
+    id: navigation.destination.payments
+- assertVisible:
+    id: payments.page
+- tapOn:
+    id: payment.row.seed-rejected-current
+- assertVisible:
+    id: payment.details
+- assertNotVisible:
+    id: navigation.compact
+- assertVisible:
+    id: payment.details.reference
+- assertVisible:
+    id: payment.details.amount
+- assertVisible:
+    id: payment.status.rejected
+- takeScreenshot: payment-details-payments
+- back
+- assertVisible:
+    id: payments.page
+- takeScreenshot: payment-details-origins

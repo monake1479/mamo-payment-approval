@@ -1,0 +1,25 @@
+appId: ${APP_ID}
+name: System Back returns to the Home start destination
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: home.page
+# Reached Payments through the Home "View all" action.
+- tapOn:
+    id: home.viewAllPayments
+- assertVisible:
+    id: payments.page
+- back
+- assertVisible:
+    id: home.page
+- takeScreenshot: back-from-view-all
+# Reached Payments through the navigation control.
+- tapOn:
+    id: navigation.destination.payments
+- assertVisible:
+    id: payments.page
+- back
+- assertVisible:
+    id: home.page
+- takeScreenshot: back-from-nav-control
