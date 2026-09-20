@@ -19,6 +19,23 @@ class PaymentNavigationShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    // Branch switches (nav controls, swipe, or "View all") do not push a route,
+    // so a system Back on a secondary destination would otherwise leave the app.
+    // Return to Home first — the standard "back to the start destination"
+    // pattern — and only let Back exit once Home is showing.
+    return PopScope<Object?>(
+      canPop: navigationShell.currentIndex == 0,
+      onPopInvokedWithResult: (bool didPop, Object? result) {
+        if (didPop) {
+          return;
+        }
+        _selectDestination(0);
+      },
+      child: _buildShell(context, l10n),
+    );
+  }
+
+  Widget _buildShell(BuildContext context, AppLocalizations l10n) {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         if (constraints.maxWidth >= AppTheme.expandedBreakpoint) {
@@ -112,11 +129,13 @@ class PaymentNavigationShell extends StatelessWidget {
 class PaymentBranchNavigatorContainer extends StatefulWidget {
   const PaymentBranchNavigatorContainer({
     required this.currentIndex,
+    required this.onDestinationSelected,
     required this.children,
     super.key,
   });
 
   final int currentIndex;
+  final ValueChanged<int> onDestinationSelected;
   final List<Widget> children;
 
   @override
@@ -126,49 +145,87 @@ class PaymentBranchNavigatorContainer extends StatefulWidget {
 
 class _PaymentBranchNavigatorContainerState
     extends State<PaymentBranchNavigatorContainer> {
-  int? _outgoingIndex;
+  late List<int> _activationCounts = List<int>.filled(
+    widget.children.length,
+    0,
+  );
+  int? _transitionTarget;
+
+  /// Index the pager is leaving. Kept alive until the transition settles so the
+  /// outgoing surface stays fully painted while it slides off screen instead of
+  /// snapping to its pre-entrance (hidden) state once [currentIndex] commits to
+  /// the destination at the half-way point.
+  int? _transitionOrigin;
 
   @override
   void didUpdateWidget(PaymentBranchNavigatorContainer oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (_activationCounts.length != widget.children.length) {
+      _activationCounts = List<int>.generate(
+        widget.children.length,
+        (int index) =>
+            index < _activationCounts.length ? _activationCounts[index] : 0,
+      );
+    }
     if (oldWidget.currentIndex != widget.currentIndex) {
-      _outgoingIndex = oldWidget.currentIndex;
+      if (_transitionTarget != widget.currentIndex) {
+        _activationCounts[widget.currentIndex] += 1;
+      }
+      _transitionOrigin ??= oldWidget.currentIndex;
+      _transitionTarget = widget.currentIndex;
     }
   }
 
-  void _completeTransition() {
-    if (mounted && _outgoingIndex != null) {
-      setState(() => _outgoingIndex = null);
+  void _startTransition(int targetIndex) {
+    if (_transitionTarget == targetIndex || !mounted) {
+      return;
+    }
+    setState(() {
+      _transitionOrigin ??= widget.currentIndex;
+      _transitionTarget = targetIndex;
+      _activationCounts[targetIndex] += 1;
+    });
+  }
+
+  void _completeTransition(int settledIndex) {
+    if (mounted && (_transitionTarget != null || _transitionOrigin != null)) {
+      setState(() {
+        _transitionTarget = null;
+        _transitionOrigin = null;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool animationsDisabled = MediaQuery.disableAnimationsOf(context);
-    if (animationsDisabled) {
-      _outgoingIndex = null;
-    }
-    final int direction =
-        _outgoingIndex == null || widget.currentIndex >= _outgoingIndex!
-        ? 1
-        : -1;
-    return Stack(
-      fit: StackFit.expand,
+    return AppPageTransitionSwitcher(
+      currentIndex: widget.currentIndex,
+      onPageChanged: widget.onDestinationSelected,
+      onTransitionStarted: _startTransition,
+      onTransitionCompleted: _completeTransition,
       children: <Widget>[
         for (final (int index, Widget child) in widget.children.indexed)
-          if (index != widget.currentIndex && index != _outgoingIndex)
-            Offstage(child: child),
-        AppPageTransitionSwitcher(
-          direction: direction,
-          onTransitionCompleted: _completeTransition,
-          child: KeyedSubtree(
-            key: ValueKey<int>(widget.currentIndex),
-            child: widget.children[widget.currentIndex],
+          _motionScope(
+            index,
+            child,
+            startAnimation:
+                index == widget.currentIndex ||
+                index == _transitionTarget ||
+                index == _transitionOrigin,
           ),
-        ),
       ],
     );
   }
+
+  Widget _motionScope(
+    int index,
+    Widget child, {
+    required bool startAnimation,
+  }) => AppIndexedPageMotionScope(
+    activation: _activationCounts[index],
+    startAnimation: startAnimation,
+    child: child,
+  );
 }
 
 class _DestinationIcon extends StatelessWidget {

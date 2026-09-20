@@ -7,6 +7,8 @@ name: Payment details preserve Home and Payments origins
     id: payment.row.seed-approved-current
 - assertVisible:
     id: payment.details
+- assertNotVisible:
+    id: navigation.compact
 - assertVisible:
     id: payment.details.reference
 - assertVisible:
@@ -26,6 +28,8 @@ name: Payment details preserve Home and Payments origins
     id: payment.row.seed-rejected-current
 - assertVisible:
     id: payment.details
+- assertNotVisible:
+    id: navigation.compact
 - assertVisible:
     id: payment.details.reference
 - assertVisible:
@@ -33,8 +37,7 @@ name: Payment details preserve Home and Payments origins
 - assertVisible:
     id: payment.status.rejected
 - takeScreenshot: payment-details-payments
-- tapOn:
-    id: payment.details.back
+- back
 - assertVisible:
     id: payments.page
 - takeScreenshot: payment-details-origins

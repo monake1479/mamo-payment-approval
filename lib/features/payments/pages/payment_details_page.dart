@@ -98,7 +98,8 @@ class _PaymentDetailsContent extends StatelessWidget {
             constraints.maxWidth >= AppTheme.expandedBreakpoint
             ? AppTheme.pagePadding
             : AppTheme.compactPadding;
-        return Center(
+        return Align(
+          alignment: Alignment.topCenter,
           child: ConstrainedBox(
             constraints: const BoxConstraints(
               maxWidth: AppTheme.expandedContentWidth,
@@ -112,46 +113,24 @@ class _PaymentDetailsContent extends StatelessWidget {
               ),
               child: Semantics(
                 identifier: 'payment.details',
-                child: AppStaggeredColumn(
+                child: AppPageStaggeredColumn(
                   spacing: AppTheme.sectionGap,
                   children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: <Widget>[
-                        Text(
-                          l10n.statusLabel,
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
+                    Semantics(
+                      identifier: 'payment.details.amount',
+                      child: Text(
+                        formatters.money(
+                          resolvedPayment.amount,
+                          resolvedPayment.currency,
                         ),
-                        const SizedBox(height: AppTheme.smallGap),
-                        Align(
-                          alignment: AlignmentDirectional.centerStart,
-                          child: Semantics(
-                            identifier:
-                                'payment.status.${resolvedPayment.status.name}',
-                            child: PaymentStatusChip(
-                              status: resolvedPayment.status.visual,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: AppTheme.itemGap),
-                        Semantics(
-                          identifier: 'payment.details.amount',
-                          child: Text(
-                            formatters.money(
-                              resolvedPayment.amount,
-                              resolvedPayment.currency,
-                            ),
-                            style: theme.textTheme.headlineLarge,
-                          ),
-                        ),
-                      ],
+                        style: theme.textTheme.headlineLarge,
+                      ),
                     ),
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(AppTheme.compactPadding),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: <Widget>[
                             PaymentDetailField(
                               icon: Icons.business_outlined,
@@ -159,6 +138,24 @@ class _PaymentDetailsContent extends StatelessWidget {
                               value: resolvedPayment.counterparty,
                               semanticIdentifier:
                                   'payment.details.counterparty',
+                            ),
+                            const SizedBox(height: AppTheme.sectionGap),
+                            Text(
+                              l10n.statusLabel,
+                              style: theme.textTheme.labelLarge?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: AppTheme.smallGap),
+                            Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: Semantics(
+                                identifier:
+                                    'payment.status.${resolvedPayment.status.name}',
+                                child: PaymentStatusChip(
+                                  status: resolvedPayment.status.visual,
+                                ),
+                              ),
                             ),
                             const SizedBox(height: AppTheme.sectionGap),
                             PaymentDetailField(

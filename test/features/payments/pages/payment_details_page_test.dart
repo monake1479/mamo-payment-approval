@@ -52,6 +52,25 @@ void main() {
         expect(find.text(payment.reference), findsOneWidget);
         expect(find.text('Approved'), findsOneWidget);
         expect(find.byType(PaymentStatusChip), findsOneWidget);
+        expect(
+          find.ancestor(
+            of: find.bySemanticsIdentifier('payment.status.approved'),
+            matching: find.byType(Card),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          tester
+              .getTopLeft(find.bySemanticsIdentifier('payment.status.approved'))
+              .dy,
+          greaterThan(
+            tester
+                .getTopLeft(
+                  find.bySemanticsIdentifier('payment.details.counterparty'),
+                )
+                .dy,
+          ),
+        );
         await tester.ensureVisible(
           find.bySemanticsIdentifier('payment.details.decided'),
         );
@@ -59,6 +78,38 @@ void main() {
       });
     }
   }
+
+  testWidgets('anchors decided details at the top of the page', (
+    WidgetTester tester,
+  ) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    final Payment payment = approvedPayment();
+    final StubPaymentsBackend backend = StubPaymentsBackend(
+      onLoad: () async => <Payment>[payment],
+    );
+    final PaymentsCubit cubit = createPaymentsCubit(backend);
+    addTearDown(cubit.close);
+    await cubit.load();
+
+    await tester.pumpWidget(
+      _DetailsTestApp(
+        brightness: Brightness.light,
+        cubit: cubit,
+        child: PaymentDetailsPage(paymentId: payment.id),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final double bodyTop = tester.getBottomLeft(find.byType(AppBar)).dy;
+    final double detailsTop = tester
+        .getTopLeft(find.bySemanticsIdentifier('payment.details'))
+        .dy;
+    expect(detailsTop, closeTo(bodyTop + AppTheme.sectionGap, 0.1));
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('resolves details from the latest canonical collection state', (
     WidgetTester tester,

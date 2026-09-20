@@ -33,7 +33,7 @@ Use widget tests for:
 
 - generated localization wiring, English/regional-English locale resolution, unsupported-locale fallback, localized application title, and compact/expanded foundation rendering with large text;
 - home, list, details, and overlay states;
-- navigation back to the originating screen;
+- direct-manipulation Home/Payments dragging, settling, and navigation-control transitions at compact and expanded widths; system Back from the Payments destination returning to the Home start destination; full-screen details without shell navigation; and in-app, system, and iOS edge-gesture Back to the originating screen;
 - foundation `go_router` injection, root stack behavior, location retention across rebuilds, and safe unknown-route recovery; startup/build errors render without router initialization;
 - the approval overlay remaining above the active route;
 - outside tap, swipe, and Back leaving the approval overlay/request intact; failed decisions remaining open for recovery;
@@ -42,6 +42,7 @@ Use widget tests for:
 - Approve unavailable before authenticated disclosure and after background remasking, Reject available without authentication, and remasking covering semantics/copyable content without closing the overlay or adding an app-wide lock;
 - debug-action visibility, dragging, and session position;
 - compact and expanded portrait layouts, semantics, loading, empty, and error states in both light and dark appearances as implemented (`UI-01/02`).
+- loading-to-data, indexed Home/Payments entry, and pushed-detail entrance timing, including immediate final content when reduced motion is requested and no replay for ordinary collection rebuilds.
 
 ## Maestro end-to-end tests
 
@@ -50,7 +51,7 @@ Keep a small set of critical journeys, introduced with their implementation slic
 1. Generate a request, authenticate, approve, and verify the list and monthly summary.
 2. Generate a request, reject it without authentication, and verify return navigation and excluded totals.
 3. Navigate between screens and verify the debug action retains its position.
-4. Open decided-payment details from Home and Payments and return to the originating screen.
+4. Switch between Home and Payments by horizontal swipe, open decided-payment details from both origins without shell navigation, and return through in-app and system Back.
 
 The runtime foundation adds `maestro/foundation.yaml` (normal launch and resume,
 `RUNTIME-01/03`) and `maestro/configuration_failure.yaml` (safe mismatched-flavor

@@ -11,9 +11,8 @@ import 'package:mamo_payment_approval_challenge/features/payments/pages/payments
 
 abstract final class AppRoutes {
   static const String home = 'home';
-  static const String homePayment = 'home-payment';
   static const String payments = 'payments';
-  static const String paymentsPayment = 'payments-payment';
+  static const String paymentDetails = 'payment-details';
 }
 
 final class MamoPaymentRouter {
@@ -22,16 +21,30 @@ final class MamoPaymentRouter {
         initialLocation: '/home',
         routes: <RouteBase>[
           GoRoute(path: '/', redirect: (context, state) => '/home'),
+          GoRoute(
+            path: '/payments/payment/:paymentId',
+            name: AppRoutes.paymentDetails,
+            pageBuilder: (context, state) => AppMotionPage<void>(
+              key: state.pageKey,
+              name: state.name,
+              child: PaymentDetailsPage(
+                paymentId: state.pathParameters['paymentId'] ?? '',
+              ),
+            ),
+          ),
           StatefulShellRoute(
             builder: (context, state, navigationShell) =>
                 PaymentNavigationShell(navigationShell: navigationShell),
             navigatorContainerBuilder: (context, navigationShell, children) =>
                 PaymentBranchNavigatorContainer(
                   currentIndex: navigationShell.currentIndex,
+                  onDestinationSelected: (int index) =>
+                      navigationShell.goBranch(index),
                   children: children,
                 ),
             branches: <StatefulShellBranch>[
               StatefulShellBranch(
+                preload: true,
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/home',
@@ -39,7 +52,7 @@ final class MamoPaymentRouter {
                     builder: (context, state) => HomePage(
                       onOpenPayment: (String paymentId) => unawaited(
                         context.pushNamed(
-                          AppRoutes.homePayment,
+                          AppRoutes.paymentDetails,
                           pathParameters: <String, String>{
                             'paymentId': paymentId,
                           },
@@ -47,24 +60,11 @@ final class MamoPaymentRouter {
                       ),
                       onViewAll: () => context.goNamed(AppRoutes.payments),
                     ),
-                    routes: <RouteBase>[
-                      GoRoute(
-                        path: 'payment/:paymentId',
-                        name: AppRoutes.homePayment,
-                        pageBuilder: (context, state) => AppMotionPage<void>(
-                          context: context,
-                          key: state.pageKey,
-                          name: state.name,
-                          child: PaymentDetailsPage(
-                            paymentId: state.pathParameters['paymentId'] ?? '',
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
               StatefulShellBranch(
+                preload: true,
                 routes: <RouteBase>[
                   GoRoute(
                     path: '/payments',
@@ -72,27 +72,13 @@ final class MamoPaymentRouter {
                     builder: (context, state) => PaymentsPage(
                       onOpenPayment: (String paymentId) => unawaited(
                         context.pushNamed(
-                          AppRoutes.paymentsPayment,
+                          AppRoutes.paymentDetails,
                           pathParameters: <String, String>{
                             'paymentId': paymentId,
                           },
                         ),
                       ),
                     ),
-                    routes: <RouteBase>[
-                      GoRoute(
-                        path: 'payment/:paymentId',
-                        name: AppRoutes.paymentsPayment,
-                        pageBuilder: (context, state) => AppMotionPage<void>(
-                          context: context,
-                          key: state.pageKey,
-                          name: state.name,
-                          child: PaymentDetailsPage(
-                            paymentId: state.pathParameters['paymentId'] ?? '',
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),

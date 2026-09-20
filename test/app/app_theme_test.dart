@@ -5,6 +5,7 @@ import 'package:mamo_payment_approval_challenge/app/app.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_status_colors.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
@@ -93,6 +94,14 @@ void main() {
             : Brightness.dark,
       );
       expect(theme.appBarTheme.systemOverlayStyle, systemUiStyle);
+      expect(
+        theme.pageTransitionsTheme.builders[TargetPlatform.android],
+        isA<AppPageTransitionsBuilder>(),
+      );
+      expect(
+        theme.pageTransitionsTheme.builders[TargetPlatform.iOS],
+        isA<AppCupertinoPageTransitionsBuilder>(),
+      );
     });
   }
 

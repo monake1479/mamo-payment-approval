@@ -11,8 +11,9 @@ name: Decided payments list and monthly summary
     id: home.summary.count
 - assertVisible:
     id: payment.row.seed-approved-current
-- tapOn:
-    id: navigation.destination.payments
+- swipe:
+    direction: LEFT
+    duration: 400
 - assertVisible:
     id: payments.page
 - assertVisible:
@@ -30,3 +31,8 @@ name: Decided payments list and monthly summary
 - assertNotVisible:
     id: payment.status.pending
 - takeScreenshot: decided-payments
+- swipe:
+    direction: RIGHT
+    duration: 400
+- assertVisible:
+    id: home.page

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/pages/payments_page.dart';
@@ -113,6 +114,56 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('payments.empty'), findsOneWidget);
     expect(attempts, 2);
+  });
+
+  testWidgets('reveals loaded history after the loading state fades out', (
+    WidgetTester tester,
+  ) async {
+    final Completer<List<Payment>> pendingLoad = Completer<List<Payment>>();
+    final StubPaymentsBackend backend = StubPaymentsBackend(
+      onLoad: () => pendingLoad.future,
+    );
+    final PaymentsCubit cubit = createPaymentsCubit(backend);
+    addTearDown(cubit.close);
+    unawaited(cubit.load());
+
+    await tester.pumpWidget(
+      _PaymentsTestApp(
+        cubit: cubit,
+        child: PaymentsPage(onOpenPayment: (_) {}),
+      ),
+    );
+    expect(find.bySemanticsIdentifier('payments.loading'), findsOneWidget);
+
+    pendingLoad.complete(<Payment>[approvedPayment()]);
+    await tester.pump();
+    await tester.pump();
+
+    Iterable<double> historyOpacityValues() => tester
+        .widgetList<Opacity>(
+          find.descendant(
+            of: find.byType(AppStaggeredColumn),
+            matching: find.byType(Opacity),
+          ),
+        )
+        .map((Opacity item) => item.opacity);
+
+    expect(historyOpacityValues(), everyElement(0));
+    await tester.pump(AppMotion.fast - const Duration(milliseconds: 1));
+    expect(historyOpacityValues(), everyElement(0));
+
+    await tester.pump(const Duration(milliseconds: 1));
+    await tester.pump(const Duration(milliseconds: 80));
+    final List<double> entering = historyOpacityValues().toList(
+      growable: false,
+    );
+    expect(entering, hasLength(2));
+    expect(entering.first, greaterThan(0));
+    expect(entering.first, greaterThan(entering.last));
+
+    await tester.pumpAndSettle();
+    expect(find.text('Atlas Office Supplies'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('reporting-zone context fits compact layout at 200% text', (

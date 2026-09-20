@@ -52,6 +52,7 @@ void main() {
           data: MediaQueryData(disableAnimations: true),
           child: Scaffold(
             body: AppStaggeredColumn(
+              startDelay: AppMotion.fast,
               children: <Widget>[Text('First'), Text('Second')],
             ),
           ),
@@ -107,6 +108,98 @@ void main() {
     expect(opacityValues(), everyElement(0));
     await tester.pump(AppMotion.staggeredDuration(2));
     expect(opacityValues(), everyElement(1));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('staggered content waits for its configured entrance delay', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: AppStaggeredColumn(
+            startDelay: AppMotion.fast,
+            children: <Widget>[Text('First'), Text('Second')],
+          ),
+        ),
+      ),
+    );
+
+    expect(_staggeredOpacityValues(tester), everyElement(0));
+    await tester.pump(AppMotion.fast - const Duration(milliseconds: 1));
+    expect(_staggeredOpacityValues(tester), everyElement(0));
+
+    await tester.pump(const Duration(milliseconds: 1));
+    await tester.pump(const Duration(milliseconds: 80));
+    final List<double> entering = _staggeredOpacityValues(tester)
+        .toList(growable: false);
+    expect(entering.first, greaterThan(0));
+    expect(entering.first, greaterThan(entering.last));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('staggered columns preserve flexible children', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: AppStaggeredColumn(
+            children: <Widget>[
+              Text('Heading'),
+              Expanded(child: Text('Flexible content')),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    expect(find.text('Flexible content'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('page content waits until its pushed route is visible', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Builder(
+          builder: (BuildContext context) => TextButton(
+            onPressed: () {
+              Navigator.of(context).push<void>(
+                PageRouteBuilder<void>(
+                  transitionDuration: const Duration(milliseconds: 400),
+                  pageBuilder:
+                      (
+                        BuildContext context,
+                        Animation<double> animation,
+                        Animation<double> secondaryAnimation,
+                      ) => const Scaffold(
+                        body: AppPageStaggeredColumn(
+                          children: <Widget>[
+                            Text('Detail summary'),
+                            Text('Detail fields'),
+                          ],
+                        ),
+                      ),
+                ),
+              );
+            },
+            child: const Text('Open details'),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Open details'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 240));
+    expect(_staggeredOpacityValues(tester), everyElement(0));
+
+    await tester.pump(const Duration(milliseconds: 40));
+    await tester.pump(const Duration(milliseconds: 80));
+    expect(_staggeredOpacityValues(tester), everyElement(greaterThan(0)));
     expect(tester.takeException(), isNull);
   });
 
@@ -207,71 +300,71 @@ void main() {
     routeController.dispose();
   });
 
-  testWidgets('page switcher moves opaque pages edge to edge', (
+  testWidgets('page switcher animates programmatic destination changes', (
     WidgetTester tester,
   ) async {
     late StateSetter updateState;
     int page = 0;
     int completedTransitions = 0;
+    int startedTransitions = 0;
     await tester.pumpWidget(
       MaterialApp(
         home: StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             updateState = setState;
             return AppPageTransitionSwitcher(
-              direction: 1,
-              onTransitionCompleted: () => completedTransitions += 1,
-              child: SizedBox(
-                key: ValueKey<int>(page),
-                child: Text('Page $page'),
-              ),
+              currentIndex: page,
+              onPageChanged: (int index) => updateState(() => page = index),
+              onTransitionStarted: (int index) => startedTransitions += 1,
+              onTransitionCompleted: (int index) => completedTransitions += 1,
+              children: const <Widget>[
+                SizedBox.expand(child: Text('Page 0')),
+                SizedBox.expand(child: Text('Page 1')),
+              ],
             );
           },
         ),
       ),
     );
-    expect(find.text('Page 0'), findsOneWidget);
+    await tester.pumpAndSettle();
+    expect(find.text('Page 0').hitTestable(), findsOneWidget);
 
     updateState(() => page = 1);
     await tester.pump();
-    expect(find.text('Page 0'), findsOneWidget);
-    expect(find.text('Page 1'), findsOneWidget);
-
     await tester.pump(AppMotion.standard ~/ 2);
-    FractionalTranslation movingTransitionFor(String label) => tester
-        .widgetList<FractionalTranslation>(
-          find.ancestor(
-            of: find.text(label),
-            matching: find.byType(FractionalTranslation),
-          ),
-        )
-        .singleWhere(
-          (FractionalTranslation transition) =>
-              transition.translation.dx.abs() > 0.001,
-        );
-    final FractionalTranslation outgoing = movingTransitionFor('Page 0');
-    final FractionalTranslation incoming = movingTransitionFor('Page 1');
-    expect(outgoing.translation.dx, lessThan(0));
-    expect(incoming.translation.dx, greaterThan(0));
+    final double outgoingX = tester
+        .getTopLeft(find.text('Page 0', skipOffstage: false))
+        .dx;
+    final double incomingX = tester
+        .getTopLeft(find.text('Page 1', skipOffstage: false))
+        .dx;
+    expect(outgoingX, lessThan(0));
+    expect(incomingX, greaterThan(0));
     expect(
-      incoming.translation.dx - outgoing.translation.dx,
-      closeTo(1, 0.001),
+      incomingX - outgoingX,
+      closeTo(tester.view.physicalSize.width / tester.view.devicePixelRatio, 1),
     );
     expect(
-      find.ancestor(of: find.text('Page 0'), matching: find.byType(ColoredBox)),
+      find.ancestor(
+        of: find.text('Page 0', skipOffstage: false),
+        matching: find.byType(ColoredBox),
+      ),
       findsAtLeastNWidgets(1),
     );
     expect(
-      find.ancestor(of: find.text('Page 1'), matching: find.byType(ColoredBox)),
+      find.ancestor(
+        of: find.text('Page 1', skipOffstage: false),
+        matching: find.byType(ColoredBox),
+      ),
       findsAtLeastNWidgets(1),
     );
 
     await tester.pump(
       AppMotion.standard ~/ 2 + const Duration(milliseconds: 1),
     );
-    expect(find.text('Page 0'), findsNothing);
-    expect(find.text('Page 1'), findsOneWidget);
-    expect(completedTransitions, 1);
+    expect(find.text('Page 1').hitTestable(), findsOneWidget);
+    expect(startedTransitions, 1);
+    expect(completedTransitions, greaterThanOrEqualTo(1));
     expect(tester.takeException(), isNull);
   });
 
@@ -281,6 +374,7 @@ void main() {
     late StateSetter updateState;
     int page = 0;
     int completedTransitions = 0;
+    int startedTransitions = 0;
     await tester.pumpWidget(
       MaterialApp(
         home: MediaQuery(
@@ -289,12 +383,14 @@ void main() {
             builder: (BuildContext context, StateSetter setState) {
               updateState = setState;
               return AppPageTransitionSwitcher(
-                direction: 1,
-                onTransitionCompleted: () => completedTransitions += 1,
-                child: SizedBox(
-                  key: ValueKey<int>(page),
-                  child: Text('Page $page'),
-                ),
+                currentIndex: page,
+                onPageChanged: (int index) => updateState(() => page = index),
+                onTransitionStarted: (int index) => startedTransitions += 1,
+                onTransitionCompleted: (int index) => completedTransitions += 1,
+                children: const <Widget>[
+                  SizedBox.expand(child: Text('Page 0')),
+                  SizedBox.expand(child: Text('Page 1')),
+                ],
               );
             },
           ),
@@ -304,10 +400,11 @@ void main() {
 
     updateState(() => page = 1);
     await tester.pump();
+    await tester.pump();
 
-    expect(find.text('Page 0'), findsNothing);
-    expect(find.text('Page 1'), findsOneWidget);
-    expect(completedTransitions, 1);
+    expect(find.text('Page 1').hitTestable(), findsOneWidget);
+    expect(startedTransitions, 1);
+    expect(completedTransitions, greaterThanOrEqualTo(1));
     expect(tester.takeException(), isNull);
   });
 }

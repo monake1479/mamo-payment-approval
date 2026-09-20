@@ -26,9 +26,11 @@ Parallel screen implementation follows the delegated UI contract and shared ligh
 
 ## Read-only payments screen increment
 
-The read-only increment implements `HOME-01..04`, `PAY-01..03`, `DETAIL-01/02`, `MONEY-01`, and the applicable `UI-01` states against the authoritative `PaymentsCubit` collection. Home shows an approved-only account-month summary and five recent decided payments. Payments shows all approved/rejected history, and branch-local pushed details preserve whether the user arrived from Home or Payments. Missing or pending identifiers render safe localized UI.
+The read-only increment implements `HOME-01..04`, `PAY-01..03`, `DETAIL-01/02`, `MONEY-01`, and the applicable `UI-01` states against the authoritative `PaymentsCubit` collection. Home shows an approved-only account-month summary and five recent decided payments. Payments shows all approved/rejected history. A directly manipulated horizontal pager makes both indexed surfaces follow the pointer and settle or cancel naturally; navigation controls animate the same pager. A full-screen `/payments/payment/:paymentId` route sits above their shell and preserves whether the user arrived from Home or Payments. Missing or pending identifiers render safe localized UI.
 
 Compact layouts use bottom navigation; expanded layouts use a rail. Loading, empty, typed-error/retry, success, light/dark, account-zone dates, fixed AED formatting, and 200% text are covered by widget tests. The app shell exposes a composition builder for the later global approval/debug layer but does not implement either feature in this increment. `maestro/payments_list.yaml` and `maestro/payment_details.yaml` cover the deterministic list, summary, details, and return journeys; native run evidence remains separate from Flutter tests.
+
+Success content follows the accepted motion contract: Home and Payments wait for the loading label to fade before their first reveal, then replay meaningful-group entrance whenever their indexed destination becomes active; decided-payment detail groups start only after the pushed route is visibly on screen. These entrances do not replay for collection rebuilds or scrolling and resolve immediately when reduced motion is requested.
 
 Local review follow-up for `MONEY-01` rejects any positive input that would normalize to zero fils, including values inside the binary-noise tolerance. Regression tests cover the shared validator and payment model. Date display delegates English month names to `intl` with an explicit locale, preserving the accepted format and account zone even when the device locale differs.
 
@@ -68,7 +70,9 @@ The owner selected `go_router` for app navigation. A DI-owned
 `MamoPaymentRouter` owns and disposes one `GoRouter`; app composition injects its
 stable router into `MaterialApp.router`. Route declarations stay in that
 application-infrastructure class. `/home` and `/payments` are stateful shell
-branches with branch-local decided-payment detail routes.
+branches. Decided-payment details use a pushed root route under the `/payments`
+path, outside the shell navigation surface, so system Back returns to the exact
+Home or Payments origin.
 Unknown paths use the existing localized safe error view without revealing the
 requested URI. Startup/build-error UI remains independent of router and DI. No
 code generation or auth redirect. The app-level builder remains the explicit

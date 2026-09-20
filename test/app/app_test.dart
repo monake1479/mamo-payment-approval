@@ -96,6 +96,14 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('payment.details'), findsOneWidget);
+    expect(find.bySemanticsIdentifier('navigation.compact'), findsNothing);
+    expect(
+      router.namedLocation(
+        AppRoutes.paymentDetails,
+        pathParameters: const <String, String>{'paymentId': 'approved-payment'},
+      ),
+      '/payments/payment/approved-payment',
+    );
     final BuildContext detailsContext = tester.element(
       find.byType(PaymentDetailsPage),
     );
@@ -112,12 +120,153 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('payment.details'), findsOneWidget);
+    expect(find.bySemanticsIdentifier('navigation.compact'), findsNothing);
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
   });
 
-  testWidgets('indexed navigation preserves a branch-local details route', (
+  testWidgets('details reveal their content after the route becomes visible', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(
+      find.bySemanticsIdentifier('payment.row.approved-payment'),
+    );
+    await tester.pump();
+
+    Iterable<double> detailsOpacityValues() => tester
+        .widgetList<Opacity>(
+          find.descendant(
+            of: find.byType(AppPageStaggeredColumn),
+            matching: find.byType(Opacity),
+          ),
+        )
+        .map((Opacity item) => item.opacity);
+
+    expect(detailsOpacityValues(), everyElement(0));
+    await tester.pump(const Duration(milliseconds: 170));
+    expect(detailsOpacityValues(), everyElement(0));
+
+    await tester.pump(const Duration(milliseconds: 20));
+    await tester.pump(const Duration(milliseconds: 80));
+    expect(detailsOpacityValues(), everyElement(greaterThan(0)));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payment.details'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('Home and Payments content enters when its tab becomes active', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+    );
+    await tester.pumpAndSettle();
+
+    Iterable<double> pageOpacityValues(String semanticsIdentifier) => tester
+        .widgetList<Opacity>(
+          find.descendant(
+            of: find.bySemanticsIdentifier(semanticsIdentifier),
+            matching: find.byType(Opacity),
+          ),
+        )
+        .map((Opacity item) => item.opacity);
+
+    await tester.tap(find.text('Payments'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 170));
+    final List<double> enteringPayments = pageOpacityValues('payments.page')
+        .toList(growable: false);
+    expect(enteringPayments, isNotEmpty);
+    expect(enteringPayments, contains(isNot(1)));
+    await tester.pump(const Duration(milliseconds: 80));
+    expect(
+      pageOpacityValues('payments.page').first,
+      greaterThanOrEqualTo(enteringPayments.first),
+    );
+    await tester.pumpAndSettle();
+    expect(pageOpacityValues('payments.page'), everyElement(1));
+
+    await tester.tap(find.text('Home'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 170));
+    final List<double> enteringHome = pageOpacityValues('home.page')
+        .toList(growable: false);
+    expect(enteringHome, isNotEmpty);
+    expect(enteringHome, contains(isNot(1)));
+    await tester.pump(const Duration(milliseconds: 80));
+    expect(
+      pageOpacityValues('home.page').first,
+      greaterThanOrEqualTo(enteringHome.first),
+    );
+    await tester.pumpAndSettle();
+    expect(pageOpacityValues('home.page'), everyElement(1));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('horizontal swipes switch between Home and Payments', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.fling(
+      find.bySemanticsIdentifier('navigation.swipeRegion'),
+      const Offset(-300, 0),
+      1000,
+    );
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
+
+    await tester.fling(
+      find.bySemanticsIdentifier('navigation.swipeRegion'),
+      const Offset(300, 0),
+      1000,
+    );
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('home.page'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('system back returns to Home from the Payments destination', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MamoPaymentApprovalApp(router: router, paymentsCubit: cubit),
+    );
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('home.page'), findsOneWidget);
+
+    // Reached Payments through the Home "View all" action.
+    await tester.tap(find.text('View all'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
+
+    final bool poppedFromViewAll = await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(poppedFromViewAll, isTrue);
+    expect(find.bySemanticsIdentifier('home.page'), findsOneWidget);
+
+    // Same behaviour when Payments is reached through the nav bar.
+    await tester.tap(find.text('Payments'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
+
+    final bool poppedFromNavBar = await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(poppedFromNavBar, isTrue);
+    expect(find.bySemanticsIdentifier('home.page'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('iOS edge-back gesture returns from details to its origin', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
@@ -130,20 +279,18 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('payment.details'), findsOneWidget);
+    expect(find.bySemanticsIdentifier('navigation.compact'), findsNothing);
 
-    await tester.tap(find.text('Payments'));
+    final TestGesture gesture = await tester.startGesture(const Offset(5, 300));
+    await gesture.moveBy(const Offset(500, 0));
+    await tester.pump();
+    await gesture.up();
     await tester.pumpAndSettle();
-    expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
 
-    await tester.tap(find.text('Home'));
-    await tester.pumpAndSettle();
-    expect(find.bySemanticsIdentifier('payment.details'), findsOneWidget);
-
-    await tester.tap(find.bySemanticsIdentifier('payment.details.back'));
-    await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('home.page'), findsOneWidget);
+    expect(find.bySemanticsIdentifier('payment.details'), findsNothing);
     expect(tester.takeException(), isNull);
-  });
+  }, variant: TargetPlatformVariant.only(TargetPlatform.iOS));
 
   testWidgets('unknown paths stay safe across rebuilds and can return Home', (
     WidgetTester tester,

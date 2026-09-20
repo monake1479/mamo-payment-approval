@@ -26,6 +26,8 @@ class PaymentsPage extends StatelessWidget {
       semanticIdentifier: 'payments.page',
       child: BlocBuilder<PaymentsCubit, PaymentsState>(
         builder: (BuildContext context, PaymentsState state) {
+          final AppIndexedPageMotionScope? pageMotion =
+              AppIndexedPageMotionScope.maybeOf(context);
           return AppMotionSwitcher(
             child: switch (state.status) {
               PaymentsLoadStatus.initial ||
@@ -44,6 +46,8 @@ class PaymentsPage extends StatelessWidget {
                   PaymentsLoadStatus.success,
                 ),
                 payments: state.decidedPayments,
+                motionReplayKey: pageMotion?.activation,
+                startMotion: pageMotion?.startAnimation ?? true,
                 reportingTimeZone: state.reportingTimeZone,
                 formatters: PaymentFormatters(
                   reportingTimeZone: state.reportingTimeZone,
@@ -61,6 +65,8 @@ class PaymentsPage extends StatelessWidget {
 class _PaymentsHistory extends StatelessWidget {
   const _PaymentsHistory({
     required this.payments,
+    required this.motionReplayKey,
+    required this.startMotion,
     required this.reportingTimeZone,
     required this.formatters,
     required this.onOpenPayment,
@@ -68,6 +74,8 @@ class _PaymentsHistory extends StatelessWidget {
   });
 
   final List<Payment> payments;
+  final Object? motionReplayKey;
+  final bool startMotion;
   final String reportingTimeZone;
   final PaymentFormatters formatters;
   final ValueChanged<String> onOpenPayment;
@@ -97,8 +105,11 @@ class _PaymentsHistory extends StatelessWidget {
             },
           );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return AppStaggeredColumn(
+      spacing: AppTheme.itemGap,
+      replayKey: motionReplayKey,
+      startAnimation: startMotion,
+      startDelay: AppMotion.fast,
       children: <Widget>[
         Semantics(
           identifier: 'payments.reportingTimeZone',
@@ -109,7 +120,6 @@ class _PaymentsHistory extends StatelessWidget {
             ),
           ),
         ),
-        const SizedBox(height: AppTheme.itemGap),
         Expanded(child: history),
       ],
     );

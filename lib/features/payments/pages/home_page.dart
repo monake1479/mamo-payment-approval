@@ -32,6 +32,8 @@ class HomePage extends StatelessWidget {
       semanticIdentifier: 'home.page',
       child: BlocBuilder<PaymentsCubit, PaymentsState>(
         builder: (BuildContext context, PaymentsState state) {
+          final AppIndexedPageMotionScope? pageMotion =
+              AppIndexedPageMotionScope.maybeOf(context);
           return AppMotionSwitcher(
             child: switch (state.status) {
               PaymentsLoadStatus.initial ||
@@ -50,6 +52,8 @@ class HomePage extends StatelessWidget {
                   PaymentsLoadStatus.success,
                 ),
                 state: state,
+                motionReplayKey: pageMotion?.activation,
+                startMotion: pageMotion?.startAnimation ?? true,
                 onOpenPayment: onOpenPayment,
                 onViewAll: onViewAll,
               ),
@@ -64,12 +68,16 @@ class HomePage extends StatelessWidget {
 class _HomeContent extends StatelessWidget {
   const _HomeContent({
     required this.state,
+    required this.motionReplayKey,
+    required this.startMotion,
     required this.onOpenPayment,
     required this.onViewAll,
     super.key,
   });
 
   final PaymentsState state;
+  final Object? motionReplayKey;
+  final bool startMotion;
   final ValueChanged<String> onOpenPayment;
   final VoidCallback onViewAll;
 
@@ -87,6 +95,9 @@ class _HomeContent extends StatelessWidget {
       children: <Widget>[
         AppStaggeredColumn(
           spacing: AppTheme.sectionGap,
+          replayKey: motionReplayKey,
+          startAnimation: startMotion,
+          startDelay: AppMotion.fast,
           children: <Widget>[
             MonthlySummaryCard(
               amount: formatters.money(
