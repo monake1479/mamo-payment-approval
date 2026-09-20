@@ -7,7 +7,11 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tool"))
-from test_scope import select_scope
+from test_scope import PAYMENTS_UI_TESTS, select_scope
+
+
+def with_ui(*tests):
+    return sorted({*tests, *PAYMENTS_UI_TESTS})
 
 
 class PaymentsScopeTest(unittest.TestCase):
@@ -19,7 +23,7 @@ class PaymentsScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            ["test/features/payments/states/payments/payments_cubit_test.dart"],
+            with_ui("test/features/payments/states/payments/payments_cubit_test.dart"),
         )
         self.assertFalse(scope["hook_tests"])
 
@@ -31,7 +35,7 @@ class PaymentsScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            ["test/features/payments/states/payments/payments_cubit_test.dart"],
+            with_ui("test/features/payments/states/payments/payments_cubit_test.dart"),
         )
         self.assertFalse(scope["hook_tests"])
 
@@ -43,10 +47,10 @@ class PaymentsScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            [
+            with_ui(
                 "test/common/data/payments/models/payment_serialization_test.dart",
                 "test/common/data/payments/payments_repository_test.dart",
-            ],
+            ),
         )
         self.assertFalse(scope["hook_tests"])
 
@@ -58,11 +62,11 @@ class PaymentsScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            [
+            with_ui(
                 "test/common/data/payments/payments_repository_test.dart",
                 "test/common/data/payments/use_cases/payment_use_cases_test.dart",
                 "test/features/payments/states/payments/payments_cubit_test.dart",
-            ],
+            ),
         )
 
     def test_summary_change_selects_projection_consumers(self):
@@ -73,11 +77,11 @@ class PaymentsScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            [
+            with_ui(
                 "test/common/data/payments/models/payments_collection_test.dart",
                 "test/common/data/payments/use_cases/payment_use_cases_test.dart",
                 "test/features/payments/states/payments/payments_cubit_test.dart",
-            ],
+            ),
         )
 
     def test_mock_backend_change_selects_contract_consumers(self):
@@ -88,13 +92,22 @@ class PaymentsScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            [
+            with_ui(
                 "test/common/data/payments/payments_repository_test.dart",
                 "test/common/data/payments/use_cases/payment_use_cases_test.dart",
                 "test/features/payments/states/payments/payments_cubit_test.dart",
                 "test/mock_backend/payments/mock_payments_backend_test.dart",
-            ],
+            ),
         )
+
+    def test_payment_row_change_selects_all_screen_consumers(self):
+        scope = select_scope(
+            ["lib/features/payments/widgets/payment_row.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(scope["flutter_tests"], sorted(PAYMENTS_UI_TESTS))
+        self.assertFalse(scope["hook_tests"])
 
 
 if __name__ == "__main__":

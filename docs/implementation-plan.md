@@ -4,9 +4,9 @@
 
 Every slice is a runnable increment with a PR into `dev`. Verified increments reach `main` through separate promotion PRs from `dev`. PRs link decisions, criteria, tests, and evidence; no implementation goes directly into shared branches.
 
-The committed foundation contains the placeholder app, rules and project skills, native flavors, localization, bootstrap/error handling, router, push tooling, tests, and CI configuration. The payment data/use-case/Cubit slice is implemented locally on its feature branch; payment screens, approval UI, and native authentication remain planned. The accepted system-following light/dark theme and shared UI tokens are implemented on `dev`.
+The shared `dev` base contains the foundation, accepted payment data/use-case/Cubit architecture, system-following light/dark theme, shared UI tokens, native flavors, localization, bootstrap/error handling, router, push tooling, tests, and CI configuration. This feature branch adds the read-only Home, Payments, and decided-payment details increment; approval, authentication, and the debug action remain separate work.
 
-The UI foundation increment added system-following light/dark themes and centralized component/layout tokens and merged into `dev` on 2026-09-18. The owner accepted the [UI contract](product/ui-contract.md) with that merge. The remaining [implementation contracts](architecture/implementation-contract.md) resolve routine decisions under delegated authority and remain subject to owner review. No payment screen is claimed implemented by the theme increment.
+The UI foundation increment added system-following light/dark themes, shared motion, and centralized component/layout tokens and merged into `dev` on 2026-09-18. The owner accepted the [UI contract](product/ui-contract.md) with that merge. The remaining [implementation contracts](architecture/implementation-contract.md) resolve routine decisions under delegated authority and remain subject to owner review. No payment screen is claimed implemented by the theme increment.
 
 An earlier version of the workflow received an [independent audit and targeted correction check](testing/agent-workflow-review.md). That audit does not verify subsequent workflow or application changes. New planning decisions are recorded in the [product Q&A](product/requirements.md#planning-qa-accepted-decisions); accepted requirements are distinct from implemented behaviour.
 
@@ -23,6 +23,16 @@ An earlier version of the workflow received an [independent audit and targeted c
 Split slices further when useful. Domain/data/state/UI types arrive when the runnable increment needs them. Introduce native CI/build artifacts with platform delivery work.
 
 Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01/02`). Verify both appearances at compact/expanded portrait widths and with large text as screens arrive. No manual theme selector is included. A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
+
+## Read-only payments screen increment
+
+The read-only increment implements `HOME-01..04`, `PAY-01..03`, `DETAIL-01/02`, `MONEY-01`, and the applicable `UI-01` states against the authoritative `PaymentsCubit` collection. Home shows an approved-only account-month summary and five recent decided payments. Payments shows all approved/rejected history. A directly manipulated horizontal pager makes both indexed surfaces follow the pointer and settle or cancel naturally; navigation controls animate the same pager. A full-screen `/payments/payment/:paymentId` route sits above their shell and preserves whether the user arrived from Home or Payments. Missing or pending identifiers render safe localized UI.
+
+Compact layouts use bottom navigation; expanded layouts use a rail. Loading, empty, typed-error/retry, success, light/dark, account-zone dates, fixed AED formatting, and 200% text are covered by widget tests. The app shell exposes a composition builder for the later global approval/debug layer but does not implement either feature in this increment. `maestro/payments_list.yaml` and `maestro/payment_details.yaml` cover the deterministic list, summary, details, and return journeys; native run evidence remains separate from Flutter tests.
+
+Success content follows the accepted motion contract: Home and Payments wait for the loading label to fade before their first reveal, then replay meaningful-group entrance whenever their indexed destination becomes active; decided-payment detail groups start only after the pushed route is visibly on screen. These entrances do not replay for collection rebuilds or scrolling and resolve immediately when reduced motion is requested.
+
+Local review follow-up for `MONEY-01` rejects any positive input that would normalize to zero fils, including values inside the binary-noise tolerance. Regression tests cover the shared validator and payment model. Date display delegates English month names to `intl` with an explicit locale, preserving the accepted format and account zone even when the device locale differs.
 
 ## Native foundation increment
 
@@ -59,14 +69,14 @@ evidence independently from bootstrap tests.
 The owner selected `go_router` for app navigation. A DI-owned
 `MamoPaymentRouter` owns and disposes one `GoRouter`; app composition injects its
 stable router into `MaterialApp.router`. Route declarations stay in that
-application-infrastructure class. The only current route is `/`, displaying the
-unchanged foundation page.
+application-infrastructure class. `/home` and `/payments` are stateful shell
+branches. Decided-payment details use a pushed root route under the `/payments`
+path, outside the shell navigation surface, so system Back returns to the exact
+Home or Payments origin.
 Unknown paths use the existing localized safe error view without revealing the
 requested URI. Startup/build-error UI remains independent of router and DI. No
-placeholder feature routes, code generation, or auth redirects are introduced.
-Verify router ownership and identity, root/back behavior, preserved location on
-rebuild, unknown-route recovery, localization/layout, and native startup/resume.
-Future payment/details/overlay journeys arrive with their corresponding slices.
+code generation or auth redirect. The app-level builder remains the explicit
+extension point for the later global approval overlay and draggable action.
 
 ## Localization foundation increment
 

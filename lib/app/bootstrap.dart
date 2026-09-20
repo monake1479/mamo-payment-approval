@@ -9,6 +9,7 @@ import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart'
 import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
 import 'package:mamo_payment_approval_challenge/app/platform/app_orientation.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
 
 Future<void> bootstrap(AppEnvironment environment) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,5 +31,10 @@ Future<void> bootstrap(AppEnvironment environment) async {
   }
 
   configureErrorHandling(getIt<LocalDiagnostics>());
-  runApp(MamoPaymentApprovalApp(router: getIt<MamoPaymentRouter>().router));
+  runApp(
+    MamoPaymentApprovalApp(
+      router: getIt<MamoPaymentRouter>().router,
+      paymentsCubit: getIt<PaymentsCubit>(),
+    ),
+  );
 }
