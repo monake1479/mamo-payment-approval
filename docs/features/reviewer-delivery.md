@@ -53,6 +53,6 @@ flutter gen-l10n
 flutter build apk --flavor prod -t lib/main_prod.dart --release
 ```
 
-The Android Gradle release configuration currently selects the debug signing config. The job verifies the built APK with the Android SDK's `apksigner` and requires the signer certificate output to identify `Android Debug` before upload. It also reads the packaged metadata with `aapt` and requires the declared minimum SDK to be API 24, matching the current pinned Flutter/native configuration.
+The Android Gradle release configuration currently selects the debug signing config. The job verifies the built APK with the Android SDK's `apksigner` and requires the signer certificate output to identify `Android Debug` before upload. It also reads the packaged metadata with `aapt2` (falling back to `aapt` when only the legacy tool is present) and requires the declared minimum SDK to be API 24, matching the current pinned Flutter/native configuration.
 
 This artifact does not claim production signing, Play Store readiness, durable payment execution, or independent native-authentication evidence. Application data is session-only and resets when the OS process is terminated. CI compilation and signature verification do not replace device installation, critical-journey, or physical-device authentication checks; those remain separate delivery evidence when the corresponding features are integrated.
