@@ -66,6 +66,35 @@ final class MockPaymentsBackend implements PaymentsBackendClient {
   }
 
   @override
+  Future<List<Map<String, Object?>>> searchPayments({
+    required String query,
+    required List<String> statuses,
+  }) async {
+    await _beforeOperation();
+    final String needle = query.trim().toLowerCase();
+    return _records
+        .where((Map<String, Object?> record) {
+          final String status = record['status']! as String;
+          if (status == 'pending') {
+            return false;
+          }
+          if (statuses.isNotEmpty && !statuses.contains(status)) {
+            return false;
+          }
+          if (needle.isEmpty) {
+            return true;
+          }
+          final String counterparty = (record['counterparty']! as String)
+              .toLowerCase();
+          final String reference = (record['reference']! as String)
+              .toLowerCase();
+          return counterparty.contains(needle) || reference.contains(needle);
+        })
+        .map(Map<String, Object?>.from)
+        .toList(growable: false);
+  }
+
+  @override
   Future<Map<String, Object?>> createPaymentRequest() async {
     await _beforeOperation();
     if (_records.any((record) => record['status'] == 'pending')) {

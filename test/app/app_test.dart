@@ -34,7 +34,9 @@ void main() {
     );
     authenticate = LocalAuthenticationUseCase(authRepository);
     stop = StopLocalAuthenticationUseCase(authRepository);
-    appRouter = MamoPaymentRouter();
+    appRouter = MamoPaymentRouter(
+      createPaymentsSearchBloc: () => createPaymentsSearchBloc(backend),
+    );
     router = appRouter.router;
   });
   tearDown(() async {
@@ -317,6 +319,49 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('system Back leaves an active search intact for the return', (
+    WidgetTester tester,
+  ) async {
+    // Keep the focused search field's cursor deterministic so settling works.
+    EditableText.debugDeterministicCursor = true;
+    addTearDown(() => EditableText.debugDeterministicCursor = false);
+    await tester.pumpWidget(
+      MamoPaymentApprovalApp(
+        router: router,
+        paymentsCubit: cubit,
+        authenticate: authenticate,
+        stopAuthentication: stop,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('View all'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'marina');
+    await tester.pumpAndSettle();
+    expect(find.text('1 matching payment'), findsOneWidget);
+    expect(find.text('Atlas Office Supplies'), findsNothing);
+
+    // Back still returns to Home without leaving the app; the search is
+    // page-scoped session state, not a pushed route, so it is not popped.
+    final bool popped = await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(popped, isTrue);
+    expect(find.bySemanticsIdentifier('home.page'), findsOneWidget);
+    expect(find.text('Atlas Office Supplies'), findsWidgets);
+
+    await tester.tap(find.text('Payments'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
+    expect(find.text('1 matching payment'), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'marina',
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('iOS edge-back gesture returns from details to its origin', (
     WidgetTester tester,
   ) async {
@@ -430,7 +475,13 @@ void main() {
     expect(find.text('September 2026 · Asia/Dubai'), findsOneWidget);
 
     now = DateTime.utc(2026, 10, 2);
+    // Walk the framework's legal lifecycle sequence; the search field's
+    // EditableText observes it and asserts on skipped states.
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pumpAndSettle();
     expect(find.text('AED 10.00'), findsWidgets);

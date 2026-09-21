@@ -180,6 +180,32 @@ void main() {
       );
     });
 
+    test('searches decided history and preserves typed failures', () async {
+      final PaymentsRepository repository = _repository(
+        clock: () => fixedNow,
+        simulatedFailureInterval: 2,
+      );
+
+      final Result<PaymentsFailure, List<Payment>> found = await repository
+          .searchPayments(
+            query: 'marina',
+            statuses: const <PaymentStatus>{PaymentStatus.rejected},
+          );
+      final Result<PaymentsFailure, List<Payment>> failed = await repository
+          .searchPayments(query: 'marina', statuses: const <PaymentStatus>{});
+
+      expect(
+        (found as Success<PaymentsFailure, List<Payment>>).value.map(
+          (Payment payment) => payment.id,
+        ),
+        <String>['seed-rejected-current'],
+      );
+      expect(
+        (failed as Failure<PaymentsFailure, List<Payment>>).failure,
+        const PaymentsUnavailableFailure(),
+      );
+    });
+
     test('uses the currency configured by the mock backend', () async {
       final PaymentsRepository repository = _repository(
         initialPayments: const <Payment>[],

@@ -26,6 +26,20 @@ DEVICE_AUTH_TESTS = [
     "test/common/data/device_authentication/use_cases/stop_local_authentication_use_case_test.dart",
 ]
 
+# The decided-history search slice: its event-driven bloc feeds the Payments
+# page, and the router provides the bloc, so shell/app tests run as well.
+SEARCH_TESTS = [
+    "test/features/payments/states/search/payments_search_bloc_test.dart",
+    "test/common/data/payments/use_cases/search_payments_use_case_test.dart",
+]
+
+# Search results cross the same data-source boundary as loads; changes to that
+# boundary or to the search contract also run the data-source unit tests.
+PAYMENTS_DATA_SOURCE_TESTS = [
+    "test/common/data/payments/data_sources/payments_remote_data_source_test.dart",
+    "test/common/data/payments/payments_repository_test.dart",
+]
+
 # The incoming-approval and draggable debug-action flow. These consume the
 # accepted payments and device-authentication use cases; changes to the shared
 # app shell or to those use cases also exercise the approval journey.
@@ -76,9 +90,10 @@ FLUTTER_TESTS = {
         "test/app/bootstrap_test.dart",
     ],
     "lib/common/data/payments/data_sources/payments_remote_data_source.dart": [
-        "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_DATA_SOURCE_TESTS,
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *SEARCH_TESTS,
         *PAYMENTS_UI_TESTS,
     ],
     "lib/mock_backend/payments/mock_payments_backend.dart": [
@@ -91,17 +106,17 @@ FLUTTER_TESTS = {
     "lib/mock_backend/payments/payments_backend_client.dart": [
         "test/app/bootstrap_test.dart",
         "test/mock_backend/payments/mock_payments_backend_test.dart",
-        "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_DATA_SOURCE_TESTS,
         *PAYMENTS_UI_TESTS,
     ],
     "lib/mock_backend/payments/payments_backend_exception.dart": [
         "test/mock_backend/payments/mock_payments_backend_test.dart",
-        "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_DATA_SOURCE_TESTS,
         *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/dtos/payment_dto.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
-        "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_DATA_SOURCE_TESTS,
         *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/converters/payment_amount_json_converter.dart": [
@@ -115,10 +130,19 @@ FLUTTER_TESTS = {
     "lib/common/data/payments/models/payment.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
         "test/common/data/payments/models/payment_test.dart",
-        "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_DATA_SOURCE_TESTS,
         "test/common/data/payments/models/payments_collection_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *SEARCH_TESTS,
+        *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
+    ],
+    "lib/common/data/payments/models/decided_payment_order.dart": [
+        "test/common/data/payments/models/payments_collection_test.dart",
+        "test/common/data/payments/use_cases/payment_use_cases_test.dart",
+        "test/features/payments/states/payments/payments_cubit_test.dart",
+        *SEARCH_TESTS,
         *PAYMENTS_UI_TESTS,
     ],
     "lib/common/data/payments/models/payments_collection.dart": [
@@ -141,18 +165,20 @@ FLUTTER_TESTS = {
     "lib/common/data/payments/error_handling/payments_failure.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
         "test/common/data/payments/models/payment_test.dart",
-        "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_DATA_SOURCE_TESTS,
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *SEARCH_TESTS,
         *PAYMENTS_UI_TESTS,
         *APPROVAL_TESTS,
     ],
     "lib/common/result/models/result.dart": [
         "test/common/result/models/result_test.dart",
         "test/common/data/payments/models/payment_serialization_test.dart",
-        "test/common/data/payments/payments_repository_test.dart",
+        *PAYMENTS_DATA_SOURCE_TESTS,
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *SEARCH_TESTS,
         *PAYMENTS_UI_TESTS,
     ],
     "lib/common/result/models/unit.dart": [
@@ -164,7 +190,15 @@ FLUTTER_TESTS = {
         "test/common/data/payments/payments_repository_test.dart",
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
+        *SEARCH_TESTS,
         *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
+    ],
+    "lib/common/data/payments/use_cases/search_payments_use_case.dart": [
+        "test/app/bootstrap_test.dart",
+        *SEARCH_TESTS,
+        *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
     ],
     "lib/common/data/payments/use_cases/create_payment_request_use_case.dart": [
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
@@ -195,6 +229,23 @@ FLUTTER_TESTS = {
         "test/features/payments/states/payments/payments_cubit_test.dart",
         *PAYMENTS_UI_TESTS,
     ],
+    "lib/features/payments/states/search/payments_search_bloc.dart": [
+        "test/features/payments/states/search/payments_search_bloc_test.dart",
+        *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
+    ],
+    "lib/features/payments/states/search/payments_search_event.dart": [
+        "test/features/payments/states/search/payments_search_bloc_test.dart",
+        *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
+    ],
+    "lib/features/payments/states/search/payments_search_state.dart": [
+        "test/features/payments/states/search/payments_search_bloc_test.dart",
+        *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
+    ],
+    "lib/features/payments/widgets/payments_search_field.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/features/payments/widgets/payment_status_filter_chips.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
     "lib/features/payments/states/approval/approval_cubit.dart": APPROVAL_TESTS,
     "lib/features/payments/states/approval/approval_state.dart": APPROVAL_TESTS,
     "lib/features/payments/states/approval/approval_failure.dart": APPROVAL_TESTS,
@@ -251,6 +302,10 @@ for generated, source in {
         "lib/common/result/models/unit.dart",
     "lib/features/payments/states/payments/payments_state.freezed.dart":
         "lib/features/payments/states/payments/payments_state.dart",
+    "lib/features/payments/states/search/payments_search_state.freezed.dart":
+        "lib/features/payments/states/search/payments_search_state.dart",
+    "lib/features/payments/states/search/payments_search_event.freezed.dart":
+        "lib/features/payments/states/search/payments_search_event.dart",
     "lib/features/payments/states/approval/approval_state.freezed.dart":
         "lib/features/payments/states/approval/approval_state.dart",
     "lib/features/payments/states/approval/approval_failure.freezed.dart":

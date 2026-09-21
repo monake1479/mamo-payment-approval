@@ -6,8 +6,10 @@ import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/c
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/decide_payment_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/load_payments_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/refresh_payments_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/search_payments_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_bloc.dart';
 import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_client.dart';
 import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_exception.dart';
 
@@ -18,6 +20,7 @@ final class StubPaymentsBackend implements PaymentsBackendClient {
 
   final Future<List<Payment>> Function() onLoad;
   int loadCalls = 0;
+  int searchCalls = 0;
 
   @override
   String get currency => 'AED';
@@ -29,6 +32,31 @@ final class StubPaymentsBackend implements PaymentsBackendClient {
   Future<List<Map<String, Object?>>> loadPayments() async {
     loadCalls += 1;
     return (await onLoad()).map(_record).toList(growable: false);
+  }
+
+  /// Mirrors the mock backend's decided-only, case-insensitive rules over the
+  /// same [onLoad] data so page tests can drive search without a second store.
+  @override
+  Future<List<Map<String, Object?>>> searchPayments({
+    required String query,
+    required List<String> statuses,
+  }) async {
+    searchCalls += 1;
+    final String needle = query.trim().toLowerCase();
+    return (await onLoad())
+        .where((Payment payment) => payment.status != PaymentStatus.pending)
+        .where(
+          (Payment payment) =>
+              statuses.isEmpty || statuses.contains(payment.status.name),
+        )
+        .where(
+          (Payment payment) =>
+              needle.isEmpty ||
+              payment.counterparty.toLowerCase().contains(needle) ||
+              payment.reference.toLowerCase().contains(needle),
+        )
+        .map(_record)
+        .toList(growable: false);
   }
 
   @override
@@ -73,6 +101,21 @@ PaymentsCubit createPaymentsCubit(
     ),
     decidePayment: DecidePaymentUseCase(repository, clock: resolvedClock),
     refreshPayments: RefreshPaymentsUseCase(repository, clock: resolvedClock),
+  );
+}
+
+/// Search bloc over the same stub backend as [createPaymentsCubit]. Tests
+/// default to no debounce so widget assertions do not depend on the window;
+/// the bloc tests cover the debounce timing explicitly.
+PaymentsSearchBloc createPaymentsSearchBloc(
+  StubPaymentsBackend backend, {
+  Duration debounceDuration = Duration.zero,
+}) {
+  return PaymentsSearchBloc(
+    searchPayments: SearchPaymentsUseCase(
+      PaymentsRepository(PaymentsRemoteDataSource(backend)),
+    ),
+    debounceDuration: debounceDuration,
   );
 }
 
@@ -139,6 +182,7 @@ final class StubPaymentsRepository extends PaymentsRepository {
     required this.onLoad,
     this.onCreateRequest,
     this.onDecide,
+    this.onSearch,
   }) : super(const PaymentsRemoteDataSource(_UnusedBackendClient()));
 
   final Future<Result<PaymentsFailure, List<Payment>>> Function() onLoad;
@@ -148,9 +192,16 @@ final class StubPaymentsRepository extends PaymentsRepository {
     PaymentDecision decision,
   )?
   onDecide;
+  final Future<Result<PaymentsFailure, List<Payment>>> Function(
+    String query,
+    Set<PaymentStatus> statuses,
+  )?
+  onSearch;
   int loadCalls = 0;
   int createCalls = 0;
   int decideCalls = 0;
+  final List<String> searchQueries = <String>[];
+  final List<Set<PaymentStatus>> searchStatuses = <Set<PaymentStatus>>[];
 
   @override
   String get reportingTimeZone => 'Asia/Dubai';
@@ -180,6 +231,19 @@ final class StubPaymentsRepository extends PaymentsRepository {
     return onDecide?.call(paymentId, decision) ??
         const Failure<PaymentsFailure, Payment>(PaymentsUnavailableFailure());
   }
+
+  @override
+  Future<Result<PaymentsFailure, List<Payment>>> searchPayments({
+    required String query,
+    required Set<PaymentStatus> statuses,
+  }) async {
+    searchQueries.add(query);
+    searchStatuses.add(statuses);
+    return onSearch?.call(query, statuses) ??
+        const Failure<PaymentsFailure, List<Payment>>(
+          PaymentsUnavailableFailure(),
+        );
+  }
 }
 
 final class _UnusedBackendClient implements PaymentsBackendClient {
@@ -204,6 +268,22 @@ final class _UnusedBackendClient implements PaymentsBackendClient {
   @override
   Future<List<Map<String, Object?>>> loadPayments() =>
       throw UnimplementedError();
+
+  @override
+  Future<List<Map<String, Object?>>> searchPayments({
+    required String query,
+    required List<String> statuses,
+  }) => throw UnimplementedError();
+}
+
+PaymentsSearchBloc createPaymentsSearchBlocFromRepository(
+  PaymentsRepository repository, {
+  Duration debounceDuration = Duration.zero,
+}) {
+  return PaymentsSearchBloc(
+    searchPayments: SearchPaymentsUseCase(repository),
+    debounceDuration: debounceDuration,
+  );
 }
 
 PaymentsCubit createPaymentsCubitFromRepository(

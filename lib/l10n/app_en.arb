@@ -157,5 +157,28 @@
   "approvalAuthenticationFailed": "Authentication did not succeed. The payment details remain hidden.",
   "@approvalAuthenticationFailed": {"description": "Recoverable message after native authentication fails."},
   "approvalDecisionFailed": "The payment could not be updated. Try again.",
-  "@approvalDecisionFailed": {"description": "Safe recovery message after approval or rejection fails."}
+  "@approvalDecisionFailed": {"description": "Safe recovery message after approval or rejection fails."},
+  "paymentsSearchLabel": "Search payments",
+  "@paymentsSearchLabel": {"description": "Accessible label for the decided payment history search field."},
+  "paymentsSearchHint": "Search by counterparty or reference",
+  "@paymentsSearchHint": {"description": "Hint inside the payment history search field naming the visible fields it searches."},
+  "paymentsSearchClearLabel": "Clear search",
+  "@paymentsSearchClearLabel": {"description": "Accessible label for the action that clears the search text and status filters."},
+  "paymentsSearchFiltersLabel": "Filter by status",
+  "@paymentsSearchFiltersLabel": {"description": "Accessible label for the group of decided status filter chips."},
+  "paymentsSearchLoadingLabel": "Searching payments",
+  "@paymentsSearchLoadingLabel": {"description": "Accessible label shown while a payment history search is running."},
+  "paymentsSearchResultCount": "{count, plural, =1{1 matching payment} other{{count} matching payments}}",
+  "@paymentsSearchResultCount": {
+    "description": "Number of decided payments matching the current search and status filters.",
+    "placeholders": {"count": {"type": "int"}}
+  },
+  "paymentsSearchEmptyTitle": "No matching payments",
+  "@paymentsSearchEmptyTitle": {"description": "Heading shown when no decided payment matches the search and status filters."},
+  "paymentsSearchEmptyDescription": "Try a different search or clear the status filters.",
+  "@paymentsSearchEmptyDescription": {"description": "Explanation shown when no decided payment matches the search and status filters."},
+  "paymentsSearchErrorTitle": "Search is unavailable",
+  "@paymentsSearchErrorTitle": {"description": "Heading shown when a payment history search fails."},
+  "paymentsSearchErrorDescription": "We could not search the payment history. Try again.",
+  "@paymentsSearchErrorDescription": {"description": "Safe recovery guidance for a failed payment history search."}
 }

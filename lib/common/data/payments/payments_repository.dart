@@ -17,6 +17,13 @@ class PaymentsRepository {
   Future<Result<PaymentsFailure, List<Payment>>> load() =>
       _remoteDataSource.load();
 
+  /// Decided-history search; typed failures come from the data source, which
+  /// owns the backend exception mapping for every payment operation.
+  Future<Result<PaymentsFailure, List<Payment>>> searchPayments({
+    required String query,
+    required Set<PaymentStatus> statuses,
+  }) => _remoteDataSource.search(query: query, statuses: statuses);
+
   Future<Result<PaymentsFailure, Payment>> createRequest() =>
       _remoteDataSource.createRequest();
 

@@ -4,15 +4,24 @@ import 'package:mamo_payment_approval_challenge/common/data/payments/error_handl
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 class PaymentsLoadingView extends StatelessWidget {
-  const PaymentsLoadingView({super.key});
+  const PaymentsLoadingView({
+    this.identifier = 'payments.loading',
+    this.label,
+    super.key,
+  });
+
+  final String identifier;
+
+  /// Accessible progress label; defaults to the history loading label.
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     return Center(
       child: Semantics(
-        identifier: 'payments.loading',
-        label: l10n.paymentsLoadingLabel,
+        identifier: identifier,
+        label: label ?? l10n.paymentsLoadingLabel,
         liveRegion: true,
         child: const CircularProgressIndicator(),
       ),
@@ -77,11 +86,21 @@ class PaymentsErrorView extends StatelessWidget {
   const PaymentsErrorView({
     required this.failure,
     required this.onRetry,
+    this.identifier = 'payments.error',
+    this.title,
+    this.description,
     super.key,
   });
 
   final PaymentsFailure failure;
   final VoidCallback onRetry;
+  final String identifier;
+
+  /// Heading; defaults to the history load error title.
+  final String? title;
+
+  /// Explanation; defaults to the history load mapping of [failure].
+  final String? description;
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +110,7 @@ class PaymentsErrorView extends StatelessWidget {
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppTheme.sectionGap),
         child: Semantics(
-          identifier: 'payments.error',
+          identifier: identifier,
           liveRegion: true,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -103,13 +122,13 @@ class PaymentsErrorView extends StatelessWidget {
               ),
               const SizedBox(height: AppTheme.itemGap),
               Text(
-                l10n.paymentsLoadErrorTitle,
+                title ?? l10n.paymentsLoadErrorTitle,
                 style: theme.textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppTheme.smallGap),
               Text(
-                failure.message(l10n),
+                description ?? failure.message(l10n),
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -138,5 +157,15 @@ extension PaymentsFailureMessage on PaymentsFailure {
     PaymentBusyFailure() ||
     OperationCancelledFailure() ||
     PaymentsUnavailableFailure() => l10n.paymentsLoadErrorDescription,
+  };
+
+  String searchMessage(AppLocalizations l10n) => switch (this) {
+    InvalidPaymentFailure() => l10n.paymentsInvalidDataDescription,
+    DuplicateRequestFailure() ||
+    PaymentNotFoundFailure() ||
+    PaymentAlreadyDecidedFailure() ||
+    PaymentBusyFailure() ||
+    OperationCancelledFailure() ||
+    PaymentsUnavailableFailure() => l10n.paymentsSearchErrorDescription,
   };
 }

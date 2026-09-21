@@ -8,7 +8,9 @@ import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/c
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/decide_payment_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/load_payments_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/refresh_payments_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/search_payments_use_case.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_bloc.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -29,7 +31,10 @@ Future<void> configureDependencies(AppEnvironment environment) async {
     dispose: (PaymentsCubit cubit) => cubit.close(),
   );
   getIt.registerSingleton<MamoPaymentRouter>(
-    MamoPaymentRouter(),
+    MamoPaymentRouter(
+      createPaymentsSearchBloc: () =>
+          PaymentsSearchBloc(searchPayments: getIt<SearchPaymentsUseCase>()),
+    ),
     dispose: (router) => router.dispose(),
   );
   await getIt.allReady();

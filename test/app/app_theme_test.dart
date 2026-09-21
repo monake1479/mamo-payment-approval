@@ -125,11 +125,13 @@ void main() {
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
-        final MamoPaymentRouter appRouter = MamoPaymentRouter();
-        addTearDown(appRouter.dispose);
         final backend = StubPaymentsBackend(
           onLoad: () async => const <Payment>[],
         );
+        final MamoPaymentRouter appRouter = MamoPaymentRouter(
+          createPaymentsSearchBloc: () => createPaymentsSearchBloc(backend),
+        );
+        addTearDown(appRouter.dispose);
         final cubit = createPaymentsCubit(backend);
         addTearDown(cubit.close);
         final LocalAuthRepository authRepository = LocalAuthRepository(
