@@ -88,7 +88,7 @@ as Set<String>,
 @override
 @pragma('vm:prefer-inline')
 $PaymentSummaryCopyWith<$Res> get summary {
-
+  
   return $PaymentSummaryCopyWith<$Res>(_self.summary, (value) {
     return _then(_self.copyWith(summary: value));
   });
@@ -243,7 +243,7 @@ return $default(_that.status,_that.payments,_that.summary,_that.reportingPeriodS
 
 class _PaymentsState extends PaymentsState {
   const _PaymentsState({required this.status, required  List<Payment> payments, required this.summary, required this.reportingPeriodStartUtc, required this.reportingTimeZone, required this.reportingCurrency, required this.hasLoaded, required this.failure, required this.isCreatingRequest, required  Set<String> decidingPaymentIds}): _payments = payments,_decidingPaymentIds = decidingPaymentIds,super._();
-
+  
 
 @override final  PaymentsLoadStatus status;
  final  List<Payment> _payments;
@@ -338,7 +338,7 @@ as Set<String>,
 @override
 @pragma('vm:prefer-inline')
 $PaymentSummaryCopyWith<$Res> get summary {
-
+  
   return $PaymentSummaryCopyWith<$Res>(_self.summary, (value) {
     return _then(_self.copyWith(summary: value));
   });

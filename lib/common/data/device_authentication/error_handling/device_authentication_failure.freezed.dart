@@ -183,7 +183,7 @@ return failed();case _:
 
 class DeviceAuthenticationCancelledFailure extends DeviceAuthenticationFailure {
   const DeviceAuthenticationCancelledFailure(): super._();
-
+  
 
 
 
@@ -215,7 +215,7 @@ String toString() {
 
 class DeviceAuthenticationUnavailableFailure extends DeviceAuthenticationFailure {
   const DeviceAuthenticationUnavailableFailure(): super._();
-
+  
 
 
 
@@ -247,7 +247,7 @@ String toString() {
 
 class DeviceAuthenticationFailedFailure extends DeviceAuthenticationFailure {
   const DeviceAuthenticationFailedFailure(): super._();
-
+  
 
 
 

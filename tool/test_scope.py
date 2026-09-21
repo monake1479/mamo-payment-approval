@@ -18,23 +18,51 @@ PAYMENTS_UI_TESTS = [
     "test/features/payments/widgets/payment_state_views_test.dart",
 ]
 
+DEVICE_AUTH_TESTS = [
+    "test/common/data/device_authentication/local_auth_client_test.dart",
+    "test/common/data/device_authentication/local_auth_repository_test.dart",
+    "test/common/data/device_authentication/use_cases/is_local_auth_supported_use_case_test.dart",
+    "test/common/data/device_authentication/use_cases/local_authentication_use_case_test.dart",
+    "test/common/data/device_authentication/use_cases/stop_local_authentication_use_case_test.dart",
+]
+
 FLUTTER_TESTS = {
-    "lib/common/data/device_authentication/device_authenticator.dart": [
+    "lib/common/data/device_authentication/data_sources/local_auth_client.dart": [
         "test/app/bootstrap_test.dart",
-        "test/common/data/device_authentication/local_auth_device_authenticator_test.dart",
+        *DEVICE_AUTH_TESTS,
     ],
-    "lib/common/data/device_authentication/local_auth_client.dart": [
-        "test/common/data/device_authentication/local_auth_device_authenticator_test.dart",
-    ],
-    "lib/common/data/device_authentication/local_auth_device_authenticator.dart": [
+    "test/support/device_authentication_test_support.dart": [
         "test/app/bootstrap_test.dart",
-        "test/common/data/device_authentication/local_auth_device_authenticator_test.dart",
+        *DEVICE_AUTH_TESTS,
+    ],
+    "lib/common/data/device_authentication/local_auth_repository.dart": [
+        "test/app/bootstrap_test.dart",
+        *DEVICE_AUTH_TESTS,
+    ],
+    "lib/common/data/device_authentication/use_cases/is_local_auth_supported_use_case.dart": [
+        "test/app/bootstrap_test.dart",
+        "test/common/data/device_authentication/use_cases/is_local_auth_supported_use_case_test.dart",
+    ],
+    "lib/common/data/device_authentication/use_cases/local_authentication_use_case.dart": [
+        "test/app/bootstrap_test.dart",
+        "test/common/data/device_authentication/use_cases/local_authentication_use_case_test.dart",
+    ],
+    "lib/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart": [
+        "test/app/bootstrap_test.dart",
+        "test/common/data/device_authentication/use_cases/stop_local_authentication_use_case_test.dart",
     ],
     "lib/common/data/device_authentication/models/device_authentication_cancellation_result.dart": [
-        "test/common/data/device_authentication/local_auth_device_authenticator_test.dart",
+        "test/common/data/device_authentication/local_auth_client_test.dart",
+        "test/common/data/device_authentication/local_auth_repository_test.dart",
+        "test/common/data/device_authentication/use_cases/stop_local_authentication_use_case_test.dart",
     ],
-    "lib/common/error_handling/device_authentication_failure.dart": [
-        "test/common/data/device_authentication/local_auth_device_authenticator_test.dart",
+    "lib/common/data/device_authentication/error_handling/device_authentication_failure.dart": [
+        "test/common/data/device_authentication/local_auth_client_test.dart",
+        "test/common/data/device_authentication/local_auth_repository_test.dart",
+        "test/common/data/device_authentication/use_cases/local_authentication_use_case_test.dart",
+    ],
+    "lib/app/di/device_authentication_module.dart": [
+        "test/app/bootstrap_test.dart",
     ],
     "lib/app/di/configure_dependencies.dart": [
         "test/app/bootstrap_test.dart",
@@ -108,7 +136,7 @@ FLUTTER_TESTS = {
         "test/features/payments/states/payments/payments_cubit_test.dart",
         *PAYMENTS_UI_TESTS,
     ],
-    "lib/common/error_handling/payments_failure.dart": [
+    "lib/common/data/payments/error_handling/payments_failure.dart": [
         "test/common/data/payments/models/payment_serialization_test.dart",
         "test/common/data/payments/models/payment_test.dart",
         "test/common/data/payments/payments_repository_test.dart",
@@ -182,8 +210,8 @@ FLUTTER_TESTS = {
 }
 
 for generated, source in {
-    "lib/common/error_handling/device_authentication_failure.freezed.dart":
-        "lib/common/error_handling/device_authentication_failure.dart",
+    "lib/common/data/device_authentication/error_handling/device_authentication_failure.freezed.dart":
+        "lib/common/data/device_authentication/error_handling/device_authentication_failure.dart",
     "lib/common/data/payments/models/payment.freezed.dart":
         "lib/common/data/payments/models/payment.dart",
     "lib/common/data/payments/dtos/payment_dto.freezed.dart":
@@ -196,8 +224,8 @@ for generated, source in {
         "lib/common/data/payments/models/payment_summary.dart",
     "lib/common/data/payments/models/payments_collection.freezed.dart":
         "lib/common/data/payments/models/payments_collection.dart",
-    "lib/common/error_handling/payments_failure.freezed.dart":
-        "lib/common/error_handling/payments_failure.dart",
+    "lib/common/data/payments/error_handling/payments_failure.freezed.dart":
+        "lib/common/data/payments/error_handling/payments_failure.dart",
     "lib/common/result/models/result.freezed.dart":
         "lib/common/result/models/result.dart",
     "lib/common/result/models/unit.freezed.dart":

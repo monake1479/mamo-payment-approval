@@ -220,7 +220,7 @@ return $default(_that.id,_that.counterparty,_that.amount,_that.currency,_that.re
 
 class _Payment implements Payment {
   const _Payment({required this.id, required this.counterparty, required this.amount, required this.currency, required this.reference, required this.createdAt, required this.status, this.decidedAt});
-
+  
 
 @override final  String id;
 @override final  String counterparty;

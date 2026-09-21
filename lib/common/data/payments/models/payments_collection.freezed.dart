@@ -83,7 +83,7 @@ as String,
 @override
 @pragma('vm:prefer-inline')
 $PaymentSummaryCopyWith<$Res> get summary {
-
+  
   return $PaymentSummaryCopyWith<$Res>(_self.summary, (value) {
     return _then(_self.copyWith(summary: value));
   });
@@ -226,7 +226,7 @@ return $default(_that.payments,_that.summary,_that.reportingPeriodStartUtc,_that
 
 class _PaymentsCollection extends PaymentsCollection {
   const _PaymentsCollection({required  List<Payment> payments, required this.summary, required this.reportingPeriodStartUtc, required this.reportingTimeZone, required this.reportingCurrency}): _payments = payments,super._();
-
+  
 
  final  List<Payment> _payments;
 @override List<Payment> get payments {
@@ -305,7 +305,7 @@ as String,
 @override
 @pragma('vm:prefer-inline')
 $PaymentSummaryCopyWith<$Res> get summary {
-
+  
   return $PaymentSummaryCopyWith<$Res>(_self.summary, (value) {
     return _then(_self.copyWith(summary: value));
   });

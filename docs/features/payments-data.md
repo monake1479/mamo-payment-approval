@@ -6,7 +6,7 @@ Status: implemented and locally verified on the feature branch. User-facing scre
 
 This slice supplies the shared payment contract for `PAY-01`, `PAY-04`, `HOME-01`, `HOME-02`, and `MONEY-01`:
 
-- reusable Freezed payment models under `lib/common/data/payments/models/`, with one authored model per file, and a cross-layer `PaymentsFailure` union under `lib/common/error_handling/`;
+- reusable Freezed payment models under `lib/common/data/payments/models/`, with one authored model per file, and a cross-layer `PaymentsFailure` union under `lib/common/data/payments/error_handling/`;
 - a Freezed `PaymentDto` with a payment-specific amount converter under `common/data/payments/converters/` and reusable UTC conversion under `common/converters/`;
 - UTC record serialization and account-zone monthly reporting with `Asia/Dubai` as the demonstration account setting;
 - a production-shaped asynchronous remote data source backed in demo composition by a deterministic in-memory backend client, with seeded decided history, one active request, final decisions, and opt-in deterministic failure simulation;

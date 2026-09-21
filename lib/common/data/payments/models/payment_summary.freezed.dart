@@ -214,7 +214,7 @@ return $default(_that.approvedAmount,_that.approvedCount);case _:
 
 class _PaymentSummary implements PaymentSummary {
   const _PaymentSummary({required this.approvedAmount, required this.approvedCount});
-
+  
 
 @override final  double approvedAmount;
 @override final  int approvedCount;

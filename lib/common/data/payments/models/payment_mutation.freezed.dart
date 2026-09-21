@@ -80,7 +80,7 @@ as PaymentsCollection,
 @override
 @pragma('vm:prefer-inline')
 $PaymentCopyWith<$Res> get payment {
-
+  
   return $PaymentCopyWith<$Res>(_self.payment, (value) {
     return _then(_self.copyWith(payment: value));
   });
@@ -89,7 +89,7 @@ $PaymentCopyWith<$Res> get payment {
 @override
 @pragma('vm:prefer-inline')
 $PaymentsCollectionCopyWith<$Res> get collection {
-
+  
   return $PaymentsCollectionCopyWith<$Res>(_self.collection, (value) {
     return _then(_self.copyWith(collection: value));
   });
@@ -232,7 +232,7 @@ return $default(_that.payment,_that.collection);case _:
 
 class _PaymentMutation implements PaymentMutation {
   const _PaymentMutation({required this.payment, required this.collection});
-
+  
 
 @override final  Payment payment;
 @override final  PaymentsCollection collection;
@@ -299,7 +299,7 @@ as PaymentsCollection,
 @override
 @pragma('vm:prefer-inline')
 $PaymentCopyWith<$Res> get payment {
-
+  
   return $PaymentCopyWith<$Res>(_self.payment, (value) {
     return _then(_self.copyWith(payment: value));
   });
@@ -308,7 +308,7 @@ $PaymentCopyWith<$Res> get payment {
 @override
 @pragma('vm:prefer-inline')
 $PaymentsCollectionCopyWith<$Res> get collection {
-
+  
   return $PaymentsCollectionCopyWith<$Res>(_self.collection, (value) {
     return _then(_self.copyWith(collection: value));
   });
