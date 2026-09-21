@@ -89,6 +89,18 @@ class AppearanceScopeTest(unittest.TestCase):
         )
         self.assertFalse(scope["hook_tests"])
 
+    def test_option_widget_change_selects_selector_consumers(self):
+        scope = select_scope(
+            ["lib/features/settings/widgets/theme_mode_option.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(
+            scope["flutter_tests"],
+            sorted([SELECTOR_TEST, SETTINGS_PAGE_TEST, APP_TEST]),
+        )
+        self.assertFalse(scope["hook_tests"])
+
     def test_preferences_module_change_selects_bootstrap(self):
         scope = select_scope(
             ["lib/app/di/app_preferences_module.dart"],

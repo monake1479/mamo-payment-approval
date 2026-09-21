@@ -42,7 +42,7 @@ extended the system-following baseline (Q1) on 2026-09-21; [ADR 0012](decisions/
 records the decision, the new `shared_preferences` dependency, and its
 alternatives. See [the feature note](features/appearance.md).
 
-An appearance domain under `lib/common/data/appearance/` persists a Flutter-free
+An appearance domain under `lib/common/data/appearance/` persists a
 `ThemePreference` through a `SharedPreferences` data source, repository, and
 load/save use cases, all lazy singletons like the device-authentication feature.
 A process-wide `ThemeModeCubit` hydrates the stored preference during composition

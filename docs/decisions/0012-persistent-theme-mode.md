@@ -25,8 +25,9 @@ and added no persistence dependency, so introducing one is a material decision.
 Add an appearance domain under `lib/common/data/appearance/` following the
 established shared-data layering:
 
-- `ThemePreference` — a Flutter-free domain enum (`system`, `light`, `dark`) with
-  a stable `storageValue` decoupled from `name`.
+- `ThemePreference` — the domain enum (`system`, `light`, `dark`) with a stable
+  `storageValue` decoupled from `name`, colocated with the
+  `ThemePreferenceMaterial` extension that maps it onto Flutter's `ThemeMode`.
 - `ThemePreferenceLocalDataSource` — the single concrete data source over
   `SharedPreferences`. Reading is total (a missing or unrecognized value means
   "follow the system"); writing returns a typed `AppearanceFailure` through the
@@ -37,8 +38,7 @@ established shared-data layering:
   device-authentication feature.
 
 Presentation adds a `ThemeModeCubit` (Freezed `ThemeModeState`) that hydrates the
-persisted preference during composition and drives `MaterialApp.themeMode`. The
-domain enum is mapped to Flutter's `ThemeMode` in a presentation-only extension.
+persisted preference during composition and drives `MaterialApp.themeMode`.
 A `Settings` screen, reachable from a labelled action in the Home header and
 pushed as `/settings` above the navigation shell, hosts a `ThemeModeSelector`
 whose selected option is conveyed by both an indicator icon and accessibility

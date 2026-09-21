@@ -14,9 +14,11 @@ the concrete `SharedPreferences` data source (no interface). The data source own
 the storage SDK calls and translates storage failures into typed results, so the
 repository never handles raw storage exceptions.
 
-`ThemePreference` is a Flutter-free domain enum. Its `storageValue` is a stable
+`ThemePreference` is the appearance-domain enum. Its `storageValue` is a stable
 string, decoupled from `name`, so a future rename cannot invalidate a stored
-value. Reading is total: a missing or unrecognized value resolves to
+value. The same file carries the `ThemePreferenceMaterial` extension that maps
+the enum onto Flutter's `ThemeMode`, so the enum file is the one place that
+imports Flutter within the appearance data domain. Reading is total: a missing or unrecognized value resolves to
 `ThemePreference.system`. Writing returns `Result<AppearanceFailure, Unit>`;
 `AppearanceFailure.persistenceFailed` carries the stable code
 `appearance.persistence_failed`.
@@ -26,16 +28,17 @@ process-wide singleton, hydrated once during composition via `loadInitial()` so
 the app opens in the stored appearance without a flash, and it drives
 `MaterialApp.themeMode`. `select` applies the new value immediately, then
 persists it; a persistence failure keeps the in-session selection rather than
-reverting a deliberate choice. The domain enum is mapped to Flutter's `ThemeMode`
-by the presentation-only `ThemePreferenceMaterial` extension; the Cubit and its
-state stay Flutter-free apart from the `bloc` base class.
+reverting a deliberate choice. `App` maps the enum to Flutter's `ThemeMode`
+through `ThemePreferenceMaterial`; the Cubit and its state stay Flutter-free
+apart from the `bloc` base class.
 
 ## Surface and accessibility
 
 A labelled `Settings` action in the Home header opens the `/settings` route,
 pushed above the navigation shell like payment details. The settings screen hosts
-`ThemeModeSelector`, a mutually exclusive System/Light/Dark chooser. Each option
-is a full-width target that stays taller than the 48-pixel minimum at 200% text,
+`ThemeModeSelector`, a mutually exclusive System/Light/Dark chooser that renders
+one `ThemeModeOption` row per `ThemeModeOptionData` entry. Each option is a
+full-width target that stays taller than the 48-pixel minimum at 200% text,
 carries a stable `settings.themeMode.<value>` semantics identifier and radio
 selection semantics, and shows its selected state through an indicator icon as
 well as colour. All copy is English ARB resolved through `AppLocalizations`.

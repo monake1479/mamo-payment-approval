@@ -117,7 +117,19 @@ FLUTTER_TESTS = {
         "test/features/settings/pages/settings_page_test.dart",
         "test/app/app_theme_mode_test.dart",
     ],
-    "lib/features/settings/theme_mode_presentation.dart": [
+    "lib/features/settings/models/theme_mode_option_data.dart": [
+        "test/features/settings/widgets/theme_mode_selector_test.dart",
+        "test/features/settings/pages/settings_page_test.dart",
+        "test/app/app_theme_mode_test.dart",
+    ],
+    "lib/features/settings/models/theme_mode_option_data.freezed.dart": [
+        "test/features/settings/widgets/theme_mode_selector_test.dart",
+        "test/features/settings/pages/settings_page_test.dart",
+        "test/app/app_theme_mode_test.dart",
+    ],
+    "lib/features/settings/widgets/theme_mode_option.dart": [
+        "test/features/settings/widgets/theme_mode_selector_test.dart",
+        "test/features/settings/pages/settings_page_test.dart",
         "test/app/app_theme_mode_test.dart",
     ],
     "lib/features/settings/widgets/theme_mode_selector.dart": [

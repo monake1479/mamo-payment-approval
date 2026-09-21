@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart' show ThemeMode;
+
 /// User-selectable appearance mode for the application.
 ///
-/// This is a domain-level type and deliberately free of Flutter imports;
-/// presentation maps it onto a Material `ThemeMode`. The default is
-/// [ThemePreference.system], which follows the device appearance.
+/// The default is [ThemePreference.system], which follows the device
+/// appearance. [ThemePreferenceMaterial] maps it onto the Flutter [ThemeMode]
+/// consumed by `MaterialApp`.
 enum ThemePreference {
   system,
   light,
@@ -27,5 +29,15 @@ enum ThemePreference {
     'light' => ThemePreference.light,
     'dark' => ThemePreference.dark,
     _ => null,
+  };
+}
+
+/// Maps a [ThemePreference] onto the Flutter [ThemeMode] consumed by
+/// `MaterialApp`.
+extension ThemePreferenceMaterial on ThemePreference {
+  ThemeMode get materialThemeMode => switch (this) {
+    ThemePreference.system => ThemeMode.system,
+    ThemePreference.light => ThemeMode.light,
+    ThemePreference.dark => ThemeMode.dark,
   };
 }
