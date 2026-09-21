@@ -1,9 +1,9 @@
 import 'package:injectable/injectable.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/decided_payment_order.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/payments_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/common/data/payments/models/decided_payment_order.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/payments_repository.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
 
 /// Finds decided payments matching a free-text query over the visible
 /// counterparty/reference fields and an optional status filter, returned in

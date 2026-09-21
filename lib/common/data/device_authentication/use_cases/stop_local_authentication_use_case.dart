@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/local_auth_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
+import 'package:mamo_approval/common/data/device_authentication/local_auth_repository.dart';
+import 'package:mamo_approval/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
 
 @lazySingleton
 class StopLocalAuthenticationUseCase {

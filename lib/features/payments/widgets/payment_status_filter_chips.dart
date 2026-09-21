@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_bloc.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_event.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_event.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 /// Decided-status filter chips. Only approved and rejected are offered because
 /// the history never contains the pending request.

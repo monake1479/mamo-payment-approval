@@ -1,4 +1,4 @@
-# ADR 0012: Event-driven BLoC for payments search
+# ADR 0013: Event-driven BLoC for payments search
 
 - Status: Proposed (coordinator-selected under the delegated implementation authority; subject to owner review)
 - Date: 2026-09-21

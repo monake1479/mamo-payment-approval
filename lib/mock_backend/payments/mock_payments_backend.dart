@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_client.dart';
-import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_exception.dart';
+import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart';
+import 'package:mamo_approval/mock_backend/payments/payments_backend_exception.dart';
 import 'package:timezone/data/latest.dart' as time_zone_data;
 import 'package:timezone/timezone.dart' as time_zone;
 

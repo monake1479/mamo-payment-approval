@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/search_payments_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_event.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_state.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/search_payments_use_case.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_event.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_state.dart';
 import 'package:stream_transform/stream_transform.dart';
 
 /// Event-driven search over the decided payment history.

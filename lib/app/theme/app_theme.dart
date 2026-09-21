@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_status_colors.dart';
+import 'package:mamo_approval/app/theme/app_motion.dart';
+import 'package:mamo_approval/app/theme/app_status_colors.dart';
 
 abstract final class AppTheme {
   static const double compactPadding = 16;

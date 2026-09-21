@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/error_handling/device_authentication_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/local_auth_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
+import 'package:mamo_approval/common/data/device_authentication/error_handling/device_authentication_failure.dart';
+import 'package:mamo_approval/common/data/device_authentication/local_auth_repository.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/common/result/models/unit.dart';
 
 @lazySingleton
 class LocalAuthenticationUseCase {

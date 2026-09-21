@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/widgets/monthly_summary_card.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/widgets/payment_state_views.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/features/payments/widgets/monthly_summary_card.dart';
+import 'package:mamo_approval/features/payments/widgets/payment_state_views.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 void main() {
   for (final Brightness brightness in Brightness.values) {

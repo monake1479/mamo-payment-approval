@@ -4,28 +4,28 @@ import 'dart:ui';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/app/bootstrap.dart';
-import 'package:mamo_payment_approval_challenge/app/config/app_environment.dart';
-import 'package:mamo_payment_approval_challenge/app/di/configure_dependencies.dart';
-import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostics.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
-import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/data_sources/local_auth_client.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/local_auth_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/is_local_auth_supported_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/data_sources/payments_remote_data_source.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/payments_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/create_payment_request_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/decide_payment_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/load_payments_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/refresh_payments_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/search_payments_use_case.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
-import 'package:mamo_payment_approval_challenge/mock_backend/payments/mock_payments_backend.dart';
-import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_client.dart';
+import 'package:mamo_approval/app/bootstrap.dart';
+import 'package:mamo_approval/app/config/app_environment.dart';
+import 'package:mamo_approval/app/di/configure_dependencies.dart';
+import 'package:mamo_approval/app/diagnostics/local_diagnostics.dart';
+import 'package:mamo_approval/app/errors/app_failure.dart';
+import 'package:mamo_approval/app/errors/configure_error_handling.dart';
+import 'package:mamo_approval/app/navigation/app_router.dart';
+import 'package:mamo_approval/common/data/device_authentication/data_sources/local_auth_client.dart';
+import 'package:mamo_approval/common/data/device_authentication/local_auth_repository.dart';
+import 'package:mamo_approval/common/data/device_authentication/use_cases/is_local_auth_supported_use_case.dart';
+import 'package:mamo_approval/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
+import 'package:mamo_approval/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
+import 'package:mamo_approval/common/data/payments/data_sources/payments_remote_data_source.dart';
+import 'package:mamo_approval/common/data/payments/payments_repository.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/create_payment_request_use_case.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/decide_payment_use_case.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/load_payments_use_case.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/refresh_payments_use_case.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/search_payments_use_case.dart';
+import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_approval/mock_backend/payments/mock_payments_backend.dart';
+import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -161,7 +161,7 @@ void main() {
       AppFailureCode.startupFailed,
       ErrorOrigin.startup,
       stack: StackTrace.fromString(
-        'PRIVATE_PAYLOAD /private/file.dart:1:2\n${List<String>.generate(30, (index) => 'package:mamo_payment_approval_challenge/app/bootstrap.dart:$index:1').join('\n')}',
+        'PRIVATE_PAYLOAD /private/file.dart:1:2\n${List<String>.generate(30, (index) => 'package:mamo_approval/app/bootstrap.dart:$index:1').join('\n')}',
       ),
     );
     final Map<String, dynamic> record =

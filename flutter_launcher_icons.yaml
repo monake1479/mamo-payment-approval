@@ -1,0 +1,11 @@
+# Placeholder launcher icons for "Mamo Approval".
+# Regenerate after replacing the source art: `dart run flutter_launcher_icons`.
+# Brand colour matches the app_theme seed (#6938EF). Replace before release.
+flutter_launcher_icons:
+  image_path: "assets/branding/app_icon.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  min_sdk_android: 24
+  adaptive_icon_background: "#6938EF"
+  adaptive_icon_foreground: "assets/branding/app_icon_foreground.png"

@@ -3,20 +3,20 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/approval/approval_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/approval/approval_state.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/debug_action/debug_action_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_state.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/widgets/approval_overlay.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/widgets/debug_payment_action.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/navigation/app_router.dart';
+import 'package:mamo_approval/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
+import 'package:mamo_approval/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/features/payments/states/approval/approval_cubit.dart';
+import 'package:mamo_approval/features/payments/states/approval/approval_state.dart';
+import 'package:mamo_approval/features/payments/states/debug_action/debug_action_cubit.dart';
+import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_approval/features/payments/states/payments/payments_state.dart';
+import 'package:mamo_approval/features/payments/widgets/approval_overlay.dart';
+import 'package:mamo_approval/features/payments/widgets/debug_payment_action.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 class PaymentFlowLayer extends StatefulWidget {
   const PaymentFlowLayer({

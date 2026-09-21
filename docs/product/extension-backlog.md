@@ -9,7 +9,7 @@ Choose a small addition with clear user value, a demonstrable journey, explainab
 | Candidate | User value | Questions and costs |
 |---|---|---|
 | Payment decision timeline | Explain when a request arrived and was decided | Timestamp semantics, privacy, distinction from durable audit logs |
-| Search and status filtering | Find payments as the list grows | Selected for slice 5: `SEARCH-01..05`, [feature note](../features/payments-search.md), [ADR 0012](../decisions/0012-event-driven-bloc-for-payments-search.md); filter ownership, empty results, and return-navigation state are resolved there |
+| Search and status filtering | Find payments as the list grows | Selected for slice 5: `SEARCH-01..05`, [feature note](../features/payments-search.md), [ADR 0013](../decisions/0013-event-driven-bloc-for-payments-search.md); filter ownership, empty results, and return-navigation state are resolved there |
 | Deterministic demo scenarios | Exercise recovery as well as success | Separate from real authentication; no release auth bypass |
 | Accessible decision feedback | Clear results through text, motion, optional haptics | Duplicate feedback, reduced motion, platform settings |
 

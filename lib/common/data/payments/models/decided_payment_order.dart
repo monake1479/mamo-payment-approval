@@ -1,4 +1,4 @@
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
 
 /// Canonical ordering for decided payments: newest decision first, then the
 /// stable identifier ascending so equal decision times stay deterministic.

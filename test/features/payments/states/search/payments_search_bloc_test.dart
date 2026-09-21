@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_bloc.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_event.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_state.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_event.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_state.dart';
 
 import '../../../../support/payments_test_support.dart';
 

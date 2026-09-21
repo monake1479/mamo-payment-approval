@@ -1,9 +1,9 @@
 import 'package:injectable/injectable.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/data_sources/local_auth_client.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/error_handling/device_authentication_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
+import 'package:mamo_approval/common/data/device_authentication/data_sources/local_auth_client.dart';
+import 'package:mamo_approval/common/data/device_authentication/error_handling/device_authentication_failure.dart';
+import 'package:mamo_approval/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/common/result/models/unit.dart';
 
 /// Coordinates native device authentication over the [LocalAuthClient] data
 /// source.

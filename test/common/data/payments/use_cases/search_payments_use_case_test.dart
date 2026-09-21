@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/search_payments_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/search_payments_use_case.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
 
 import '../../../../support/payments_test_support.dart';
 

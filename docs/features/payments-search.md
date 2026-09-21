@@ -1,6 +1,6 @@
 # Payments search and status filtering
 
-Status: implemented on the feature branch as the slice-5 extension selected from the [backlog](../product/extension-backlog.md); decision recorded in [ADR 0012](../decisions/0012-event-driven-bloc-for-payments-search.md).
+Status: implemented on the feature branch as the slice-5 extension selected from the [backlog](../product/extension-backlog.md); decision recorded in [ADR 0013](../decisions/0013-event-driven-bloc-for-payments-search.md).
 
 ## Behaviour
 
@@ -19,4 +19,4 @@ Status: implemented on the feature branch as the slice-5 extension selected from
 
 ## Verification
 
-Backend, data-source, repository, use-case, bloc (`blocTest` and `fakeAsync`), page, and app tests cover the path; see ADR 0012 for the file list. Maestro coverage for the search journey is not added in this slice and remains a follow-up.
+Backend, data-source, repository, use-case, bloc (`blocTest` and `fakeAsync`), page, and app tests cover the path; see ADR 0013 for the file list. Maestro coverage for the search journey is not added in this slice and remains a follow-up.

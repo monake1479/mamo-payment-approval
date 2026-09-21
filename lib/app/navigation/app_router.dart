@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/app_failure_view.dart';
-import 'package:mamo_payment_approval_challenge/app/navigation/payment_navigation_shell.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/pages/home_page.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/pages/payment_details_page.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/pages/payments_page.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_bloc.dart';
+import 'package:mamo_approval/app/errors/app_failure.dart';
+import 'package:mamo_approval/app/errors/app_failure_view.dart';
+import 'package:mamo_approval/app/navigation/payment_navigation_shell.dart';
+import 'package:mamo_approval/app/theme/app_motion.dart';
+import 'package:mamo_approval/features/payments/pages/home_page.dart';
+import 'package:mamo_approval/features/payments/pages/payment_details_page.dart';
+import 'package:mamo_approval/features/payments/pages/payments_page.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart';
 
 abstract final class AppRoutes {
   static const String home = 'home';

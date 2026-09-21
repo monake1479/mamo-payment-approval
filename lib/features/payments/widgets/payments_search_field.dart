@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_bloc.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/search/payments_search_event.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_event.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 /// Free-text search over the visible counterparty and reference fields. The
 /// text controller is ephemeral widget state; the bloc owns the searched query.
