@@ -54,14 +54,19 @@ first frame, avoiding an appearance flash.
 
 The default remains `System`. Only the non-sensitive appearance preference is
 stored; no payment, authentication, or otherwise sensitive data is persisted. A
-failed write keeps the applied selection effective for the session; the choice
-simply will not survive a restart, and the user can retry by selecting again.
+failed write keeps the applied selection effective for the session and is
+reported to the user through a typed failure in the Cubit state; selecting the
+same option again retries the write. If the platform store cannot be opened at
+startup, composition falls back to a session-only store that refuses writes, so
+a cosmetic preference never blocks the payment app from starting.
 
 ## Consequences
 
 - The app gains its first persistence dependency. It is confined to the
   appearance domain behind a narrow data source and must not become a general
   store for sensitive data (see the backlog's app-PIN note).
+- `shared_preferences_platform_interface` becomes a runtime dependency for the
+  session-only fallback store installed by the preferences module.
 - `MamoPaymentApprovalApp` now requires a `ThemeModeCubit`; app composition and
   tests supply it.
 - `AppFailureApp` continues to follow the system appearance; the override applies

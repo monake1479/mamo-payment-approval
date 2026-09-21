@@ -42,13 +42,13 @@ void main() {
         tester.getSemantics(
           find.bySemanticsIdentifier('settings.themeMode.system'),
         ),
-        isSemantics(isSelected: true),
+        isSemantics(isSelected: true, isButton: true),
       );
       expect(
         tester.getSemantics(
           find.bySemanticsIdentifier('settings.themeMode.dark'),
         ),
-        isSemantics(isSelected: false),
+        isSemantics(isSelected: false, isButton: true),
       );
       handle.dispose();
       expect(

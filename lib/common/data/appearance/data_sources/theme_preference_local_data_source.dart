@@ -11,9 +11,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// `LocalAuthClient` for device authentication. It owns the storage SDK calls
 /// and translates storage failures into typed results.
 ///
-/// [read] is total: a missing or unrecognized stored value is not an error, it
-/// means "follow the system", so it returns [ThemePreference.system] rather than
-/// a failure. [write] can fail, so it returns a typed [AppearanceFailure].
+/// [read] is total: a missing, unrecognized, or non-string stored value is not
+/// an error, it means "follow the system", so it returns
+/// [ThemePreference.system] rather than a failure. [write] can fail, so it
+/// returns a typed [AppearanceFailure].
 @lazySingleton
 class ThemePreferenceLocalDataSource {
   const ThemePreferenceLocalDataSource(this._preferences);
@@ -23,14 +24,9 @@ class ThemePreferenceLocalDataSource {
   final SharedPreferences _preferences;
 
   ThemePreference read() {
-    try {
-      return ThemePreference.fromStorageValue(
-            _preferences.getString(_preferenceKey),
-          ) ??
-          ThemePreference.system;
-    } on Exception {
-      return ThemePreference.system;
-    }
+    final Object? stored = _preferences.get(_preferenceKey);
+    return ThemePreference.fromStorageValue(stored is String ? stored : null) ??
+        ThemePreference.system;
   }
 
   Future<Result<AppearanceFailure, Unit>> write(

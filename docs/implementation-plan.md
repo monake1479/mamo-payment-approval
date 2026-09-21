@@ -50,9 +50,10 @@ and drives `MaterialApp.themeMode`; a Settings screen reachable from the Home
 heading hosts an accessible System/Light/Dark chooser. Only the non-sensitive
 appearance preference is stored. Data-source, use-case, Cubit, selector,
 settings, and app-level theme-mode tests plus bootstrap DI checks cover the
-default, each stored value, a persistence failure, applying and persisting a
-selection, and opening in and toggling to the persisted appearance in both
-appearances at 200% text.
+default, each stored value, a surfaced and retried persistence failure,
+composition over an unavailable store, applying and persisting a selection, and
+opening in and toggling to the persisted appearance; the selector is verified in
+both appearances at 200% text.
 
 ## Native foundation increment
 

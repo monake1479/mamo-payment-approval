@@ -29,6 +29,12 @@ APPEARANCE_TESTS = [
     SETTINGS_PAGE_TEST,
     APP_TEST,
 ]
+# App-level tests that compose the app with a hydrated ThemeModeCubit.
+APP_SHELL_TESTS = [
+    "test/app/app_test.dart",
+    "test/app/app_theme_test.dart",
+    "test/app/approval_flow_test.dart",
+]
 
 
 class AppearanceScopeTest(unittest.TestCase):
@@ -43,7 +49,7 @@ class AppearanceScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            sorted([BOOTSTRAP_TEST, *APPEARANCE_TESTS]),
+            sorted([BOOTSTRAP_TEST, *APPEARANCE_TESTS, *APP_SHELL_TESTS]),
         )
         self.assertFalse(scope["hook_tests"])
 
@@ -55,7 +61,15 @@ class AppearanceScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            sorted([BOOTSTRAP_TEST, CUBIT_TEST, SETTINGS_PAGE_TEST, APP_TEST]),
+            sorted(
+                [
+                    BOOTSTRAP_TEST,
+                    CUBIT_TEST,
+                    SETTINGS_PAGE_TEST,
+                    APP_TEST,
+                    *APP_SHELL_TESTS,
+                ]
+            ),
         )
         self.assertFalse(scope["hook_tests"])
 
@@ -70,7 +84,15 @@ class AppearanceScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            sorted([LOCAL_DS_TEST, USE_CASES_TEST, CUBIT_TEST]),
+            sorted(
+                [
+                    BOOTSTRAP_TEST,
+                    LOCAL_DS_TEST,
+                    USE_CASES_TEST,
+                    CUBIT_TEST,
+                    SETTINGS_PAGE_TEST,
+                ]
+            ),
         )
         self.assertFalse(scope["hook_tests"])
 
@@ -85,7 +107,7 @@ class AppearanceScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            sorted([CUBIT_TEST, SETTINGS_PAGE_TEST, APP_TEST]),
+            sorted([CUBIT_TEST, SETTINGS_PAGE_TEST, APP_TEST, *APP_SHELL_TESTS]),
         )
         self.assertFalse(scope["hook_tests"])
 
@@ -99,6 +121,15 @@ class AppearanceScopeTest(unittest.TestCase):
             scope["flutter_tests"],
             sorted([SELECTOR_TEST, SETTINGS_PAGE_TEST, APP_TEST]),
         )
+        self.assertFalse(scope["hook_tests"])
+
+    def test_session_only_store_change_selects_bootstrap(self):
+        scope = select_scope(
+            ["lib/app/di/session_only_shared_preferences_store.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(scope["flutter_tests"], [BOOTSTRAP_TEST])
         self.assertFalse(scope["hook_tests"])
 
     def test_preferences_module_change_selects_bootstrap(self):

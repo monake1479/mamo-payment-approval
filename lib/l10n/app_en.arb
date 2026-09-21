@@ -177,5 +177,7 @@
   "themeModeDarkLabel": "Dark",
   "@themeModeDarkLabel": {"description": "Appearance option that always uses the dark theme."},
   "themeModeDarkDescription": "Always dark",
-  "@themeModeDarkDescription": {"description": "Explanation of the dark appearance option."}
+  "@themeModeDarkDescription": {"description": "Explanation of the dark appearance option."},
+  "appearancePersistenceFailed": "Your appearance choice could not be saved. It stays applied for now; select it again to retry.",
+  "@appearancePersistenceFailed": {"description": "Safe message when the selected appearance mode cannot be persisted; the selection remains applied for the session."}
 }

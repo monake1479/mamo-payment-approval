@@ -27,8 +27,11 @@ imports Flutter within the appearance data domain. Reading is total: a missing o
 process-wide singleton, hydrated once during composition via `loadInitial()` so
 the app opens in the stored appearance without a flash, and it drives
 `MaterialApp.themeMode`. `select` applies the new value immediately, then
-persists it; a persistence failure keeps the in-session selection rather than
-reverting a deliberate choice. `App` maps the enum to Flutter's `ThemeMode`
+persists it. A failed save keeps the in-session selection rather than reverting
+a deliberate choice, and is stored in the state as a typed `AppearanceFailure`;
+the settings screen maps it to a localized snackbar, and selecting the same
+option again retries the save. A save result that arrives after a newer
+selection is discarded. `App` maps the enum to Flutter's `ThemeMode`
 through `ThemePreferenceMaterial`; the Cubit and its state stay Flutter-free
 apart from the `bloc` base class.
 
@@ -47,13 +50,20 @@ well as colour. All copy is English ARB resolved through `AppLocalizations`.
 
 Only the non-sensitive appearance preference is stored, through
 `shared_preferences`. No payment or authentication data is persisted. The default
-is `System`. `AppFailureApp` continues to follow the system appearance; the
+is `System`. Reading tolerates a missing, unrecognized, or non-string stored
+value. If the platform store cannot be opened during composition, the
+preferences module installs `SessionOnlySharedPreferencesStore`, which reads as
+empty and refuses writes, so the app still starts in the system appearance and
+every save reports the persistence failure instead of blocking startup. `AppFailureApp` continues to follow the system appearance; the
 override applies to normal app composition only.
 
 ## Verification
 
 `UI-03` maps to the appearance data-source, use-case, Cubit, selector, settings,
 and app-level theme-mode tests, plus the bootstrap DI registration checks. They
-cover the stored default and each value, a persistence failure, applying and
-persisting a selection, opening in the persisted appearance, and toggling from
-Home through Settings in both appearances at 200% text.
+cover the stored default, each value, and a non-string stored value; a failed
+save surfacing in state and on the settings screen, retry, and a newer selection
+clearing the failure; composition over an unavailable platform store; applying
+and persisting a selection; opening in the persisted appearance; and toggling
+from Home through Settings. The selector itself is verified in both appearances
+at 200% text.

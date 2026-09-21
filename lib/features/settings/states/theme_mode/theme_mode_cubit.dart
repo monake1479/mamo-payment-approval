@@ -1,7 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mamo_approval/common/data/appearance/error_handling/appearance_failure.dart';
 import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
 import 'package:mamo_approval/common/data/appearance/use_cases/load_theme_preference_use_case.dart';
 import 'package:mamo_approval/common/data/appearance/use_cases/save_theme_preference_use_case.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/common/result/models/unit.dart';
 import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_state.dart';
 
 /// Owns the selected appearance mode and drives `MaterialApp.themeMode`.
@@ -29,16 +32,27 @@ final class ThemeModeCubit extends Cubit<ThemeModeState> {
 
   /// Applies [preference] and persists it.
   ///
-  /// The new value is emitted first so the change is instant. Persistence runs
-  /// afterwards; its typed result is intentionally not surfaced because
-  /// appearance is non-critical and the selection is already effective for the
-  /// session. A failed write simply will not survive a restart, and the user can
-  /// retry by selecting again (see ADR 0013).
+  /// The new value is emitted first so the change is instant, then the save
+  /// runs. A failed save keeps the applied selection for the session and is
+  /// surfaced through [ThemeModeState.persistenceFailure]; selecting the same
+  /// option again retries the save. Reselecting an already persisted option is
+  /// a no-op. A save result that arrives after a newer selection is discarded.
   Future<void> select(ThemePreference preference) async {
-    if (preference == state.preference) {
+    final bool alreadyApplied = preference == state.preference;
+    if (alreadyApplied && state.persistenceFailure == null) {
       return;
     }
     emit(ThemeModeState(preference: preference));
-    await _savePreference(preference);
+    final Result<AppearanceFailure, Unit> result = await _savePreference(
+      preference,
+    );
+    if (isClosed || state.preference != preference) {
+      return;
+    }
+    result.fold(
+      onSuccess: (Unit _) {},
+      onFailure: (AppearanceFailure failure) =>
+          emit(state.copyWith(persistenceFailure: failure)),
+    );
   }
 }

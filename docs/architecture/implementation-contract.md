@@ -33,7 +33,7 @@ Actual backgrounding revokes disclosure immediately, including an in-flight auth
 
 A decision submitted before backgrounding may finish once; do not cancel or replay it automatically. Apply its canonical result, then perform any navigation effect once when the app can present it. Failed decisions remain recoverable in the overlay, with sensitive data masked after backgrounding.
 
-All demo state is session-only. OS process termination resets to the seed on the next launch; there is no claim of durable payment execution or recovery. Explain this clearly in reviewer documentation. App-switcher content remains concealed. On Android versions without recents-only screenshot protection, use the existing privacy boundary and document any additional screenshot restriction required for concealment rather than silently claiming coverage.
+All demo state is session-only, with one owner-approved exception: the non-sensitive appearance preference persists across launches (`UI-03`, ADR 0013). OS process termination resets payment data to the seed on the next launch; there is no claim of durable payment execution or recovery. Explain this clearly in reviewer documentation. App-switcher content remains concealed. On Android versions without recents-only screenshot protection, use the existing privacy boundary and document any additional screenshot restriction required for concealment rather than silently claiming coverage.
 
 ## Branch and integration contract
 

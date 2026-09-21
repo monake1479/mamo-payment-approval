@@ -47,6 +47,17 @@ void main() {
 
       expect(dataSource.read(), ThemePreference.system);
     });
+
+    test(
+      'falls back to system when the stored value is not a string',
+      () async {
+        final ThemePreferenceLocalDataSource dataSource = await dataSourceWith(
+          const <String, Object>{_preferenceKey: 1},
+        );
+
+        expect(dataSource.read(), ThemePreference.system);
+      },
+    );
   });
 
   group('write', () {

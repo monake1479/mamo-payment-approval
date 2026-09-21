@@ -34,7 +34,6 @@ class HomePage extends StatelessWidget {
       semanticIdentifier: 'home.page',
       trailing: Semantics(
         identifier: 'home.openSettings',
-        button: true,
         child: IconButton(
           tooltip: l10n.settingsOpenLabel,
           onPressed: onOpenSettings,

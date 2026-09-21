@@ -26,6 +26,7 @@ class ThemeModeOption extends StatelessWidget {
         : theme.colorScheme.onSurfaceVariant;
     return Semantics(
       identifier: 'settings.themeMode.${data.value.storageValue}',
+      button: true,
       inMutuallyExclusiveGroup: true,
       selected: isSelected,
       child: InkWell(

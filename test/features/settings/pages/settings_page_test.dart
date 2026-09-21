@@ -43,6 +43,30 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('announces a failed save and keeps the selection applied', (
+    WidgetTester tester,
+  ) async {
+    final ThemeModeCubit cubit = createThemeModeCubit(
+      await failingWriteSharedPreferences(),
+    );
+    addTearDown(cubit.close);
+
+    await tester.pumpWidget(_wrap(cubit));
+    await tester.pumpAndSettle();
+    await tester.tap(find.bySemanticsIdentifier('settings.themeMode.dark'));
+    await tester.pumpAndSettle();
+
+    expect(cubit.state.preference, ThemePreference.dark);
+    expect(
+      find.text(
+        'Your appearance choice could not be saved. It stays applied for now; '
+        'select it again to retry.',
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('marks the current preference as selected', (
     WidgetTester tester,
   ) async {

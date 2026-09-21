@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ThemeModeState {
 
- ThemePreference get preference;
+ ThemePreference get preference; AppearanceFailure? get persistenceFailure;
 /// Create a copy of ThemeModeState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $ThemeModeStateCopyWith<ThemeModeState> get copyWith => _$ThemeModeStateCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as ThemeModeState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ThemeModeState&&(identical(other.preference, _this.preference) || other.preference == _this.preference));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ThemeModeState&&(identical(other.preference, _this.preference) || other.preference == _this.preference)&&(identical(other.persistenceFailure, _this.persistenceFailure) || other.persistenceFailure == _this.persistenceFailure));
 }
 
 
 @override
 int get hashCode {
   final _this = this as ThemeModeState;
-  return Object.hash(runtimeType,_this.preference);
+  return Object.hash(runtimeType,_this.preference,_this.persistenceFailure);
 }
 
 @override
 String toString() {
   final _this = this as ThemeModeState;
-  return 'ThemeModeState(preference: ${_this.preference})';
+  return 'ThemeModeState(preference: ${_this.preference}, persistenceFailure: ${_this.persistenceFailure})';
 }
 
 
@@ -51,11 +51,11 @@ abstract mixin class $ThemeModeStateCopyWith<$Res>  {
   factory $ThemeModeStateCopyWith(ThemeModeState value, $Res Function(ThemeModeState) _then) = _$ThemeModeStateCopyWithImpl;
 @useResult
 $Res call({
- ThemePreference preference
+ ThemePreference preference, AppearanceFailure? persistenceFailure
 });
 
 
-
+$AppearanceFailureCopyWith<$Res>? get persistenceFailure;
 
 }
 /// @nodoc
@@ -68,13 +68,26 @@ class _$ThemeModeStateCopyWithImpl<$Res>
 
 /// Create a copy of ThemeModeState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? preference = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? preference = null,Object? persistenceFailure = freezed,}) {
   return _then(ThemeModeState(
 preference: null == preference ? _self.preference : preference // ignore: cast_nullable_to_non_nullable
-as ThemePreference,
+as ThemePreference,persistenceFailure: freezed == persistenceFailure ? _self.persistenceFailure : persistenceFailure // ignore: cast_nullable_to_non_nullable
+as AppearanceFailure?,
   ));
 }
+/// Create a copy of ThemeModeState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppearanceFailureCopyWith<$Res>? get persistenceFailure {
+    if (_self.persistenceFailure == null) {
+    return null;
+  }
 
+  return $AppearanceFailureCopyWith<$Res>(_self.persistenceFailure!, (value) {
+    return _then(_self.copyWith(persistenceFailure: value));
+  });
+}
 }
 
 
@@ -156,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ThemePreference preference)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ThemePreference preference,  AppearanceFailure? persistenceFailure)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ThemeModeState() when $default != null:
-return $default(_that.preference);case _:
+return $default(_that.preference,_that.persistenceFailure);case _:
   return orElse();
 
 }
@@ -177,10 +190,10 @@ return $default(_that.preference);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ThemePreference preference)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ThemePreference preference,  AppearanceFailure? persistenceFailure)  $default,) {final _that = this;
 switch (_that) {
 case _ThemeModeState():
-return $default(_that.preference);case _:
+return $default(_that.preference,_that.persistenceFailure);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +210,10 @@ return $default(_that.preference);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ThemePreference preference)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ThemePreference preference,  AppearanceFailure? persistenceFailure)?  $default,) {final _that = this;
 switch (_that) {
 case _ThemeModeState() when $default != null:
-return $default(_that.preference);case _:
+return $default(_that.preference,_that.persistenceFailure);case _:
   return null;
 
 }
@@ -212,10 +225,11 @@ return $default(_that.preference);case _:
 
 
 class _ThemeModeState implements ThemeModeState {
-  const _ThemeModeState({required this.preference});
+  const _ThemeModeState({required this.preference, this.persistenceFailure});
   
 
 @override final  ThemePreference preference;
+@override final  AppearanceFailure? persistenceFailure;
 
 /// Create a copy of ThemeModeState
 /// with the given fields replaced by the non-null parameter values.
@@ -227,18 +241,18 @@ _$ThemeModeStateCopyWith<_ThemeModeState> get copyWith => __$ThemeModeStateCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ThemeModeState&&(identical(other.preference, preference) || other.preference == preference));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ThemeModeState&&(identical(other.preference, preference) || other.preference == preference)&&(identical(other.persistenceFailure, persistenceFailure) || other.persistenceFailure == persistenceFailure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,preference);
+    return Object.hash(runtimeType,preference,persistenceFailure);
 }
 
 @override
 String toString() {
-    return 'ThemeModeState(preference: $preference)';
+    return 'ThemeModeState(preference: $preference, persistenceFailure: $persistenceFailure)';
 }
 
 
@@ -249,11 +263,11 @@ abstract mixin class _$ThemeModeStateCopyWith<$Res> implements $ThemeModeStateCo
   factory _$ThemeModeStateCopyWith(_ThemeModeState value, $Res Function(_ThemeModeState) _then) = __$ThemeModeStateCopyWithImpl;
 @override @useResult
 $Res call({
- ThemePreference preference
+ ThemePreference preference, AppearanceFailure? persistenceFailure
 });
 
 
-
+@override $AppearanceFailureCopyWith<$Res>? get persistenceFailure;
 
 }
 /// @nodoc
@@ -266,14 +280,27 @@ class __$ThemeModeStateCopyWithImpl<$Res>
 
 /// Create a copy of ThemeModeState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? preference = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? preference = null,Object? persistenceFailure = freezed,}) {
   return _then(_ThemeModeState(
 preference: null == preference ? _self.preference : preference // ignore: cast_nullable_to_non_nullable
-as ThemePreference,
+as ThemePreference,persistenceFailure: freezed == persistenceFailure ? _self.persistenceFailure : persistenceFailure // ignore: cast_nullable_to_non_nullable
+as AppearanceFailure?,
   ));
 }
 
+/// Create a copy of ThemeModeState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppearanceFailureCopyWith<$Res>? get persistenceFailure {
+    if (_self.persistenceFailure == null) {
+    return null;
+  }
 
+  return $AppearanceFailureCopyWith<$Res>(_self.persistenceFailure!, (value) {
+    return _then(_self.copyWith(persistenceFailure: value));
+  });
+}
 }
 
 // dart format on
