@@ -291,19 +291,21 @@ void main() {
       Future<void> choose(String option) async {
         await tester.tap(statusMenu);
         await tester.pumpAndSettle();
-        await tester.tap(find.text(option).last);
+        await tester.tap(
+          find.bySemanticsIdentifier('payments.search.filter.status.$option'),
+        );
         await tester.pumpAndSettle();
       }
 
       expect(find.text('All statuses'), findsOneWidget);
       expect(find.bySemanticsIdentifier('payments.search.clear'), findsNothing);
 
-      await choose('Approved');
+      await choose('approved');
       expect(find.text(atlas.counterparty), findsOneWidget);
       expect(find.text(marina.counterparty), findsNothing);
       expect(find.bySemanticsIdentifier('payments.search.clear'), findsOne);
 
-      await choose('Rejected');
+      await choose('rejected');
       expect(find.text(marina.counterparty), findsOneWidget);
       expect(find.text(atlas.counterparty), findsNothing);
 
@@ -311,7 +313,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.bySemanticsIdentifier('payments.search.empty'), findsOne);
 
-      await choose('All statuses');
+      await choose('all');
       expect(find.text(atlas.counterparty), findsOneWidget);
       expect(find.text(marina.counterparty), findsNothing);
 
@@ -392,19 +394,24 @@ void main() {
 
       await tester.tap(dateChip);
       await tester.pump();
-      await tester.pump(AppMotion.standard ~/ 2);
-      // The picker enters with the app motion rather than popping in.
-      final FadeTransition entering = tester.widget<FadeTransition>(
-        find
-            .ancestor(
-              of: find.byType(DateRangePickerDialog),
-              matching: find.byType(FadeTransition),
-            )
-            .first,
-      );
-      expect(entering.opacity.value, greaterThan(0));
-      expect(entering.opacity.value, lessThan(1));
+      await tester.pump(AppMotion.slow ~/ 2);
+      // The picker slides up from the bottom rather than popping in.
+      Offset pickerOffset() => tester
+          .widget<SlideTransition>(
+            find
+                .ancestor(
+                  of: find.byType(DateRangePickerDialog),
+                  matching: find.byType(SlideTransition),
+                )
+                .first,
+          )
+          .position
+          .value;
+      expect(pickerOffset().dy, greaterThan(0));
+      expect(pickerOffset().dy, lessThan(1));
+      expect(pickerOffset().dx, 0);
       await tester.pumpAndSettle();
+      expect(pickerOffset(), Offset.zero);
       expect(find.byType(DateRangePickerDialog), findsOneWidget);
       await tester.tap(
         find.descendant(
@@ -452,14 +459,18 @@ void main() {
 
       await tester.tap(find.bySemanticsIdentifier('payments.search.sort'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Oldest first'));
+      await tester.tap(
+        find.bySemanticsIdentifier('payments.search.sort.decidedAt.ascending'),
+      );
       await tester.pumpAndSettle();
       expect(find.text('2 matching payments'), findsOneWidget);
       expect(topOf(atlas.counterparty), lessThan(topOf(marina.counterparty)));
 
       await tester.tap(find.bySemanticsIdentifier('payments.search.sort'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Newest first').last);
+      await tester.tap(
+        find.bySemanticsIdentifier('payments.search.sort.decidedAt.descending'),
+      );
       await tester.pumpAndSettle();
       expect(searchBlocOf(tester).state.isActive, isFalse);
       expect(topOf(marina.counterparty), lessThan(topOf(atlas.counterparty)));

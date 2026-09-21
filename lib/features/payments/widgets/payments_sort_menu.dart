@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mamo_approval/common/data/payments/models/payments_sort.dart';
 import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart';
 import 'package:mamo_approval/features/payments/states/search/payments_search_event.dart';
+import 'package:mamo_approval/features/payments/widgets/payments_dropdown_chip.dart';
 import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 /// Picks the order the backend returns decided payments in.
@@ -55,29 +56,22 @@ class PaymentsSortMenu extends StatelessWidget {
     );
     return Semantics(
       identifier: 'payments.search.sort',
-      child: PopupMenuButton<PaymentsSort>(
+      child: PaymentsDropdownChip<PaymentsSort>(
+        icon: Icons.sort,
+        label: label(selected, l10n),
+        selected: selected != PaymentsSort.decidedAtNewestFirst,
         tooltip: l10n.paymentsSearchSortLabel,
-        // The menu route must not land in the Home/Payments branch navigator,
-        // which lives inside the horizontal pager and would scroll to it.
-        useRootNavigator: true,
-        initialValue: selected,
+        options: <PaymentsDropdownOption<PaymentsSort>>[
+          for (final PaymentsSort option in _options)
+            PaymentsDropdownOption<PaymentsSort>(
+              value: option,
+              label: label(option, l10n),
+              identifier: identifier(option),
+            ),
+        ],
         onSelected: (PaymentsSort sort) => context
             .read<PaymentsSearchBloc>()
             .add(PaymentsSearchEvent.sortChanged(sort)),
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<PaymentsSort>>[
-          for (final PaymentsSort option in _options)
-            PopupMenuItem<PaymentsSort>(
-              value: option,
-              child: Semantics(
-                identifier: identifier(option),
-                child: Text(label(option, l10n)),
-              ),
-            ),
-        ],
-        child: Chip(
-          avatar: const Icon(Icons.sort),
-          label: Text(label(selected, l10n)),
-        ),
       ),
     );
   }

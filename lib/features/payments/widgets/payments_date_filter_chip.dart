@@ -37,8 +37,8 @@ class PaymentsDateFilterChip extends StatelessWidget {
             ),
           );
     // The stock picker route only fades in, which reads as an abrupt pop on
-    // the full-screen compact layout; present it with the app's entrance
-    // motion instead, on the root navigator above the Home/Payments pager.
+    // the full-screen compact layout; slide the whole picker up from the
+    // bottom instead, on the root navigator above the Home/Payments pager.
     final DateTimeRange<DateTime>? picked =
         await showGeneralDialog<DateTimeRange<DateTime>>(
           context: context,
@@ -46,7 +46,7 @@ class PaymentsDateFilterChip extends StatelessWidget {
           barrierLabel: l10n.paymentsSearchDateFilterHelp,
           barrierColor: Theme.of(context).colorScheme.scrim
               .withValues(alpha: 0.4),
-          transitionDuration: AppMotion.resolve(context, AppMotion.standard),
+          transitionDuration: AppMotion.resolve(context, AppMotion.slow),
           transitionBuilder: _entrance,
           pageBuilder:
               (
@@ -70,28 +70,24 @@ class PaymentsDateFilterChip extends StatelessWidget {
     );
   }
 
-  /// Fade plus a short rise on entry, fade on exit, like the page entrances.
+  /// Full-height rise from the bottom edge on entry, the reverse on exit; the
+  /// barrier fades underneath through the dialog route itself.
   static Widget _entrance(
     BuildContext context,
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    final CurvedAnimation curved = CurvedAnimation(
-      parent: animation,
-      curve: AppMotion.enterCurve,
-      reverseCurve: AppMotion.exitCurve,
-    );
-    return FadeTransition(
-      opacity: curved,
-      child: AnimatedBuilder(
-        animation: curved,
-        child: child,
-        builder: (BuildContext context, Widget? child) => Transform.translate(
-          offset: Offset(0, AppMotion.entranceOffset * (1 - curved.value)),
-          child: child,
-        ),
-      ),
+    return SlideTransition(
+      position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
+          .animate(
+            CurvedAnimation(
+              parent: animation,
+              curve: AppMotion.enterCurve,
+              reverseCurve: AppMotion.exitCurve,
+            ),
+          ),
+      child: child,
     );
   }
 
