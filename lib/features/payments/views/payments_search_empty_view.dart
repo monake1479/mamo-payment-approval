@@ -13,6 +13,7 @@ class PaymentsSearchEmptyView extends StatelessWidget {
       identifier: 'payments.search.empty',
       title: l10n.paymentsSearchEmptyTitle,
       description: l10n.paymentsSearchEmptyDescription,
+      scrollable: false,
     );
   }
 }

@@ -66,7 +66,7 @@ A payment request contains an identifier, counterparty, amount, reference, creat
 
 ### Payments search (extension slice)
 
-- `SEARCH-01`: The Payments screen offers a text search and Approved/Rejected filter chips over the decided history; with no criteria it shows the unchanged full history.
+- `SEARCH-01`: The Payments screen offers a text search and a status dropdown (all, approved, rejected) over the decided history; with no criteria it shows the unchanged full history, and a Clear action removes every criterion at once whenever one is active.
 - `SEARCH-02`: Text search matches only the counterparty and reference fields already shown without authentication, case-insensitively; the pending request is never returned by any search or filter.
 - `SEARCH-03`: Rapid query edits produce one search for the final text; clearing discards a waiting edit and every newer criterion cancels the search still in flight.
 - `SEARCH-04`: Results keep the history ordering and rows, show a result count, and expose search-specific empty and recoverable error states without altering the history load states.

@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mamo_approval/app/theme/app_theme.dart';
 import 'package:mamo_approval/features/payments/formatters/payment_formatters.dart';
-import 'package:mamo_approval/features/payments/widgets/payment_status_filter_chips.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_event.dart';
+import 'package:mamo_approval/features/payments/widgets/payment_status_filter_menu.dart';
 import 'package:mamo_approval/features/payments/widgets/payments_date_filter_chip.dart';
 import 'package:mamo_approval/features/payments/widgets/payments_search_field.dart';
 import 'package:mamo_approval/features/payments/widgets/payments_sort_menu.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
-/// The search field with its status, date, and sort controls, laid out as one
-/// entrance group.
+/// The search field, then the status, date, and sort controls in a wrapping
+/// row, followed by a clear action whenever any criterion is active.
 class PaymentsSearchControls extends StatelessWidget {
   const PaymentsSearchControls({
     required this.formatters,
@@ -20,26 +24,38 @@ class PaymentsSearchControls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final bool isActive = context.select(
+      (PaymentsSearchBloc bloc) => bloc.state.isActive,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         const PaymentsSearchField(),
         const SizedBox(height: AppTheme.smallGap),
-        // One scrolling row keeps the controls' height bounded at large text
-        // sizes; the list below keeps the remaining space.
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            spacing: AppTheme.smallGap,
-            children: <Widget>[
-              const PaymentStatusFilterChips(),
-              PaymentsDateFilterChip(
-                formatters: formatters,
-                lastSelectableDay: lastSelectableDay,
+        Wrap(
+          spacing: AppTheme.smallGap,
+          runSpacing: AppTheme.smallGap,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: <Widget>[
+            const PaymentStatusFilterMenu(),
+            PaymentsDateFilterChip(
+              formatters: formatters,
+              lastSelectableDay: lastSelectableDay,
+            ),
+            const PaymentsSortMenu(),
+            if (isActive)
+              Semantics(
+                identifier: 'payments.search.clear',
+                child: TextButton.icon(
+                  onPressed: () => context.read<PaymentsSearchBloc>().add(
+                    const PaymentsSearchEvent.cleared(),
+                  ),
+                  icon: const Icon(Icons.clear),
+                  label: Text(l10n.paymentsSearchClearFiltersLabel),
+                ),
               ),
-              const PaymentsSortMenu(),
-            ],
-          ),
+          ],
         ),
       ],
     );

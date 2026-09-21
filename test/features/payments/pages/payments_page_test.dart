@@ -169,11 +169,11 @@ void main() {
     final List<double> entering = historyOpacityValues().toList(
       growable: false,
     );
-    // Reporting zone, search controls, and history enter as three groups.
-    expect(entering, hasLength(3));
+    // Reporting zone and the scrolling controls-plus-history area enter as
+    // two groups.
+    expect(entering, hasLength(2));
     expect(entering.first, greaterThan(0));
-    expect(entering.first, greaterThan(entering[1]));
-    expect(entering[1], greaterThanOrEqualTo(entering.last));
+    expect(entering.first, greaterThan(entering.last));
 
     await tester.pumpAndSettle();
     expect(find.text('Atlas Office Supplies'), findsOneWidget);
@@ -267,7 +267,9 @@ void main() {
       expect(find.text('No matching payments'), findsOneWidget);
       expect(find.text(atlas.counterparty), findsNothing);
 
-      await tester.tap(find.bySemanticsIdentifier('payments.search.clear'));
+      // The field's own icon drops only the text, which is the sole
+      // criterion here, so the history returns.
+      await tester.tap(find.bySemanticsIdentifier('payments.search.clearText'));
       await tester.pumpAndSettle();
       expect(searchBlocOf(tester).state.isActive, isFalse);
       expect(
@@ -279,43 +281,49 @@ void main() {
       expect(find.text(marina.counterparty), findsOneWidget);
     });
 
-    testWidgets('status chips filter the history and combine with text', (
+    testWidgets('status menu filters the history and combines with text', (
       WidgetTester tester,
     ) async {
       await pumpPage(tester, onLoad: () async => <Payment>[atlas, marina]);
-      final Finder approvedChip = find.bySemanticsIdentifier(
-        'payments.search.filter.approved',
+      final Finder statusMenu = find.bySemanticsIdentifier(
+        'payments.search.filter.status',
       );
-      final Finder rejectedChip = find.bySemanticsIdentifier(
-        'payments.search.filter.rejected',
-      );
-      expect(tester.getSize(approvedChip).height, greaterThanOrEqualTo(48));
+      Future<void> choose(String option) async {
+        await tester.tap(statusMenu);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(option).last);
+        await tester.pumpAndSettle();
+      }
 
-      await tester.tap(approvedChip);
-      await tester.pumpAndSettle();
+      expect(find.text('All statuses'), findsOneWidget);
+      expect(find.bySemanticsIdentifier('payments.search.clear'), findsNothing);
+
+      await choose('Approved');
       expect(find.text(atlas.counterparty), findsOneWidget);
       expect(find.text(marina.counterparty), findsNothing);
+      expect(find.bySemanticsIdentifier('payments.search.clear'), findsOne);
 
-      await tester.tap(rejectedChip);
-      await tester.pumpAndSettle();
-      expect(find.text('2 matching payments'), findsOneWidget);
-
-      await tester.enterText(find.byType(TextField), 'ship');
-      await tester.pumpAndSettle();
+      await choose('Rejected');
       expect(find.text(marina.counterparty), findsOneWidget);
       expect(find.text(atlas.counterparty), findsNothing);
 
-      await tester.tap(rejectedChip);
+      await tester.enterText(find.byType(TextField), 'atlas');
       await tester.pumpAndSettle();
       expect(find.bySemanticsIdentifier('payments.search.empty'), findsOne);
 
-      // No selected status means every decided status again.
-      await tester.tap(approvedChip);
+      await choose('All statuses');
+      expect(find.text(atlas.counterparty), findsOneWidget);
+      expect(find.text(marina.counterparty), findsNothing);
+
+      // Clear drops the text and every filter and empties the field.
+      await tester.tap(find.bySemanticsIdentifier('payments.search.clear'));
       await tester.pumpAndSettle();
-      expect(find.bySemanticsIdentifier('payments.search.empty'), findsNothing);
-      expect(find.text(marina.counterparty), findsOneWidget);
-      await tester.enterText(find.byType(TextField), '');
-      await tester.pumpAndSettle();
+      expect(searchBlocOf(tester).state.isActive, isFalse);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        '',
+      );
+      expect(find.bySemanticsIdentifier('payments.search.clear'), findsNothing);
       expect(find.text(atlas.counterparty), findsOneWidget);
       expect(find.text(marina.counterparty), findsOneWidget);
     });
@@ -455,7 +463,11 @@ void main() {
       expect(backend.loadCalls, 1);
 
       stored.add(marina);
-      await tester.fling(find.byType(ListView), const Offset(0, 300), 1000);
+      await tester.fling(
+        find.byType(CustomScrollView),
+        const Offset(0, 300),
+        1000,
+      );
       await tester.pump();
       await tester.pump(const Duration(seconds: 1));
       await tester.pumpAndSettle();

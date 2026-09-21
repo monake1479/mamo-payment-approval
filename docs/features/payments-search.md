@@ -4,7 +4,7 @@ Status: implemented on the feature branch as the slice-5 extension selected from
 
 ## Behaviour
 
-- The Payments screen shows a search field and Approved/Rejected filter chips above the decided history once the collection has loaded. With no query and no selected status the page shows the unchanged full history.
+- The Payments screen shows a search field and a wrapping row of controls above the decided history once the collection has loaded: a status dropdown (all, approved, rejected), the decision-date chip, the sort dropdown, and a Clear button while any criterion is active. The controls sit inside the history scroll view, so they never constrain the list at large text sizes. With no criteria the page shows the unchanged full history.
 - Text matches case-insensitively against the counterparty and the reference, the two text fields the history row and details already display without authentication. Amount and dates are not text-searchable; status is selected through the chips. An empty status selection means both decided statuses.
 - The pending request is never part of a result, whatever the query or filter, because its counterparty and amount stay masked until native authentication (`APPROVAL-02/04`). The mock backend excludes it, the data source drops it again at the boundary, and both rules are tested.
 - Query edits are debounced (300 ms); a clear action discards a waiting edit and returns to the full history; every newer criterion cancels the search still in flight.
@@ -17,7 +17,7 @@ Status: implemented on the feature branch as the slice-5 extension selected from
 
 ## Ownership and data path
 
-`PaymentsPage` provides the `injectable` `PaymentsSearchBloc` and selects a view per collection state; `PaymentsHistoryView` (under `views/`) selects a view per search state. `PaymentsSearchField` and `PaymentStatusFilterChips` dispatch events; each event has its own handler in the bloc. Every criterion (query, statuses, date window, sort) lives in one `PaymentsSearchCriteria` value carried by the active states. The bloc calls `SearchPaymentsUseCase`, which calls `PaymentsRepository.searchPayments`, which calls `PaymentsRemoteDataSource.search`, which calls the backend client's `searchPayments` with the query, statuses, ISO date bounds, and sort parameters and maps records and exceptions to typed results. `MockPaymentsBackend` filters and orders its single authoritative record list; there is no second collection, cache, or persistence.
+`PaymentsPage` provides the `injectable` `PaymentsSearchBloc` and selects a view per collection state; `PaymentsHistoryView` (under `views/`) selects a view per search state. `PaymentsSearchField`, `PaymentStatusFilterMenu`, `PaymentsDateFilterChip`, `PaymentsSortMenu`, and the Clear action dispatch events; each event has its own handler in the bloc. Every criterion (query, statuses, date window, sort) lives in one `PaymentsSearchCriteria` value carried by the active states. The bloc calls `SearchPaymentsUseCase`, which calls `PaymentsRepository.searchPayments`, which calls `PaymentsRemoteDataSource.search`, which calls the backend client's `searchPayments` with the query, statuses, ISO date bounds, and sort parameters and maps records and exceptions to typed results. `MockPaymentsBackend` filters and orders its single authoritative record list; there is no second collection, cache, or persistence.
 
 ## Verification
 

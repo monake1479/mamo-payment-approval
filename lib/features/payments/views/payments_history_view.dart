@@ -15,8 +15,11 @@ import 'package:mamo_approval/features/payments/widgets/payments_list.dart';
 import 'package:mamo_approval/features/payments/widgets/payments_search_controls.dart';
 import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
-/// Loaded decided history: reporting-zone context, search controls, and the
-/// list area, which follows the search state (idle shows the full history).
+/// Loaded decided history: reporting-zone context, then one scroll view that
+/// holds the search controls and the list area. The controls scroll with the
+/// list, so they may wrap freely at large text sizes, and pull-to-refresh
+/// works from anywhere in the view. The list area follows the search state
+/// (idle shows the full history).
 class PaymentsHistoryView extends StatelessWidget {
   const PaymentsHistoryView({
     required this.payments,
@@ -63,51 +66,88 @@ class PaymentsHistoryView extends StatelessWidget {
             ),
           ),
         ),
-        PaymentsSearchControls(
-          formatters: formatters,
-          lastSelectableDay: lastSelectableDay,
-        ),
         Expanded(
-          child: BlocBuilder<PaymentsSearchBloc, PaymentsSearchState>(
-            builder: (BuildContext context, PaymentsSearchState searchState) {
-              return Semantics(
-                identifier: 'payments.refresh',
-                label: l10n.paymentsRefreshLabel,
-                child: RefreshIndicator(
-                  onRefresh: onRefresh,
-                  child: switch (searchState) {
-                    PaymentsSearchIdle() =>
-                      payments.isEmpty
-                          ? PaymentsEmptyView(
-                              title: l10n.emptyPaymentsTitle,
-                              description: l10n.emptyPaymentsDescription,
-                            )
-                          : PaymentsList(
-                              storageKey: 'payments.history',
-                              payments: payments,
-                              formatters: formatters,
-                              onOpenPayment: onOpenPayment,
-                            ),
-                    PaymentsSearchLoading() =>
-                      const PaymentsSearchLoadingView(),
-                    PaymentsSearchResults(
-                      payments: final List<Payment> results,
-                    ) =>
-                      PaymentsSearchResultsView(
-                        payments: results,
+          child: Semantics(
+            identifier: 'payments.refresh',
+            label: l10n.paymentsRefreshLabel,
+            child: RefreshIndicator(
+              onRefresh: onRefresh,
+              child: CustomScrollView(
+                key: const PageStorageKey<String>('payments.history'),
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: <Widget>[
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: AppTheme.itemGap),
+                      child: PaymentsSearchControls(
                         formatters: formatters,
-                        onOpenPayment: onOpenPayment,
+                        lastSelectableDay: lastSelectableDay,
                       ),
-                    PaymentsSearchEmpty() => const PaymentsSearchEmptyView(),
-                    PaymentsSearchError(:final failure) =>
-                      PaymentsSearchErrorView(failure: failure),
-                  },
-                ),
-              );
-            },
+                    ),
+                  ),
+                  BlocBuilder<PaymentsSearchBloc, PaymentsSearchState>(
+                    builder:
+                        (
+                          BuildContext context,
+                          PaymentsSearchState searchState,
+                        ) {
+                          return switch (searchState) {
+                            PaymentsSearchIdle() =>
+                              payments.isEmpty
+                                  ? _FillRemaining(
+                                      child: PaymentsEmptyView(
+                                        title: l10n.emptyPaymentsTitle,
+                                        description:
+                                            l10n.emptyPaymentsDescription,
+                                        scrollable: false,
+                                      ),
+                                    )
+                                  : PaymentsList(
+                                      payments: payments,
+                                      formatters: formatters,
+                                      onOpenPayment: onOpenPayment,
+                                    ),
+                            PaymentsSearchLoading() => const _FillRemaining(
+                              child: PaymentsSearchLoadingView(),
+                            ),
+                            PaymentsSearchResults(
+                              payments: final List<Payment> results,
+                            ) =>
+                              PaymentsSearchResultsView(
+                                payments: results,
+                                formatters: formatters,
+                                onOpenPayment: onOpenPayment,
+                              ),
+                            PaymentsSearchEmpty() => const _FillRemaining(
+                              child: PaymentsSearchEmptyView(),
+                            ),
+                            PaymentsSearchError(:final failure) =>
+                              _FillRemaining(
+                                child: PaymentsSearchErrorView(
+                                  failure: failure,
+                                ),
+                              ),
+                          };
+                        },
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
     );
+  }
+}
+
+/// Centres a state view in whatever height remains below the controls.
+class _FillRemaining extends StatelessWidget {
+  const _FillRemaining({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverFillRemaining(hasScrollBody: false, child: child);
   }
 }

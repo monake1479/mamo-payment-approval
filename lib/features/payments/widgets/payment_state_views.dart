@@ -94,12 +94,16 @@ class PaymentsErrorView extends StatelessWidget {
     this.identifier = 'payments.error',
     this.title,
     this.description,
+    this.scrollable = true,
     super.key,
   });
 
   final PaymentsFailure failure;
   final VoidCallback onRetry;
   final String identifier;
+
+  /// False when an enclosing scroll view already owns scrolling.
+  final bool scrollable;
 
   /// Heading; defaults to the history load error title.
   final String? title;
@@ -111,45 +115,50 @@ class PaymentsErrorView extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final ThemeData theme = Theme.of(context);
-    return Center(
-      child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(AppTheme.sectionGap),
-        child: Semantics(
-          identifier: identifier,
-          liveRegion: true,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Icon(
-                Icons.error_outline,
-                size: AppTheme.minimumTouchTarget,
-                color: theme.colorScheme.error,
+    final Widget content = Padding(
+      padding: const EdgeInsets.all(AppTheme.sectionGap),
+      child: Semantics(
+        identifier: identifier,
+        liveRegion: true,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(
+              Icons.error_outline,
+              size: AppTheme.minimumTouchTarget,
+              color: theme.colorScheme.error,
+            ),
+            const SizedBox(height: AppTheme.itemGap),
+            Text(
+              title ?? l10n.paymentsLoadErrorTitle,
+              style: theme.textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppTheme.smallGap),
+            Text(
+              description ?? failure.message(l10n),
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
-              const SizedBox(height: AppTheme.itemGap),
-              Text(
-                title ?? l10n.paymentsLoadErrorTitle,
-                style: theme.textTheme.titleLarge,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppTheme.smallGap),
-              Text(
-                description ?? failure.message(l10n),
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppTheme.sectionGap),
-              FilledButton.icon(
-                onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
-                label: Text(l10n.retryAction),
-              ),
-            ],
-          ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppTheme.sectionGap),
+            FilledButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh),
+              label: Text(l10n.retryAction),
+            ),
+          ],
         ),
       ),
+    );
+    return Center(
+      child: scrollable
+          ? SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: content,
+            )
+          : content,
     );
   }
 }

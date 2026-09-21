@@ -20,6 +20,7 @@ class PaymentsSearchErrorView extends StatelessWidget {
       failure: failure,
       title: l10n.paymentsSearchErrorTitle,
       description: failure.searchMessage(l10n),
+      scrollable: false,
       onRetry: () => context.read<PaymentsSearchBloc>().add(
         const PaymentsSearchEvent.refreshRequested(),
       ),

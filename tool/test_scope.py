@@ -258,7 +258,7 @@ FLUTTER_TESTS = {
         *APPROVAL_TESTS,
     ],
         "lib/features/payments/widgets/payments_search_field.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
-    "lib/features/payments/widgets/payment_status_filter_chips.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/features/payments/widgets/payment_status_filter_menu.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
         "lib/features/payments/widgets/payments_search_controls.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
     "lib/features/payments/widgets/payments_date_filter_chip.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
     "lib/features/payments/widgets/payments_sort_menu.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],

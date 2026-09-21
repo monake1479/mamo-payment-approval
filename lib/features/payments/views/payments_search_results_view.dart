@@ -5,7 +5,8 @@ import 'package:mamo_approval/features/payments/formatters/payment_formatters.da
 import 'package:mamo_approval/features/payments/widgets/payments_list.dart';
 import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
-/// Matching decided payments with an announced result count.
+/// Matching decided payments with an announced result count, as slivers of
+/// the history scroll view.
 class PaymentsSearchResultsView extends StatelessWidget {
   const PaymentsSearchResultsView({
     required this.payments,
@@ -22,27 +23,27 @@ class PaymentsSearchResultsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final ThemeData theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Semantics(
-          identifier: 'payments.search.results',
-          liveRegion: true,
-          child: Text(
-            l10n.paymentsSearchResultCount(payments.length),
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+    return SliverMainAxisGroup(
+      slivers: <Widget>[
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: AppTheme.smallGap),
+            child: Semantics(
+              identifier: 'payments.search.results',
+              liveRegion: true,
+              child: Text(
+                l10n.paymentsSearchResultCount(payments.length),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             ),
           ),
         ),
-        const SizedBox(height: AppTheme.smallGap),
-        Expanded(
-          child: PaymentsList(
-            storageKey: 'payments.search',
-            payments: payments,
-            formatters: formatters,
-            onOpenPayment: onOpenPayment,
-          ),
+        PaymentsList(
+          payments: payments,
+          formatters: formatters,
+          onOpenPayment: onOpenPayment,
         ),
       ],
     );

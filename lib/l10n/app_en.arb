@@ -162,8 +162,8 @@
   "@paymentsSearchLabel": {"description": "Accessible label for the decided payment history search field."},
   "paymentsSearchHint": "Search by counterparty or reference",
   "@paymentsSearchHint": {"description": "Hint inside the payment history search field naming the visible fields it searches."},
-  "paymentsSearchClearLabel": "Clear search",
-  "@paymentsSearchClearLabel": {"description": "Accessible label for the action that clears the search text and status filters."},
+  "paymentsSearchClearLabel": "Clear search text",
+  "@paymentsSearchClearLabel": {"description": "Accessible label for the field action that clears only the search text."},
   "paymentsSearchFiltersLabel": "Filter by status",
   "@paymentsSearchFiltersLabel": {"description": "Accessible label for the group of decided status filter chips."},
   "paymentsSearchLoadingLabel": "Searching payments",
@@ -199,6 +199,10 @@
   "@paymentsSortLowestAmount": {"description": "Sort option: smallest amount first."},
   "paymentsSortCounterparty": "Counterparty A to Z",
   "@paymentsSortCounterparty": {"description": "Sort option: counterparty name ascending."},
+  "paymentsSearchStatusAll": "All statuses",
+  "@paymentsSearchStatusAll": {"description": "Status filter option that keeps every decided status."},
+  "paymentsSearchClearFiltersLabel": "Clear",
+  "@paymentsSearchClearFiltersLabel": {"description": "Action that removes the search text and every filter and sort choice."},
   "paymentsRefreshLabel": "Pull down to refresh payments",
   "@paymentsRefreshLabel": {"description": "Accessible label for the pull-to-refresh gesture on the payment history."}
 }
