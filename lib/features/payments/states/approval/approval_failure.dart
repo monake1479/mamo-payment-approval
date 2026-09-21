@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 
 part 'approval_failure.freezed.dart';
 

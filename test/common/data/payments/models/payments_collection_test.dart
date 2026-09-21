@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment_summary.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payments_collection.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payment_summary.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_collection.dart';
 
 void main() {
   group('PaymentsCollection', () {

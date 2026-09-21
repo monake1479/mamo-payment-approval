@@ -1,6 +1,6 @@
-# Mamo Payment Approval Challenge
+# Mamo Approval
 
-A production-minded Flutter implementation of a payment approval flow.
+A production-minded Flutter implementation of a payment approval flow (the "Mamo Payment Approval" challenge).
 
 The application is intentionally small, but it is structured as code that could evolve safely: business rules are separated from Flutter widgets, external capabilities sit behind interfaces, and acceptance criteria are backed by focused tests.
 
@@ -49,7 +49,7 @@ Select an Android device/emulator (API 24 or newer) or iOS device/simulator (iOS
 
 ### Flavors
 
-The app has three native flavors: `dev`, `staging`, and `prod`. Each has a thin entry point calling the same bootstrap, which validates the native flavor and initializes its `get_it` container. Each has a distinct installation identity and launcher name; see [the flavor decision](docs/decisions/0007-native-flavors.md) and [bootstrap decision](docs/decisions/0010-bootstrap-and-local-error-boundary.md).
+The app has three native flavors: `dev`, `staging`, and `prod`. Each has a thin entry point calling the same bootstrap, which validates the native flavor and initializes its `get_it` container. All flavors now share the single identity `mamo.payment.approval` and the launcher name `Mamo Approval`, so they cannot be installed side by side; the flavors only select the Dart entry point and native scheme. See [the flavor decision](docs/decisions/0007-native-flavors.md), [the single-identity decision](docs/decisions/0012-single-application-identity.md), and [bootstrap decision](docs/decisions/0010-bootstrap-and-local-error-boundary.md).
 
 ```sh
 fvm flutter run --flavor dev -t lib/main_dev.dart
@@ -68,6 +68,15 @@ fvm flutter build ios --flavor dev -t lib/main_dev.dart --simulator --debug
 ```
 
 The APK is written to `build/app/outputs/flutter-apk/app-prod-release.apk`. Android release builds still use the debug signing key; they are not store-ready releases. Unsigned iOS device builds are compilation evidence, not installable distributions. Simulator builds use `build/ios/iphonesimulator/Runner.app`; copy or install each one before building another flavor because this output path is reused.
+
+### Branding (placeholder)
+
+The launcher icon and native splash are **placeholders**: a white `MA` monogram on the brand colour (`#6938EF`, the `app_theme` seed). Source art lives in `assets/branding/`; generation is configured in `flutter_launcher_icons.yaml` and `flutter_native_splash.yaml`. Replace the source art and regenerate before release:
+
+```sh
+fvm dart run flutter_launcher_icons
+fvm dart run flutter_native_splash:create
+```
 
 ## Quality gate
 

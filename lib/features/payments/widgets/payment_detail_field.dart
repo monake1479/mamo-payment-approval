@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
 
 class PaymentDetailField extends StatelessWidget {
   const PaymentDetailField({

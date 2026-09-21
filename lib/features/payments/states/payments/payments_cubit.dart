@@ -1,15 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment_mutation.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payments_collection.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/create_payment_request_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/decide_payment_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/load_payments_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/refresh_payments_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_state.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payment_mutation.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_collection.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/create_payment_request_use_case.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/decide_payment_use_case.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/load_payments_use_case.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/refresh_payments_use_case.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/common/result/models/unit.dart';
+import 'package:mamo_approval/features/payments/states/payments/payments_state.dart';
 
 final class PaymentsCubit extends Cubit<PaymentsState> {
   factory PaymentsCubit({

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_status_colors.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/widgets/payment_status_chip.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/theme/app_status_colors.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/features/payments/widgets/payment_status_chip.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 void main() {
   for (final ThemeData theme in <ThemeData>[AppTheme.light, AppTheme.dark]) {
