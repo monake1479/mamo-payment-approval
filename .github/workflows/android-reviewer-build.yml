@@ -3,7 +3,6 @@ name: Android reviewer build
 on:
   pull_request:
     branches:
-      - dev
       - main
   workflow_dispatch:
 
