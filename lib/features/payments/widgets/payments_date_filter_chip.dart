@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mamo_approval/app/theme/app_motion.dart';
 import 'package:mamo_approval/common/data/payments/models/payments_date_range.dart';
 import 'package:mamo_approval/features/payments/formatters/payment_formatters.dart';
 import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart';
@@ -26,26 +27,70 @@ class PaymentsDateFilterChip extends StatelessWidget {
 
   Future<void> _pick(BuildContext context, PaymentsDateRange? current) async {
     final PaymentsSearchBloc bloc = context.read<PaymentsSearchBloc>();
-    final DateTimeRange<DateTime>? picked = await showDateRangePicker(
-      context: context,
-      firstDate: _firstSelectableDay,
-      lastDate: lastSelectableDay,
-      initialDateRange: current == null
-          ? null
-          : DateTimeRange<DateTime>(
-              start: formatters.accountDay(current.startUtc),
-              end: formatters.accountDay(
-                current.endUtc.subtract(const Duration(days: 1)),
-              ),
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final DateTimeRange<DateTime>? initialRange = current == null
+        ? null
+        : DateTimeRange<DateTime>(
+            start: formatters.accountDay(current.startUtc),
+            end: formatters.accountDay(
+              current.endUtc.subtract(const Duration(days: 1)),
             ),
-      helpText: AppLocalizations.of(context).paymentsSearchDateFilterHelp,
-    );
+          );
+    // The stock picker route only fades in, which reads as an abrupt pop on
+    // the full-screen compact layout; present it with the app's entrance
+    // motion instead, on the root navigator above the Home/Payments pager.
+    final DateTimeRange<DateTime>? picked =
+        await showGeneralDialog<DateTimeRange<DateTime>>(
+          context: context,
+          barrierDismissible: true,
+          barrierLabel: l10n.paymentsSearchDateFilterHelp,
+          barrierColor: Theme.of(context).colorScheme.scrim
+              .withValues(alpha: 0.4),
+          transitionDuration: AppMotion.resolve(context, AppMotion.standard),
+          transitionBuilder: _entrance,
+          pageBuilder:
+              (
+                BuildContext context,
+                Animation<double> _,
+                Animation<double> _,
+              ) => DateRangePickerDialog(
+                firstDate: _firstSelectableDay,
+                lastDate: lastSelectableDay,
+                initialDateRange: initialRange,
+                helpText: l10n.paymentsSearchDateFilterHelp,
+              ),
+        );
     if (picked == null || bloc.isClosed) {
       return;
     }
     bloc.add(
       PaymentsSearchEvent.dateRangeChanged(
         formatters.accountDays(picked.start, picked.end),
+      ),
+    );
+  }
+
+  /// Fade plus a short rise on entry, fade on exit, like the page entrances.
+  static Widget _entrance(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final CurvedAnimation curved = CurvedAnimation(
+      parent: animation,
+      curve: AppMotion.enterCurve,
+      reverseCurve: AppMotion.exitCurve,
+    );
+    return FadeTransition(
+      opacity: curved,
+      child: AnimatedBuilder(
+        animation: curved,
+        child: child,
+        builder: (BuildContext context, Widget? child) => Transform.translate(
+          offset: Offset(0, AppMotion.entranceOffset * (1 - curved.value)),
+          child: child,
+        ),
       ),
     );
   }

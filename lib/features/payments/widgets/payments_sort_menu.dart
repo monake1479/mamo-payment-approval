@@ -57,6 +57,9 @@ class PaymentsSortMenu extends StatelessWidget {
       identifier: 'payments.search.sort',
       child: PopupMenuButton<PaymentsSort>(
         tooltip: l10n.paymentsSearchSortLabel,
+        // The menu route must not land in the Home/Payments branch navigator,
+        // which lives inside the horizontal pager and would scroll to it.
+        useRootNavigator: true,
         initialValue: selected,
         onSelected: (PaymentsSort sort) => context
             .read<PaymentsSearchBloc>()

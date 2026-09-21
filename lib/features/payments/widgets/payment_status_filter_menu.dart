@@ -30,6 +30,9 @@ class PaymentStatusFilterMenu extends StatelessWidget {
       identifier: 'payments.search.filter.status',
       child: PopupMenuButton<StatusFilterOption>(
         tooltip: l10n.paymentsSearchFiltersLabel,
+        // The menu route must not land in the Home/Payments branch navigator,
+        // which lives inside the horizontal pager and would scroll to it.
+        useRootNavigator: true,
         initialValue: current,
         onSelected: (StatusFilterOption option) => context
             .read<PaymentsSearchBloc>()

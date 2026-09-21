@@ -391,6 +391,19 @@ void main() {
       expect(find.text('Decision date'), findsOneWidget);
 
       await tester.tap(dateChip);
+      await tester.pump();
+      await tester.pump(AppMotion.standard ~/ 2);
+      // The picker enters with the app motion rather than popping in.
+      final FadeTransition entering = tester.widget<FadeTransition>(
+        find
+            .ancestor(
+              of: find.byType(DateRangePickerDialog),
+              matching: find.byType(FadeTransition),
+            )
+            .first,
+      );
+      expect(entering.opacity.value, greaterThan(0));
+      expect(entering.opacity.value, lessThan(1));
       await tester.pumpAndSettle();
       expect(find.byType(DateRangePickerDialog), findsOneWidget);
       await tester.tap(

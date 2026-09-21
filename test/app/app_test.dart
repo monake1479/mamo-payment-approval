@@ -375,6 +375,51 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('search menus open above the pager without moving it', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MamoPaymentApprovalApp(
+        router: router,
+        paymentsCubit: cubit,
+        authenticate: authenticate,
+        stopAuthentication: stop,
+        themeModeCubit: themeCubit,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('View all'));
+    await tester.pumpAndSettle();
+    final PageView pager = tester.widget<PageView>(find.byType(PageView));
+    expect(pager.controller!.page, 1);
+    final double paymentsTop = tester
+        .getTopLeft(find.bySemanticsIdentifier('payments.page'))
+        .dy;
+
+    for (final String menu in <String>[
+      'payments.search.filter.status',
+      'payments.search.sort',
+    ]) {
+      await tester.tap(find.bySemanticsIdentifier(menu));
+      await tester.pumpAndSettle();
+      expect(
+        find.byWidgetPredicate((Widget w) => w is PopupMenuItem),
+        findsWidgets,
+      );
+      // The menu route sits on the root navigator, so the indexed pager and
+      // the Payments surface stay exactly where they were.
+      expect(pager.controller!.page, 1);
+      expect(
+        tester.getTopLeft(find.bySemanticsIdentifier('payments.page')).dy,
+        paymentsTop,
+      );
+      await tester.tapAt(const Offset(1, 1));
+      await tester.pumpAndSettle();
+    }
+    expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('iOS edge-back gesture returns from details to its origin', (
     WidgetTester tester,
   ) async {
