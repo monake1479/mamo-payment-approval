@@ -206,7 +206,7 @@
   "@aboutDeviceAuthenticationAvailable": {"description": "Device authentication can be used on this device."},
   "aboutDeviceAuthenticationUnavailable": "Not available",
   "@aboutDeviceAuthenticationUnavailable": {"description": "Device authentication cannot be used on this device, so incoming payment details cannot be revealed or approved."},
-  "aboutAppDescription": "Mamo Approval is a demonstration payment approval app. It shows a monthly summary and the history of decided payments, and lets you approve or reject an incoming payment request after native device authentication reveals its details.",
+  "aboutAppDescription": "Mamo Approval shows a monthly summary and the history of decided payments, and lets you approve or reject an incoming payment request after native device authentication reveals its details.",
   "@aboutAppDescription": {"description": "Short description of what the application does."},
   "aboutDeliveredHeading": "What is included",
   "@aboutDeliveredHeading": {"description": "Heading above the list of delivered features."},
