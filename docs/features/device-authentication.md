@@ -23,6 +23,13 @@ occupancy remains reserved until the previous `authenticate()` future settles, e
 when prompt stopping returns false or throws (as on iOS); a new attempt is rejected
 until then. The UI must still scope success to the same active request.
 
+This is a deliberate safety-over-liveness tradeoff: if the underlying native
+`authenticate()` future never settles (a plugin or OS defect), occupancy stays
+reserved for the process lifetime and every later attempt is rejected. The
+capability intentionally has no timeout or forced reset; recovery from a wedged
+native prompt is left to the future approval state owner rather than risking a
+late completion that resolves after a forced reset.
+
 The adapter allows biometrics or the operating system credential, treats the
 operation as sensitive, and does not persist authentication across backgrounding.
 That leaves background-versus-native-prompt lifecycle policy with the approval
@@ -44,7 +51,10 @@ remains in `MainActivity` on API 33 and newer. Older supported Android versions 
 `FLAG_SECURE`, which also disables ordinary screenshots and screen recording while
 the activity is visible. The merged application baseline locks Android, iOS, and
 Flutter composition to portrait-up. All iOS flavors share the Face ID usage
-description and retain the existing scene privacy cover.
+description and retain the existing scene privacy cover. The iOS Face ID usage
+string in `Info.plist` duplicates the canonical ARB reason because platform
+permission strings cannot be sourced from ARB; keep the two in sync, or add an
+`InfoPlist.strings` if this string ever needs localization.
 
 The implementation follows the official [`local_auth` 3.0.2 API](https://pub.dev/packages/local_auth)
 and its endorsed [Android](https://pub.dev/packages/local_auth_android) and

@@ -239,6 +239,97 @@ void main() {
     );
 
     test(
+      'invalidates a late false result after cancel and reports cancelled',
+      () async {
+        final completion = Completer<bool>();
+        final client = _FakeLocalAuthClient(authenticateCompletion: completion);
+        final authenticator = LocalAuthDeviceAuthenticator(client: client);
+        final result = authenticator.authenticate(localizedReason: 'Reason');
+        await client.authenticationStarted;
+
+        await authenticator.cancel();
+        completion.complete(false);
+
+        expect(await result, _cancelled);
+      },
+    );
+
+    test(
+      'invalidates a late plugin exception after cancel and reports cancelled',
+      () async {
+        final completion = Completer<bool>();
+        final client = _FakeLocalAuthClient(authenticateCompletion: completion);
+        final authenticator = LocalAuthDeviceAuthenticator(client: client);
+        final result = authenticator.authenticate(localizedReason: 'Reason');
+        await client.authenticationStarted;
+
+        await authenticator.cancel();
+        // An unavailable code would normally map to unavailable; after
+        // invalidation it must still surface as cancelled, never leaking the
+        // real mapping.
+        completion.completeError(
+          LocalAuthException(code: LocalAuthExceptionCode.noBiometricsEnrolled),
+        );
+
+        expect(await result, _cancelled);
+      },
+    );
+
+    test('invalidates a late platform exception after cancel and reports cancelled', () async {
+      final completion = Completer<bool>();
+      final client = _FakeLocalAuthClient(authenticateCompletion: completion);
+      final authenticator = LocalAuthDeviceAuthenticator(client: client);
+      final result = authenticator.authenticate(localizedReason: 'Reason');
+      await client.authenticationStarted;
+
+      await authenticator.cancel();
+      completion.completeError(PlatformException(code: 'late-failure'));
+
+      expect(await result, _cancelled);
+    });
+
+    test('releases native occupancy after a programmer error', () async {
+      final client = _FakeLocalAuthClient(
+        programmerError: StateError('fixture'),
+      );
+      final authenticator = LocalAuthDeviceAuthenticator(client: client);
+
+      await expectLater(
+        authenticator.authenticate(localizedReason: 'First'),
+        throwsStateError,
+      );
+
+      // The finally block must have cleared occupancy so a later attempt runs.
+      client.programmerError = null;
+      final retry = await authenticator.authenticate(localizedReason: 'Retry');
+
+      expect(retry, _succeeded);
+      expect(client.authenticateCallCount, 2);
+    });
+
+    test(
+      'rejects an empty prompt and leaves the authenticator usable',
+      () async {
+        final client = _FakeLocalAuthClient();
+        final authenticator = LocalAuthDeviceAuthenticator(client: client);
+
+        await expectLater(
+          authenticator.authenticate(localizedReason: ''),
+          throwsArgumentError,
+        );
+        expect(client.isDeviceSupportedCallCount, 0);
+
+        // The rejected attempt must not have reserved native occupancy.
+        final result = await authenticator.authenticate(
+          localizedReason: 'Reason',
+        );
+
+        expect(result, _succeeded);
+        expect(client.authenticateCallCount, 1);
+      },
+    );
+
+    test(
       'normalizes a failed native prompt stop without restoring access',
       () async {
         final completion = Completer<bool>();
@@ -527,7 +618,7 @@ final class _FakeLocalAuthClient implements LocalAuthClient {
   final LocalAuthExceptionCode? exceptionCode;
   final PlatformException? platformException;
   final MissingPluginException? missingPluginException;
-  final Error? programmerError;
+  Error? programmerError;
   final bool stopAuthenticationResult;
   final Completer<bool>? stopAuthenticationCompletion;
   final LocalAuthExceptionCode? stopExceptionCode;
