@@ -42,6 +42,7 @@ Use widget tests for:
 - Approve unavailable before authenticated disclosure and after background remasking, Reject available without authentication, and remasking covering semantics/copyable content without closing the overlay or adding an app-wide lock;
 - debug-action visibility, dragging, and session position;
 - compact and expanded portrait layouts, semantics, loading, empty, and error states in both light and dark appearances as implemented (`UI-01/02`).
+- the persisted appearance preference: stored default and values, a surfaced and retried save failure, composition over an unavailable store, opening in the persisted appearance, and toggling from Home through Settings (`UI-03`); cross-launch persistence on a device remains manual until a Maestro journey exists.
 - loading-to-data, indexed Home/Payments entry, and pushed-detail entrance timing, including immediate final content when reduced motion is requested and no replay for ordinary collection rebuilds.
 
 ## Maestro end-to-end tests

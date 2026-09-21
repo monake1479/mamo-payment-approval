@@ -11,8 +11,10 @@ import 'package:mamo_approval/common/data/payments/models/payment.dart';
 import 'package:mamo_approval/features/payments/pages/home_page.dart';
 import 'package:mamo_approval/features/payments/pages/payment_details_page.dart';
 import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
 import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
+import '../support/appearance_test_support.dart';
 import '../support/device_authentication_test_support.dart';
 import '../support/payments_test_support.dart';
 
@@ -21,14 +23,16 @@ void main() {
   late GoRouter router;
   late StubPaymentsBackend backend;
   late PaymentsCubit cubit;
+  late ThemeModeCubit themeCubit;
   late LocalAuthenticationUseCase authenticate;
   late StopLocalAuthenticationUseCase stop;
 
-  setUp(() {
+  setUp(() async {
     backend = StubPaymentsBackend(
       onLoad: () async => <Payment>[approvedPayment(), rejectedPayment()],
     );
     cubit = createPaymentsCubit(backend);
+    themeCubit = await loadThemeModeCubit();
     registerPaymentsSearchBloc(backend);
     final LocalAuthRepository authRepository = LocalAuthRepository(
       FakeLocalAuthClient(),
@@ -41,6 +45,7 @@ void main() {
   tearDown(() async {
     appRouter.dispose();
     await cubit.close();
+    await themeCubit.close();
   });
 
   for (final Locale deviceLocale in <Locale>[
@@ -58,6 +63,7 @@ void main() {
         MamoPaymentApprovalApp(
           router: router,
           paymentsCubit: cubit,
+          themeModeCubit: themeCubit,
           authenticate: authenticate,
           stopAuthentication: stop,
         ),
@@ -84,6 +90,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),
@@ -101,6 +108,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),
@@ -117,6 +125,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),
@@ -165,6 +174,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),
@@ -204,6 +214,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),
@@ -258,6 +269,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),
@@ -289,6 +301,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),
@@ -330,6 +343,7 @@ void main() {
         paymentsCubit: cubit,
         authenticate: authenticate,
         stopAuthentication: stop,
+        themeModeCubit: themeCubit,
       ),
     );
     await tester.pumpAndSettle();
@@ -368,6 +382,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),
@@ -399,6 +414,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),
@@ -412,6 +428,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),
@@ -431,6 +448,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
         globalLayerBuilder: (BuildContext context, Widget navigator) => Stack(
@@ -465,6 +483,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: cubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),

@@ -18,11 +18,13 @@ class HomePage extends StatelessWidget {
   const HomePage({
     required this.onOpenPayment,
     required this.onViewAll,
+    required this.onOpenSettings,
     super.key,
   });
 
   final ValueChanged<String> onOpenPayment;
   final VoidCallback onViewAll;
+  final VoidCallback onOpenSettings;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +32,14 @@ class HomePage extends StatelessWidget {
     return PaymentPageScaffold(
       title: l10n.homeTitle,
       semanticIdentifier: 'home.page',
+      trailing: Semantics(
+        identifier: 'home.openSettings',
+        child: IconButton(
+          tooltip: l10n.settingsOpenLabel,
+          onPressed: onOpenSettings,
+          icon: const Icon(Icons.settings_outlined),
+        ),
+      ),
       child: BlocBuilder<PaymentsCubit, PaymentsState>(
         builder: (BuildContext context, PaymentsState state) {
           final AppIndexedPageMotionScope? pageMotion =

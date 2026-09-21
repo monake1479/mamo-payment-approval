@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mamo_approval/app/theme/app_motion.dart';
 import 'package:mamo_approval/app/theme/app_theme.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/widgets/scrolled_page_body.dart';
 import 'package:mamo_approval/features/payments/formatters/payment_formatters.dart';
 import 'package:mamo_approval/features/payments/payment_status_presentation.dart';
 import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
@@ -92,107 +93,80 @@ class _PaymentDetailsContent extends StatelessWidget {
     final Payment resolvedPayment = payment!;
     final AppLocalizations l10n = AppLocalizations.of(context);
     final ThemeData theme = Theme.of(context);
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        final double horizontalPadding =
-            constraints.maxWidth >= AppTheme.expandedBreakpoint
-            ? AppTheme.pagePadding
-            : AppTheme.compactPadding;
-        return Align(
-          alignment: Alignment.topCenter,
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxWidth: AppTheme.expandedContentWidth,
-            ),
-            child: SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(
-                horizontalPadding,
-                AppTheme.sectionGap,
-                horizontalPadding,
-                AppTheme.sectionGap,
+    return ScrolledPageBody(
+      child: Semantics(
+        identifier: 'payment.details',
+        child: AppPageStaggeredColumn(
+          spacing: AppTheme.sectionGap,
+          children: <Widget>[
+            Semantics(
+              identifier: 'payment.details.amount',
+              child: Text(
+                formatters.money(
+                  resolvedPayment.amount,
+                  resolvedPayment.currency,
+                ),
+                style: theme.textTheme.headlineLarge,
               ),
-              child: Semantics(
-                identifier: 'payment.details',
-                child: AppPageStaggeredColumn(
-                  spacing: AppTheme.sectionGap,
+            ),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppTheme.compactPadding),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    Semantics(
-                      identifier: 'payment.details.amount',
-                      child: Text(
-                        formatters.money(
-                          resolvedPayment.amount,
-                          resolvedPayment.currency,
-                        ),
-                        style: theme.textTheme.headlineLarge,
+                    PaymentDetailField(
+                      icon: Icons.business_outlined,
+                      label: l10n.counterpartyLabel,
+                      value: resolvedPayment.counterparty,
+                      semanticIdentifier: 'payment.details.counterparty',
+                    ),
+                    const SizedBox(height: AppTheme.sectionGap),
+                    Text(
+                      l10n.statusLabel,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppTheme.compactPadding),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            PaymentDetailField(
-                              icon: Icons.business_outlined,
-                              label: l10n.counterpartyLabel,
-                              value: resolvedPayment.counterparty,
-                              semanticIdentifier:
-                                  'payment.details.counterparty',
-                            ),
-                            const SizedBox(height: AppTheme.sectionGap),
-                            Text(
-                              l10n.statusLabel,
-                              style: theme.textTheme.labelLarge?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(height: AppTheme.smallGap),
-                            Align(
-                              alignment: AlignmentDirectional.centerStart,
-                              child: Semantics(
-                                identifier:
-                                    'payment.status.${resolvedPayment.status.name}',
-                                child: PaymentStatusChip(
-                                  status: resolvedPayment.status.visual,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: AppTheme.sectionGap),
-                            PaymentDetailField(
-                              icon: Icons.tag_outlined,
-                              label: l10n.referenceLabel,
-                              value: resolvedPayment.reference,
-                              semanticIdentifier: 'payment.details.reference',
-                            ),
-                            const SizedBox(height: AppTheme.sectionGap),
-                            PaymentDetailField(
-                              icon: Icons.schedule_outlined,
-                              label: l10n.requestedAtLabel,
-                              value: formatters.dateTime(
-                                resolvedPayment.createdAt,
-                              ),
-                              semanticIdentifier: 'payment.details.requested',
-                            ),
-                            const SizedBox(height: AppTheme.sectionGap),
-                            PaymentDetailField(
-                              icon: Icons.event_available_outlined,
-                              label: l10n.decidedAtLabel,
-                              value: formatters.dateTime(
-                                resolvedPayment.decidedAt!,
-                              ),
-                              semanticIdentifier: 'payment.details.decided',
-                            ),
-                          ],
+                    const SizedBox(height: AppTheme.smallGap),
+                    Align(
+                      alignment: AlignmentDirectional.centerStart,
+                      child: Semantics(
+                        identifier:
+                            'payment.status.${resolvedPayment.status.name}',
+                        child: PaymentStatusChip(
+                          status: resolvedPayment.status.visual,
                         ),
                       ),
+                    ),
+                    const SizedBox(height: AppTheme.sectionGap),
+                    PaymentDetailField(
+                      icon: Icons.tag_outlined,
+                      label: l10n.referenceLabel,
+                      value: resolvedPayment.reference,
+                      semanticIdentifier: 'payment.details.reference',
+                    ),
+                    const SizedBox(height: AppTheme.sectionGap),
+                    PaymentDetailField(
+                      icon: Icons.schedule_outlined,
+                      label: l10n.requestedAtLabel,
+                      value: formatters.dateTime(resolvedPayment.createdAt),
+                      semanticIdentifier: 'payment.details.requested',
+                    ),
+                    const SizedBox(height: AppTheme.sectionGap),
+                    PaymentDetailField(
+                      icon: Icons.event_available_outlined,
+                      label: l10n.decidedAtLabel,
+                      value: formatters.dateTime(resolvedPayment.decidedAt!),
+                      semanticIdentifier: 'payment.details.decided',
                     ),
                   ],
                 ),
               ),
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }

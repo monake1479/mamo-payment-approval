@@ -6,9 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mamo_approval/app/payment_flow_layer.dart';
 import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
 import 'package:mamo_approval/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
 import 'package:mamo_approval/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
 import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
+import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_state.dart';
 import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 typedef GlobalAppLayerBuilder = Widget Function(
@@ -20,6 +23,7 @@ class MamoPaymentApprovalApp extends StatefulWidget {
   const MamoPaymentApprovalApp({
     required this.router,
     required this.paymentsCubit,
+    required this.themeModeCubit,
     required this.authenticate,
     required this.stopAuthentication,
     this.globalLayerBuilder,
@@ -28,6 +32,7 @@ class MamoPaymentApprovalApp extends StatefulWidget {
 
   final GoRouter router;
   final PaymentsCubit paymentsCubit;
+  final ThemeModeCubit themeModeCubit;
   final LocalAuthenticationUseCase authenticate;
   final StopLocalAuthenticationUseCase stopAuthentication;
   final GlobalAppLayerBuilder? globalLayerBuilder;
@@ -78,29 +83,39 @@ class _MamoPaymentApprovalAppState extends State<MamoPaymentApprovalApp>
   Widget build(BuildContext context) {
     return BlocProvider<PaymentsCubit>.value(
       value: widget.paymentsCubit,
-      child: MaterialApp.router(
-        routerConfig: widget.router,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        onGenerateTitle: (BuildContext context) =>
-            AppLocalizations.of(context).appTitle,
-        builder: (BuildContext context, Widget? navigator) {
-          final Widget routedContent = widget.globalLayerBuilder == null
-              ? navigator!
-              : widget.globalLayerBuilder!(context, navigator!);
-          return AnnotatedRegion<SystemUiOverlayStyle>(
-            value: AppTheme.systemUiOverlayStyle(Theme.of(context).colorScheme),
-            child: PaymentFlowLayer(
-              router: widget.router,
-              authenticate: widget.authenticate,
-              stopAuthentication: widget.stopAuthentication,
-              child: routedContent,
-            ),
-          );
-        },
+      child: BlocProvider<ThemeModeCubit>.value(
+        value: widget.themeModeCubit,
+        child: BlocBuilder<ThemeModeCubit, ThemeModeState>(
+          builder: (BuildContext context, ThemeModeState themeState) {
+            return MaterialApp.router(
+              routerConfig: widget.router,
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              themeMode: themeState.preference.materialThemeMode,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              onGenerateTitle: (BuildContext context) =>
+                  AppLocalizations.of(context).appTitle,
+              builder: (BuildContext context, Widget? navigator) {
+                final Widget routedContent = widget.globalLayerBuilder == null
+                    ? navigator!
+                    : widget.globalLayerBuilder!(context, navigator!);
+                return AnnotatedRegion<SystemUiOverlayStyle>(
+                  value: AppTheme.systemUiOverlayStyle(
+                    Theme.of(context).colorScheme,
+                  ),
+                  child: PaymentFlowLayer(
+                    router: widget.router,
+                    authenticate: widget.authenticate,
+                    stopAuthentication: widget.stopAuthentication,
+                    child: routedContent,
+                  ),
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }

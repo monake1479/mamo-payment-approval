@@ -48,6 +48,26 @@ APPROVAL_TESTS = [
     "test/features/payments/states/approval/approval_cubit_test.dart",
 ]
 
+# The appearance (theme-mode) slice: persisted preference data layer, its state
+# owner, the settings surface, and the app-level wiring that drives themeMode.
+APPEARANCE_TESTS = [
+    "test/common/data/appearance/theme_preference_local_data_source_test.dart",
+    "test/common/data/appearance/theme_preference_use_cases_test.dart",
+    "test/features/settings/states/theme_mode/theme_mode_cubit_test.dart",
+    "test/features/settings/widgets/theme_mode_selector_test.dart",
+    "test/features/settings/pages/settings_page_test.dart",
+    "test/app/app_theme_mode_test.dart",
+]
+
+# Every app-level test that composes MamoPaymentApprovalApp builds a hydrated
+# ThemeModeCubit through the appearance test support, so state-owner and
+# appearance data changes must exercise them too.
+THEME_MODE_APP_TESTS = [
+    "test/app/app_test.dart",
+    "test/app/app_theme_test.dart",
+    "test/app/approval_flow_test.dart",
+]
+
 FLUTTER_TESTS = {
     "lib/common/data/device_authentication/data_sources/local_auth_client.dart": [
         "test/app/bootstrap_test.dart",
@@ -82,6 +102,93 @@ FLUTTER_TESTS = {
         "test/common/data/device_authentication/local_auth_client_test.dart",
         "test/common/data/device_authentication/local_auth_repository_test.dart",
         "test/common/data/device_authentication/use_cases/local_authentication_use_case_test.dart",
+    ],
+    "lib/common/data/appearance/models/theme_preference.dart": [
+        *APPEARANCE_TESTS,
+        *THEME_MODE_APP_TESTS,
+    ],
+    "lib/common/data/appearance/error_handling/appearance_failure.dart": [
+        "test/app/bootstrap_test.dart",
+        "test/common/data/appearance/theme_preference_local_data_source_test.dart",
+        "test/common/data/appearance/theme_preference_use_cases_test.dart",
+        "test/features/settings/states/theme_mode/theme_mode_cubit_test.dart",
+        "test/features/settings/pages/settings_page_test.dart",
+    ],
+    "lib/common/data/appearance/data_sources/theme_preference_local_data_source.dart": [
+        "test/app/bootstrap_test.dart",
+        *APPEARANCE_TESTS,
+        *THEME_MODE_APP_TESTS,
+    ],
+    "lib/common/data/appearance/theme_preference_repository.dart": [
+        "test/app/bootstrap_test.dart",
+        *APPEARANCE_TESTS,
+        *THEME_MODE_APP_TESTS,
+    ],
+    "lib/common/data/appearance/use_cases/load_theme_preference_use_case.dart": [
+        "test/app/bootstrap_test.dart",
+        "test/common/data/appearance/theme_preference_use_cases_test.dart",
+        "test/features/settings/states/theme_mode/theme_mode_cubit_test.dart",
+        "test/app/app_theme_mode_test.dart",
+        *THEME_MODE_APP_TESTS,
+    ],
+    "lib/common/data/appearance/use_cases/save_theme_preference_use_case.dart": [
+        "test/app/bootstrap_test.dart",
+        "test/common/data/appearance/theme_preference_use_cases_test.dart",
+        "test/features/settings/states/theme_mode/theme_mode_cubit_test.dart",
+        "test/app/app_theme_mode_test.dart",
+        *THEME_MODE_APP_TESTS,
+    ],
+    "lib/common/widgets/scrolled_page_body.dart": [
+        "test/features/payments/pages/payment_details_page_test.dart",
+        "test/features/settings/pages/settings_page_test.dart",
+        "test/app/app_theme_mode_test.dart",
+    ],
+    "lib/features/settings/appearance_failure_messages.dart": [
+        "test/features/settings/pages/settings_page_test.dart",
+    ],
+    "lib/features/settings/states/theme_mode/theme_mode_cubit.dart": [
+        "test/app/bootstrap_test.dart",
+        "test/features/settings/states/theme_mode/theme_mode_cubit_test.dart",
+        "test/features/settings/pages/settings_page_test.dart",
+        "test/app/app_theme_mode_test.dart",
+        *THEME_MODE_APP_TESTS,
+    ],
+    "lib/features/settings/states/theme_mode/theme_mode_state.dart": [
+        "test/features/settings/states/theme_mode/theme_mode_cubit_test.dart",
+        "test/features/settings/pages/settings_page_test.dart",
+        "test/app/app_theme_mode_test.dart",
+        *THEME_MODE_APP_TESTS,
+    ],
+    "lib/features/settings/models/theme_mode_option_data.dart": [
+        "test/features/settings/widgets/theme_mode_selector_test.dart",
+        "test/features/settings/pages/settings_page_test.dart",
+        "test/app/app_theme_mode_test.dart",
+    ],
+    "lib/features/settings/widgets/theme_mode_option.dart": [
+        "test/features/settings/widgets/theme_mode_selector_test.dart",
+        "test/features/settings/pages/settings_page_test.dart",
+        "test/app/app_theme_mode_test.dart",
+    ],
+    "lib/features/settings/widgets/theme_mode_selector.dart": [
+        "test/features/settings/widgets/theme_mode_selector_test.dart",
+        "test/features/settings/pages/settings_page_test.dart",
+        "test/app/app_theme_mode_test.dart",
+    ],
+    "lib/features/settings/pages/settings_page.dart": [
+        "test/features/settings/pages/settings_page_test.dart",
+        "test/app/app_theme_mode_test.dart",
+    ],
+    "lib/app/di/app_preferences_module.dart": [
+        "test/app/bootstrap_test.dart",
+    ],
+    "lib/app/di/session_only_shared_preferences_store.dart": [
+        "test/app/bootstrap_test.dart",
+    ],
+    "test/support/appearance_test_support.dart": [
+        "test/app/bootstrap_test.dart",
+        *APPEARANCE_TESTS,
+        *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
     ],
     "lib/app/di/device_authentication_module.dart": [
         "test/app/bootstrap_test.dart",
@@ -276,22 +383,41 @@ FLUTTER_TESTS = {
     "lib/app/payment_flow_layer.dart": APPROVAL_TESTS,
     "lib/features/payments/widgets/approval_overlay.dart": APPROVAL_TESTS,
     "lib/features/payments/widgets/debug_payment_action.dart": APPROVAL_TESTS,
-    "lib/app/app.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
-    "lib/app/bootstrap.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
-    "lib/app/di/configure_dependencies.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/app/app.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS, *APPEARANCE_TESTS],
+    "lib/app/bootstrap.dart": [
+        *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
+        "test/app/app_theme_mode_test.dart",
+    ],
+    "lib/app/di/configure_dependencies.dart": [
+        *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
+        "test/app/bootstrap_test.dart",
+        "test/app/app_theme_mode_test.dart",
+    ],
     "lib/app/di/configure_dependencies.config.dart": [
         "test/app/bootstrap_test.dart",
     ],
-    "lib/app/navigation/app_router.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/app/navigation/app_router.dart": [
+        *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
+        "test/app/app_theme_mode_test.dart",
+    ],
     "lib/app/navigation/payment_navigation_shell.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/payment_status_presentation.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/formatters/payment_formatters.dart": PAYMENTS_UI_TESTS,
-    "lib/features/payments/pages/home_page.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/pages/home_page.dart": [
+        *PAYMENTS_UI_TESTS,
+        "test/app/app_theme_mode_test.dart",
+    ],
     "lib/features/payments/pages/payment_details_page.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/pages/payments_page.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/widgets/monthly_summary_card.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/widgets/payment_detail_field.dart": PAYMENTS_UI_TESTS,
-    "lib/features/payments/widgets/payment_page_scaffold.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/widgets/payment_page_scaffold.dart": [
+        *PAYMENTS_UI_TESTS,
+        "test/app/app_theme_mode_test.dart",
+    ],
     "lib/features/payments/widgets/payment_row.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/widgets/payment_state_views.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/widgets/payment_status_chip.dart": [
@@ -302,6 +428,12 @@ FLUTTER_TESTS = {
 }
 
 for generated, source in {
+    "lib/common/data/appearance/error_handling/appearance_failure.freezed.dart":
+        "lib/common/data/appearance/error_handling/appearance_failure.dart",
+    "lib/features/settings/states/theme_mode/theme_mode_state.freezed.dart":
+        "lib/features/settings/states/theme_mode/theme_mode_state.dart",
+    "lib/features/settings/models/theme_mode_option_data.freezed.dart":
+        "lib/features/settings/models/theme_mode_option_data.dart",
     "lib/common/data/device_authentication/error_handling/device_authentication_failure.freezed.dart":
         "lib/common/data/device_authentication/error_handling/device_authentication_failure.dart",
     "lib/common/data/payments/models/payment.freezed.dart":

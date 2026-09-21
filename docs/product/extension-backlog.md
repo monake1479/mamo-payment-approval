@@ -4,12 +4,12 @@
 
 This backlog contains discussion candidates and explicitly deferred owner requests. The owner will choose an original contribution after the core flow works. Neither a candidate nor a deferred request authorizes implementation.
 
-Choose a small addition with clear user value, a demonstrable journey, explainable architecture, realistic effort, and focused tests. Preserve baseline criteria and session-only storage unless explicitly changed.
+Choose a small addition with clear user value, a demonstrable journey, explainable architecture, realistic effort, and focused tests. Preserve baseline criteria and session-only storage unless explicitly changed. The owner explicitly changed the storage guardrail once, for the non-sensitive appearance preference only: `UI-03` persists the selected theme mode via `shared_preferences` (see [ADR 0013](../decisions/0013-persistent-theme-mode.md)). This does not authorize persisting payment or authentication data, or a general local database.
 
 | Candidate | User value | Questions and costs |
 |---|---|---|
 | Payment decision timeline | Explain when a request arrived and was decided | Timestamp semantics, privacy, distinction from durable audit logs |
-| Search and status filtering | Find payments as the list grows | Selected for slice 5: `SEARCH-01..05`, [feature note](../features/payments-search.md), [ADR 0013](../decisions/0013-event-driven-bloc-for-payments-search.md); filter ownership, empty results, and return-navigation state are resolved there |
+| Search and status filtering | Find payments as the list grows | Selected for slice 5: `SEARCH-01..05`, [feature note](../features/payments-search.md), [ADR 0014](../decisions/0014-event-driven-bloc-for-payments-search.md); filter ownership, empty results, and return-navigation state are resolved there |
 | Deterministic demo scenarios | Exercise recovery as well as success | Separate from real authentication; no release auth bypass |
 | Accessible decision feedback | Clear results through text, motion, optional haptics | Duplicate feedback, reduced motion, platform settings |
 
