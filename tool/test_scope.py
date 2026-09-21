@@ -26,6 +26,14 @@ DEVICE_AUTH_TESTS = [
     "test/common/data/device_authentication/use_cases/stop_local_authentication_use_case_test.dart",
 ]
 
+# The incoming-approval and draggable debug-action flow. These consume the
+# accepted payments and device-authentication use cases; changes to the shared
+# app shell or to those use cases also exercise the approval journey.
+APPROVAL_TESTS = [
+    "test/app/approval_flow_test.dart",
+    "test/features/payments/states/approval/approval_cubit_test.dart",
+]
+
 FLUTTER_TESTS = {
     "lib/common/data/device_authentication/data_sources/local_auth_client.dart": [
         "test/app/bootstrap_test.dart",
@@ -62,12 +70,6 @@ FLUTTER_TESTS = {
         "test/common/data/device_authentication/use_cases/local_authentication_use_case_test.dart",
     ],
     "lib/app/di/device_authentication_module.dart": [
-        "test/app/bootstrap_test.dart",
-    ],
-    "lib/app/di/configure_dependencies.dart": [
-        "test/app/bootstrap_test.dart",
-    ],
-    "lib/app/di/configure_dependencies.config.dart": [
         "test/app/bootstrap_test.dart",
     ],
     "lib/app/di/mock_backend_module.dart": [
@@ -143,6 +145,7 @@ FLUTTER_TESTS = {
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
         *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
     ],
     "lib/common/result/models/result.dart": [
         "test/common/result/models/result_test.dart",
@@ -172,6 +175,7 @@ FLUTTER_TESTS = {
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
         "test/features/payments/states/payments/payments_cubit_test.dart",
         *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
     ],
     "lib/common/data/payments/use_cases/load_payments_use_case.dart": [
         "test/common/data/payments/use_cases/payment_use_cases_test.dart",
@@ -191,10 +195,21 @@ FLUTTER_TESTS = {
         "test/features/payments/states/payments/payments_cubit_test.dart",
         *PAYMENTS_UI_TESTS,
     ],
-    "lib/app/app.dart": PAYMENTS_UI_TESTS,
-    "lib/app/bootstrap.dart": PAYMENTS_UI_TESTS,
-    "lib/app/di/configure_dependencies.dart": PAYMENTS_UI_TESTS,
-    "lib/app/navigation/app_router.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/states/approval/approval_cubit.dart": APPROVAL_TESTS,
+    "lib/features/payments/states/approval/approval_state.dart": APPROVAL_TESTS,
+    "lib/features/payments/states/approval/approval_failure.dart": APPROVAL_TESTS,
+    "lib/features/payments/states/debug_action/debug_action_cubit.dart": APPROVAL_TESTS,
+    "lib/features/payments/states/debug_action/debug_action_state.dart": APPROVAL_TESTS,
+    "lib/app/payment_flow_layer.dart": APPROVAL_TESTS,
+    "lib/features/payments/widgets/approval_overlay.dart": APPROVAL_TESTS,
+    "lib/features/payments/widgets/debug_payment_action.dart": APPROVAL_TESTS,
+    "lib/app/app.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/app/bootstrap.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/app/di/configure_dependencies.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/app/di/configure_dependencies.config.dart": [
+        "test/app/bootstrap_test.dart",
+    ],
+    "lib/app/navigation/app_router.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
     "lib/app/navigation/payment_navigation_shell.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/payment_status_presentation.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/formatters/payment_formatters.dart": PAYMENTS_UI_TESTS,
@@ -206,6 +221,10 @@ FLUTTER_TESTS = {
     "lib/features/payments/widgets/payment_page_scaffold.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/widgets/payment_row.dart": PAYMENTS_UI_TESTS,
     "lib/features/payments/widgets/payment_state_views.dart": PAYMENTS_UI_TESTS,
+    "lib/features/payments/widgets/payment_status_chip.dart": [
+        *PAYMENTS_UI_TESTS,
+        "test/features/payments/widgets/payment_status_chip_test.dart",
+    ],
     "lib/features/payments/widgets/recent_payments_section.dart": PAYMENTS_UI_TESTS,
 }
 
@@ -232,6 +251,12 @@ for generated, source in {
         "lib/common/result/models/unit.dart",
     "lib/features/payments/states/payments/payments_state.freezed.dart":
         "lib/features/payments/states/payments/payments_state.dart",
+    "lib/features/payments/states/approval/approval_state.freezed.dart":
+        "lib/features/payments/states/approval/approval_state.dart",
+    "lib/features/payments/states/approval/approval_failure.freezed.dart":
+        "lib/features/payments/states/approval/approval_failure.dart",
+    "lib/features/payments/states/debug_action/debug_action_state.freezed.dart":
+        "lib/features/payments/states/debug_action/debug_action_state.dart",
 }.items():
     FLUTTER_TESTS[generated] = FLUTTER_TESTS[source]
 

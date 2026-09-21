@@ -8,8 +8,12 @@ import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_status_colors.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/local_auth_repository.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
 
+import '../support/device_authentication_test_support.dart';
 import '../support/payments_test_support.dart';
 
 double contrast(Color first, Color second) {
@@ -128,10 +132,15 @@ void main() {
         );
         final cubit = createPaymentsCubit(backend);
         addTearDown(cubit.close);
+        final LocalAuthRepository authRepository = LocalAuthRepository(
+          FakeLocalAuthClient(),
+        );
         await tester.pumpWidget(
           MamoPaymentApprovalApp(
             router: appRouter.router,
             paymentsCubit: cubit,
+            authenticate: LocalAuthenticationUseCase(authRepository),
+            stopAuthentication: StopLocalAuthenticationUseCase(authRepository),
           ),
         );
         await tester.pumpAndSettle();
