@@ -138,12 +138,12 @@ FLUTTER_TESTS = {
         *PAYMENTS_UI_TESTS,
         *APPROVAL_TESTS,
     ],
-    "lib/common/data/payments/models/decided_payment_order.dart": [
-        "test/common/data/payments/models/payments_collection_test.dart",
-        "test/common/data/payments/use_cases/payment_use_cases_test.dart",
-        "test/features/payments/states/payments/payments_cubit_test.dart",
+        "lib/common/data/payments/models/payments_sort.dart": [
+        *PAYMENTS_DATA_SOURCE_TESTS,
+        "test/mock_backend/payments/mock_payments_backend_test.dart",
         *SEARCH_TESTS,
         *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
     ],
     "lib/common/data/payments/models/payments_collection.dart": [
         "test/common/data/payments/models/payments_collection_test.dart",
@@ -244,8 +244,15 @@ FLUTTER_TESTS = {
         *PAYMENTS_UI_TESTS,
         *APPROVAL_TESTS,
     ],
-    "lib/features/payments/widgets/payments_search_field.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+        "lib/features/payments/widgets/payments_search_field.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
     "lib/features/payments/widgets/payment_status_filter_chips.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/features/payments/widgets/payments_search_controls.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/features/payments/widgets/payments_list.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/features/payments/views/payments_history_view.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/features/payments/views/payments_search_results_view.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/features/payments/views/payments_search_empty_view.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/features/payments/views/payments_search_error_view.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/features/payments/views/payments_search_loading_view.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
     "lib/features/payments/states/approval/approval_cubit.dart": APPROVAL_TESTS,
     "lib/features/payments/states/approval/approval_state.dart": APPROVAL_TESTS,
     "lib/features/payments/states/approval/approval_failure.dart": APPROVAL_TESTS,
@@ -304,8 +311,10 @@ for generated, source in {
         "lib/features/payments/states/payments/payments_state.dart",
     "lib/features/payments/states/search/payments_search_state.freezed.dart":
         "lib/features/payments/states/search/payments_search_state.dart",
-    "lib/features/payments/states/search/payments_search_event.freezed.dart":
+        "lib/features/payments/states/search/payments_search_event.freezed.dart":
         "lib/features/payments/states/search/payments_search_event.dart",
+    "lib/common/data/payments/models/payments_sort.freezed.dart":
+        "lib/common/data/payments/models/payments_sort.dart",
     "lib/features/payments/states/approval/approval_state.freezed.dart":
         "lib/features/payments/states/approval/approval_state.dart",
     "lib/features/payments/states/approval/approval_failure.freezed.dart":

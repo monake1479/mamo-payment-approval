@@ -66,10 +66,22 @@ void main() {
       final MockPaymentsBackend backend = MockPaymentsBackend(clock: () => now);
 
       final List<Map<String, Object?>> byCounterparty = await backend
-          .searchPayments(query: '  atlas ', statuses: const <String>[]);
+          .searchPayments(
+            sortBy: 'decidedAt',
+            sortDirection: 'desc',
+            query: '  atlas ',
+            statuses: const <String>[],
+          );
       final List<Map<String, Object?>> byReference = await backend
-          .searchPayments(query: 'ship-7', statuses: const <String>[]);
+          .searchPayments(
+            sortBy: 'decidedAt',
+            sortDirection: 'desc',
+            query: 'ship-7',
+            statuses: const <String>[],
+          );
       final List<Map<String, Object?>> none = await backend.searchPayments(
+        sortBy: 'decidedAt',
+        sortDirection: 'desc',
         query: 'nobody',
         statuses: const <String>[],
       );
@@ -95,11 +107,23 @@ void main() {
         expect(pending['status'], 'pending');
 
         final List<Map<String, Object?>> everything = await backend
-            .searchPayments(query: '', statuses: const <String>[]);
+            .searchPayments(
+              sortBy: 'decidedAt',
+              sortDirection: 'desc',
+              query: '',
+              statuses: const <String>[],
+            );
         final List<Map<String, Object?>> pendingRequested = await backend
-            .searchPayments(query: '', statuses: const <String>['pending']);
+            .searchPayments(
+              sortBy: 'decidedAt',
+              sortDirection: 'desc',
+              query: '',
+              statuses: const <String>['pending'],
+            );
         final List<Map<String, Object?>> byVisibleText = await backend
             .searchPayments(
+              sortBy: 'decidedAt',
+              sortDirection: 'desc',
               query: pending['counterparty']! as String,
               statuses: const <String>[],
             );
@@ -112,11 +136,74 @@ void main() {
           decision: 'rejected',
         );
         final List<Map<String, Object?>> rejected = await backend
-            .searchPayments(query: '', statuses: const <String>['rejected']);
+            .searchPayments(
+              sortBy: 'decidedAt',
+              sortDirection: 'desc',
+              query: '',
+              statuses: const <String>['rejected'],
+            );
         final List<Map<String, Object?>> approved = await backend
-            .searchPayments(query: '', statuses: const <String>['approved']);
+            .searchPayments(
+              sortBy: 'decidedAt',
+              sortDirection: 'desc',
+              query: '',
+              statuses: const <String>['approved'],
+            );
         expect(rejected.map((r) => r['id']), <Object?>[pending['id']]);
         expect(approved, isEmpty);
+      },
+    );
+
+    test(
+      'search orders results by the requested field and direction',
+      () async {
+        final MockPaymentsBackend backend = MockPaymentsBackend(
+          clock: () => now,
+        );
+        Future<List<Object?>> idsSortedBy(
+          String field,
+          String direction,
+        ) async {
+          final List<Map<String, Object?>> records = await backend
+              .searchPayments(
+                query: '',
+                statuses: const <String>[],
+                sortBy: field,
+                sortDirection: direction,
+              );
+          return records.map((r) => r['id']).toList(growable: false);
+        }
+
+        // Equal decision times fall back to the identifier.
+        expect(await idsSortedBy('decidedAt', 'desc'), <String>[
+          'seed-approved-current',
+          'seed-rejected-current',
+          'seed-approved-previous',
+        ]);
+        expect(await idsSortedBy('decidedAt', 'asc'), <String>[
+          'seed-approved-previous',
+          'seed-approved-current',
+          'seed-rejected-current',
+        ]);
+        expect(await idsSortedBy('amount', 'asc'), <String>[
+          'seed-approved-previous',
+          'seed-rejected-current',
+          'seed-approved-current',
+        ]);
+        expect(await idsSortedBy('counterparty', 'asc'), <String>[
+          'seed-approved-current',
+          'seed-approved-previous',
+          'seed-rejected-current',
+        ]);
+        await expectLater(
+          backend.searchPayments(
+            query: '',
+            statuses: const <String>[],
+            sortBy: 'reference',
+            sortDirection: 'asc',
+          ),
+          throwsArgumentError,
+        );
       },
     );
 
@@ -124,6 +211,8 @@ void main() {
       final MockPaymentsBackend backend = MockPaymentsBackend(clock: () => now);
 
       final List<Map<String, Object?>> results = await backend.searchPayments(
+        sortBy: 'decidedAt',
+        sortDirection: 'desc',
         query: '',
         statuses: const <String>[],
       );
@@ -143,9 +232,19 @@ void main() {
         simulatedFailureInterval: 2,
       );
 
-      await backend.searchPayments(query: '', statuses: const <String>[]);
+      await backend.searchPayments(
+        sortBy: 'decidedAt',
+        sortDirection: 'desc',
+        query: '',
+        statuses: const <String>[],
+      );
       await expectLater(
-        backend.searchPayments(query: '', statuses: const <String>[]),
+        backend.searchPayments(
+          sortBy: 'decidedAt',
+          sortDirection: 'desc',
+          query: '',
+          statuses: const <String>[],
+        ),
         throwsA(_backendError(PaymentsBackendErrorCode.unavailable)),
       );
     });

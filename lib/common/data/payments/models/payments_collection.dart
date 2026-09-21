@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mamo_approval/common/data/payments/models/decided_payment_order.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
 import 'package:mamo_approval/common/data/payments/models/payment_summary.dart';
 import 'package:timezone/data/latest.dart' as time_zone_data;
@@ -48,7 +47,10 @@ abstract class PaymentsCollection with _$PaymentsCollection {
         source
             .where((Payment payment) => payment.status != PaymentStatus.pending)
             .toList(growable: false)
-          ..sort(DecidedPaymentOrder.newestFirst);
+          ..sort((Payment left, Payment right) {
+            final int byDecision = right.decidedAt!.compareTo(left.decidedAt!);
+            return byDecision != 0 ? byDecision : left.id.compareTo(right.id);
+          });
     final List<Payment> approvedInPeriod = decided
         .where((Payment payment) {
           final DateTime decidedAt = payment.decidedAt!;

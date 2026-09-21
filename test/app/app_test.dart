@@ -29,14 +29,13 @@ void main() {
       onLoad: () async => <Payment>[approvedPayment(), rejectedPayment()],
     );
     cubit = createPaymentsCubit(backend);
+    registerPaymentsSearchBloc(backend);
     final LocalAuthRepository authRepository = LocalAuthRepository(
       FakeLocalAuthClient(),
     );
     authenticate = LocalAuthenticationUseCase(authRepository);
     stop = StopLocalAuthenticationUseCase(authRepository);
-    appRouter = MamoPaymentRouter(
-      createPaymentsSearchBloc: () => createPaymentsSearchBloc(backend),
-    );
+    appRouter = MamoPaymentRouter();
     router = appRouter.router;
   });
   tearDown(() async {

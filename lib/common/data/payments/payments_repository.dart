@@ -2,6 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:mamo_approval/common/data/payments/data_sources/payments_remote_data_source.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_sort.dart';
 import 'package:mamo_approval/common/result/models/result.dart';
 
 @lazySingleton
@@ -22,7 +23,8 @@ class PaymentsRepository {
   Future<Result<PaymentsFailure, List<Payment>>> searchPayments({
     required String query,
     required Set<PaymentStatus> statuses,
-  }) => _remoteDataSource.search(query: query, statuses: statuses);
+    required PaymentsSort sort,
+  }) => _remoteDataSource.search(query: query, statuses: statuses, sort: sort);
 
   Future<Result<PaymentsFailure, Payment>> createRequest() =>
       _remoteDataSource.createRequest();

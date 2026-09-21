@@ -9,12 +9,21 @@ import 'package:mamo_approval/common/data/payments/models/payment.dart';
 import 'package:mamo_approval/features/payments/pages/payments_page.dart';
 import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
 import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart';
+import 'package:mamo_approval/features/payments/widgets/payments_search_field.dart';
 import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_exception.dart';
 
 import '../../../support/payments_test_support.dart';
 
 void main() {
+  // Every page build resolves the search bloc; tests that drive search
+  // re-register with their own backend.
+  setUp(() {
+    registerPaymentsSearchBloc(
+      StubPaymentsBackend(onLoad: () async => const <Payment>[]),
+    );
+  });
+
   testWidgets('shows decided history newest first and excludes pending', (
     WidgetTester tester,
   ) async {
@@ -185,9 +194,10 @@ void main() {
       reference: 'PO-9999',
     );
 
-    // The provider owns the bloc so it closes while the widget tree is torn
-    // down inside the test zone; closing a Bloc from `addTearDown` would wait
-    // on event-stream microtasks that never run once the test zone has ended.
+    // The page provides the bloc from `getIt` and the provider closes it while
+    // the widget tree is torn down inside the test zone; closing a Bloc from
+    // `addTearDown` would wait on event-stream microtasks that never run once
+    // the test zone has ended.
     Future<(PaymentsCubit, StubPaymentsBackend)> pumpPage(
       WidgetTester tester, {
       required Future<List<Payment>> Function() onLoad,
@@ -197,14 +207,11 @@ void main() {
       final StubPaymentsBackend backend = StubPaymentsBackend(onLoad: onLoad);
       final PaymentsCubit cubit = createPaymentsCubit(backend);
       addTearDown(cubit.close);
+      registerPaymentsSearchBloc(backend, debounceDuration: debounceDuration);
       await cubit.load();
       await tester.pumpWidget(
         _PaymentsTestApp(
           cubit: cubit,
-          createSearchBloc: () => createPaymentsSearchBloc(
-            backend,
-            debounceDuration: debounceDuration,
-          ),
           child: PaymentsPage(onOpenPayment: onOpenPayment ?? (_) {}),
         ),
       );
@@ -212,8 +219,9 @@ void main() {
       return (cubit, backend);
     }
 
-    PaymentsSearchBloc searchBlocOf(WidgetTester tester) =>
-        tester.element(find.byType(PaymentsPage)).read<PaymentsSearchBloc>();
+    PaymentsSearchBloc searchBlocOf(WidgetTester tester) => tester
+        .element(find.byType(PaymentsSearchField))
+        .read<PaymentsSearchBloc>();
 
     testWidgets('matches visible counterparty or reference, never pending', (
       WidgetTester tester,
@@ -414,32 +422,20 @@ void main() {
 }
 
 class _PaymentsTestApp extends StatelessWidget {
-  const _PaymentsTestApp({
-    required this.cubit,
-    required this.child,
-    this.createSearchBloc,
-  });
+  const _PaymentsTestApp({required this.cubit, required this.child});
 
   final PaymentsCubit cubit;
-  final PaymentsSearchBloc Function()? createSearchBloc;
   final Widget child;
 
   @override
   Widget build(BuildContext context) => BlocProvider<PaymentsCubit>.value(
     value: cubit,
-    child: BlocProvider<PaymentsSearchBloc>(
-      create: (BuildContext _) =>
-          createSearchBloc?.call() ??
-          createPaymentsSearchBloc(
-            StubPaymentsBackend(onLoad: () async => const <Payment>[]),
-          ),
-      child: MaterialApp(
-        theme: AppTheme.light,
-        darkTheme: AppTheme.dark,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: child,
-      ),
+    child: MaterialApp(
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: child,
     ),
   );
 }

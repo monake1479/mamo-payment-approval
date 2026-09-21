@@ -56,10 +56,8 @@ void main() {
       },
     );
     paymentsCubit = createPaymentsCubitFromRepository(repository);
-    appRouter = MamoPaymentRouter(
-      createPaymentsSearchBloc: () =>
-          createPaymentsSearchBlocFromRepository(repository),
-    );
+    registerPaymentsSearchBlocFromRepository(repository);
+    appRouter = MamoPaymentRouter();
     router = appRouter.router;
   });
 

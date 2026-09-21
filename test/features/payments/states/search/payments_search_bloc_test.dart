@@ -5,6 +5,8 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_sort.dart';
+
 import 'package:mamo_approval/common/result/models/result.dart';
 import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart';
 import 'package:mamo_approval/features/payments/states/search/payments_search_event.dart';
@@ -25,7 +27,11 @@ void main() {
     return StubPaymentsRepository(
       onLoad: () async =>
           const Success<PaymentsFailure, List<Payment>>(<Payment>[]),
-      onSearch: (String query, Set<PaymentStatus> statuses) async => result,
+      onSearch: (
+        String query,
+        Set<PaymentStatus> statuses,
+        PaymentsSort sort,
+      ) async => result,
     );
   }
 
@@ -306,12 +312,15 @@ void main() {
       final StubPaymentsRepository repository = StubPaymentsRepository(
         onLoad: () async =>
             const Success<PaymentsFailure, List<Payment>>(<Payment>[]),
-        onSearch: (String query, Set<PaymentStatus> statuses) =>
-            statuses.contains(PaymentStatus.approved)
-            ? slow.future
-            : Future<Result<PaymentsFailure, List<Payment>>>.value(
-                Success<PaymentsFailure, List<Payment>>(<Payment>[rejected]),
-              ),
+        onSearch:
+            (String query, Set<PaymentStatus> statuses, PaymentsSort sort) =>
+                statuses.contains(PaymentStatus.approved)
+                ? slow.future
+                : Future<Result<PaymentsFailure, List<Payment>>>.value(
+                    Success<PaymentsFailure, List<Payment>>(<Payment>[
+                      rejected,
+                    ]),
+                  ),
       );
       final PaymentsSearchBloc bloc = createPaymentsSearchBlocFromRepository(
         repository,

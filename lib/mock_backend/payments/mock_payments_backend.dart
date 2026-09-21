@@ -69,8 +69,14 @@ final class MockPaymentsBackend implements PaymentsBackendClient {
   Future<List<Map<String, Object?>>> searchPayments({
     required String query,
     required List<String> statuses,
+    required String sortBy,
+    required String sortDirection,
   }) async {
     await _beforeOperation();
+    final Comparator<Map<String, Object?>> compare = _comparator(
+      sortBy,
+      sortDirection,
+    );
     final String needle = query.trim().toLowerCase();
     return _records
         .where((Map<String, Object?> record) {
@@ -91,7 +97,37 @@ final class MockPaymentsBackend implements PaymentsBackendClient {
           return counterparty.contains(needle) || reference.contains(needle);
         })
         .map(Map<String, Object?>.from)
-        .toList(growable: false);
+        .toList()
+      ..sort(compare);
+  }
+
+  /// Orders decided records by one field in one direction, then by identifier
+  /// so equal values stay deterministic. Unknown parameters are caller bugs.
+  static Comparator<Map<String, Object?>> _comparator(
+    String sortBy,
+    String sortDirection,
+  ) {
+    final int sign = switch (sortDirection) {
+      'asc' => 1,
+      'desc' => -1,
+      _ => throw ArgumentError.value(sortDirection, 'sortDirection'),
+    };
+    final Comparable<Object> Function(Map<String, Object?> record) key =
+        switch (sortBy) {
+          'decidedAt' => (record) => record['decidedAt']! as String,
+          'createdAt' => (record) => record['createdAt']! as String,
+          'amount' => (record) => double.parse(record['amount']! as String),
+          'counterparty' => (
+            record,
+          ) => (record['counterparty']! as String).toLowerCase(),
+          _ => throw ArgumentError.value(sortBy, 'sortBy'),
+        };
+    return (Map<String, Object?> left, Map<String, Object?> right) {
+      final int byField = sign * key(left).compareTo(key(right));
+      return byField != 0
+          ? byField
+          : (left['id']! as String).compareTo(right['id']! as String);
+    };
   }
 
   @override

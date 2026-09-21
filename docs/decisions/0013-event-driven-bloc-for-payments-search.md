@@ -13,11 +13,13 @@ Search over the decided history is different. Its primary input is a stream of k
 
 1. **Cubit with hand-rolled timers.** A `search(query)` method that owns a `Timer`, a version counter, and cancellation bookkeeping. Works, but reimplements what `Bloc.on` transformers already model, scatters the timing rules across methods, and is harder to test than a declarative event pipeline.
 2. **`bloc_concurrency` + `stream_transform`.** `restartable()` is a one-line wrapper over `switchMap`, and `bloc_concurrency` offers no debounce, so the project would still need `stream_transform` plus a custom debounce that also honours the clear rule. Two packages for one line of value.
-3. **Event-driven `Bloc` with one custom `EventTransformer` (chosen).** Discrete events (`queryChanged`, `statusFilterChanged`, `cleared`, `refreshRequested`) flow through a single transformer that debounces query edits, forwards other events immediately, lets `cleared` discard a pending edit, and restarts the handler with `switchMap` from `stream_transform`.
+3. **Event-driven `Bloc` with one handler per event (chosen).** Each event (`queryChanged`, `statusFilterChanged`, `cleared`, `refreshRequested`) has its own private handler, following the project's `NewsListBloc`-style convention. Timing rules live in the transformers attached to those handlers: the query handler debounces edits and drops an edit that was waiting when the search was cleared; the query, filter, and refresh handlers restart with `switchMap` from `stream_transform`. A sequence counter guards completions superseded by a different event type.
 
 ## Decision
 
-Implement `PaymentsSearchBloc` under `lib/features/payments/states/search/` with `payments_search_bloc.dart`, `payments_search_event.dart`, and `payments_search_state.dart`. States are a Freezed sealed union: `idle`, `loading`, `results`, `empty`, `error`; every active state carries the criteria it describes. The bloc receives `SearchPaymentsUseCase` by constructor and never sees `BuildContext`, navigation, or dialogs.
+Implement `PaymentsSearchBloc` under `lib/features/payments/states/search/` with `payments_search_bloc.dart`, `payments_search_event.dart`, and `payments_search_state.dart`. States are a Freezed sealed union: `idle`, `loading`, `results`, `empty`, `error`; every active state carries the criteria it describes. The bloc is registered with `injectable` as a factory, receives `SearchPaymentsUseCase` by constructor, and never sees `BuildContext`, navigation, or dialogs. `PaymentsPage` provides it through `BlocProvider(create: getIt<PaymentsSearchBloc>())`; the router stays unaware of page-internal state owners. The page selects a view per collection state and `PaymentsHistoryView` selects a view per search state; those views live under `lib/features/payments/views/`, one class per file.
+
+Ordering is a backend concern: `PaymentsBackendClient.searchPayments` takes `sortBy`/`sortDirection` parameters, `PaymentsRemoteDataSource` maps a typed `PaymentsSort` to them, and `SearchPaymentsUseCase` requests the history order (decision time descending, identifier tie-break). No layer above the backend re-sorts search results.
 
 Add `stream_transform` as a direct dependency for `switchMap`; it was already resolved transitively and is maintained by the Dart team. Add `bloc_test` and `fake_async` as dev dependencies: `blocTest` documents event-to-state expectations in the textbook form the slice demonstrates, and `fakeAsync` proves the debounce window deterministically without wall-clock waits.
 
@@ -25,8 +27,8 @@ The rest of the payment screens keep their Cubits. This ADR does not make BLoC t
 
 ## Consequences
 
-- One transformer owns all search timing and cancellation rules and is covered by focused tests (debounce window, discarded edit on clear, in-flight restart, no timer left after close).
-- The page-scoped `BlocProvider` in the `/payments` route owns the bloc for the session, so an active search survives the Home/Payments switch and system Back, matching the pushed-route-free navigation contract.
+- Each handler is small and reads as one event's rule; the timing and cancellation rules are covered by focused tests (debounce window, discarded edit on clear, in-flight restart across event types, no timer left after close).
+- The page-scoped `BlocProvider` inside `PaymentsPage` owns the bloc for the session (the preloaded branch keeps the page alive), so an active search survives the Home/Payments switch and system Back, matching the pushed-route-free navigation contract.
 - The bloc does not subscribe to `PaymentsCubit`; a widget `BlocListener` re-dispatches `refreshRequested` when the authoritative collection changes so a fresh decision reaches an open result immediately.
 - Search reads the same authoritative mock backend through the production-shaped data source; there is no second store, cache, or persistence.
 

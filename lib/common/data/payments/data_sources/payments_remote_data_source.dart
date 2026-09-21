@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mamo_approval/common/data/payments/dtos/payment_dto.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_sort.dart';
 import 'package:mamo_approval/common/result/models/result.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_exception.dart';
@@ -37,10 +38,11 @@ final class PaymentsRemoteDataSource {
   /// without authentication: counterparty and reference. A pending request is
   /// never part of the result, so masked approval data cannot leak through a
   /// search; [PaymentStatus.pending] is dropped from [statuses] for the same
-  /// reason. An empty query with no statuses returns every decided payment.
+  /// reason. The backend applies [sort]; records come back in that order.
   Future<Result<PaymentsFailure, List<Payment>>> search({
     required String query,
     required Set<PaymentStatus> statuses,
+    required PaymentsSort sort,
   }) async {
     try {
       final List<Map<String, Object?>> records = await _backendClient
@@ -52,6 +54,11 @@ final class PaymentsRemoteDataSource {
                 )
                 .map((PaymentStatus status) => status.name)
                 .toList(growable: false),
+            sortBy: sort.field.name,
+            sortDirection: switch (sort.direction) {
+              SortDirection.ascending => 'asc',
+              SortDirection.descending => 'desc',
+            },
           );
       return switch (_decodeCollection(records)) {
         Failure<PaymentsFailure, List<Payment>>(:final failure) =>

@@ -1,6 +1,9 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mamo_approval/app/di/configure_dependencies.dart';
 import 'package:mamo_approval/common/data/payments/data_sources/payments_remote_data_source.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_sort.dart';
 import 'package:mamo_approval/common/data/payments/payments_repository.dart';
 import 'package:mamo_approval/common/data/payments/use_cases/create_payment_request_use_case.dart';
 import 'package:mamo_approval/common/data/payments/use_cases/decide_payment_use_case.dart';
@@ -34,29 +37,39 @@ final class StubPaymentsBackend implements PaymentsBackendClient {
     return (await onLoad()).map(_record).toList(growable: false);
   }
 
-  /// Mirrors the mock backend's decided-only, case-insensitive rules over the
-  /// same [onLoad] data so page tests can drive search without a second store.
+  /// Mirrors the mock backend's decided-only, case-insensitive rules and its
+  /// decision-time ordering over the same [onLoad] data so page tests can
+  /// drive search without a second store.
   @override
   Future<List<Map<String, Object?>>> searchPayments({
     required String query,
     required List<String> statuses,
+    required String sortBy,
+    required String sortDirection,
   }) async {
     searchCalls += 1;
     final String needle = query.trim().toLowerCase();
-    return (await onLoad())
-        .where((Payment payment) => payment.status != PaymentStatus.pending)
-        .where(
-          (Payment payment) =>
-              statuses.isEmpty || statuses.contains(payment.status.name),
-        )
-        .where(
-          (Payment payment) =>
-              needle.isEmpty ||
-              payment.counterparty.toLowerCase().contains(needle) ||
-              payment.reference.toLowerCase().contains(needle),
-        )
-        .map(_record)
-        .toList(growable: false);
+    final int sign = sortDirection == 'asc' ? 1 : -1;
+    final List<Payment> matches =
+        (await onLoad())
+            .where((Payment payment) => payment.status != PaymentStatus.pending)
+            .where(
+              (Payment payment) =>
+                  statuses.isEmpty || statuses.contains(payment.status.name),
+            )
+            .where(
+              (Payment payment) =>
+                  needle.isEmpty ||
+                  payment.counterparty.toLowerCase().contains(needle) ||
+                  payment.reference.toLowerCase().contains(needle),
+            )
+            .toList()
+          ..sort((Payment left, Payment right) {
+            final int byDecision =
+                sign * left.decidedAt!.compareTo(right.decidedAt!);
+            return byDecision != 0 ? byDecision : left.id.compareTo(right.id);
+          });
+    return matches.map(_record).toList(growable: false);
   }
 
   @override
@@ -112,11 +125,40 @@ PaymentsSearchBloc createPaymentsSearchBloc(
   Duration debounceDuration = Duration.zero,
 }) {
   return PaymentsSearchBloc(
-    searchPayments: SearchPaymentsUseCase(
+    SearchPaymentsUseCase(
       PaymentsRepository(PaymentsRemoteDataSource(backend)),
     ),
     debounceDuration: debounceDuration,
   );
+}
+
+/// Registers the page-scoped search bloc factory that `PaymentsPage` resolves
+/// through `getIt`, and unregisters it when the test ends.
+void registerPaymentsSearchBloc(
+  StubPaymentsBackend backend, {
+  Duration debounceDuration = Duration.zero,
+}) {
+  registerPaymentsSearchBlocFactory(
+    () => createPaymentsSearchBloc(backend, debounceDuration: debounceDuration),
+  );
+}
+
+void registerPaymentsSearchBlocFromRepository(PaymentsRepository repository) {
+  registerPaymentsSearchBlocFactory(
+    () => createPaymentsSearchBlocFromRepository(repository),
+  );
+}
+
+void registerPaymentsSearchBlocFactory(PaymentsSearchBloc Function() create) {
+  if (getIt.isRegistered<PaymentsSearchBloc>()) {
+    getIt.unregister<PaymentsSearchBloc>();
+  }
+  getIt.registerFactory<PaymentsSearchBloc>(create);
+  addTearDown(() {
+    if (getIt.isRegistered<PaymentsSearchBloc>()) {
+      getIt.unregister<PaymentsSearchBloc>();
+    }
+  });
 }
 
 Payment approvedPayment({
@@ -195,6 +237,7 @@ final class StubPaymentsRepository extends PaymentsRepository {
   final Future<Result<PaymentsFailure, List<Payment>>> Function(
     String query,
     Set<PaymentStatus> statuses,
+    PaymentsSort sort,
   )?
   onSearch;
   int loadCalls = 0;
@@ -202,6 +245,7 @@ final class StubPaymentsRepository extends PaymentsRepository {
   int decideCalls = 0;
   final List<String> searchQueries = <String>[];
   final List<Set<PaymentStatus>> searchStatuses = <Set<PaymentStatus>>[];
+  final List<PaymentsSort> searchSorts = <PaymentsSort>[];
 
   @override
   String get reportingTimeZone => 'Asia/Dubai';
@@ -236,10 +280,12 @@ final class StubPaymentsRepository extends PaymentsRepository {
   Future<Result<PaymentsFailure, List<Payment>>> searchPayments({
     required String query,
     required Set<PaymentStatus> statuses,
+    required PaymentsSort sort,
   }) async {
     searchQueries.add(query);
     searchStatuses.add(statuses);
-    return onSearch?.call(query, statuses) ??
+    searchSorts.add(sort);
+    return onSearch?.call(query, statuses, sort) ??
         const Failure<PaymentsFailure, List<Payment>>(
           PaymentsUnavailableFailure(),
         );
@@ -273,6 +319,8 @@ final class _UnusedBackendClient implements PaymentsBackendClient {
   Future<List<Map<String, Object?>>> searchPayments({
     required String query,
     required List<String> statuses,
+    required String sortBy,
+    required String sortDirection,
   }) => throw UnimplementedError();
 }
 
@@ -281,7 +329,7 @@ PaymentsSearchBloc createPaymentsSearchBlocFromRepository(
   Duration debounceDuration = Duration.zero,
 }) {
   return PaymentsSearchBloc(
-    searchPayments: SearchPaymentsUseCase(repository),
+    SearchPaymentsUseCase(repository),
     debounceDuration: debounceDuration,
   );
 }
