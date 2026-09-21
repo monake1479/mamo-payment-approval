@@ -32,6 +32,7 @@ class AboutSummaryCard extends StatelessWidget {
                 l10n.aboutFeaturePaymentScreens,
                 l10n.aboutFeatureApprovalFlow,
                 l10n.aboutFeatureDeviceAuthentication,
+                l10n.aboutFeaturePrivacyCover,
                 l10n.aboutFeatureReviewerDelivery,
                 l10n.aboutFeatureAppearance,
               ],

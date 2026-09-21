@@ -73,6 +73,13 @@ void main() {
       expect(find.byIcon(Icons.fingerprint), findsOneWidget);
       expect(find.text('What is included'), findsOneWidget);
       expect(
+        find.text(
+          'App content is hidden in the app switcher while the app is in the '
+          'background',
+        ),
+        findsOneWidget,
+      );
+      expect(
         find.bySemanticsIdentifier('settings.about.deviceAuthentication'),
         findsOneWidget,
       );

@@ -216,6 +216,8 @@
   "@aboutFeatureApprovalFlow": {"description": "Delivered feature: the incoming approval flow."},
   "aboutFeatureDeviceAuthentication": "Biometric or device-passcode authentication before sensitive details are revealed",
   "@aboutFeatureDeviceAuthentication": {"description": "Delivered feature: native device authentication."},
+  "aboutFeaturePrivacyCover": "App content is hidden in the app switcher while the app is in the background",
+  "@aboutFeaturePrivacyCover": {"description": "Delivered feature: the app-switcher preview conceals application content on both platforms."},
   "aboutFeatureReviewerDelivery": "Reviewer Android build produced from the repository",
   "@aboutFeatureReviewerDelivery": {"description": "Delivered feature: the reviewer APK delivery."},
   "aboutFeatureAppearance": "System, light, and dark appearance with a remembered choice",
