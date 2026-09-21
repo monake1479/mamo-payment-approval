@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
 
 void main() {
   group('Payment', () {

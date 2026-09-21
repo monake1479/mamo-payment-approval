@@ -1,10 +1,10 @@
 import 'package:injectable/injectable.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment_mutation.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payments_collection.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/payments_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payment_mutation.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_collection.dart';
+import 'package:mamo_approval/common/data/payments/payments_repository.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
 
 @lazySingleton
 class CreatePaymentRequestUseCase {

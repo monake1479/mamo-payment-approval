@@ -1,15 +1,15 @@
-import 'package:mamo_payment_approval_challenge/common/data/payments/data_sources/payments_remote_data_source.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/payments_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/create_payment_request_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/decide_payment_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/load_payments_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/refresh_payments_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
-import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_client.dart';
-import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_exception.dart';
+import 'package:mamo_approval/common/data/payments/data_sources/payments_remote_data_source.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/payments_repository.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/create_payment_request_use_case.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/decide_payment_use_case.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/load_payments_use_case.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/refresh_payments_use_case.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart';
+import 'package:mamo_approval/mock_backend/payments/payments_backend_exception.dart';
 
 final DateTime fixedNow = DateTime.utc(2026, 9, 17, 8);
 

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/common/result/models/unit.dart';
 
 void main() {
   group('Result', () {

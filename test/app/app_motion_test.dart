@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
+import 'package:mamo_approval/app/theme/app_motion.dart';
 
 void main() {
   testWidgets('items enter from below in a staggered sequence', (

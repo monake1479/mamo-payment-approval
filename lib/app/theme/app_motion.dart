@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
 
 abstract final class AppMotion {
   static const Duration fast = Duration(milliseconds: 160);

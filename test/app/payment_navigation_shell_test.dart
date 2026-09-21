@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mamo_payment_approval_challenge/app/navigation/payment_navigation_shell.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/navigation/payment_navigation_shell.dart';
+import 'package:mamo_approval/app/theme/app_motion.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 void main() {
   for (final Size size in <Size>[const Size(320, 640), const Size(768, 1024)]) {

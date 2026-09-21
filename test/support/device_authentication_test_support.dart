@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:local_auth/local_auth.dart';
 import 'package:local_auth_platform_interface/local_auth_platform_interface.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/data_sources/local_auth_client.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/error_handling/device_authentication_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
+import 'package:mamo_approval/common/data/device_authentication/data_sources/local_auth_client.dart';
+import 'package:mamo_approval/common/data/device_authentication/error_handling/device_authentication_failure.dart';
+import 'package:mamo_approval/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/common/result/models/unit.dart';
 
 /// Fakes the `local_auth` plugin so `LocalAuthClient`'s SDK-exception mapping can
 /// be unit tested. Drive it to return values or throw plugin exceptions.
