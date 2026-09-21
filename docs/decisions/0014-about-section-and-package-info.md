@@ -11,8 +11,9 @@ coordinator asked for an in-app counterpart on the existing settings screen
 (ADR 0013) so a reviewer holding the APK can see what the app does, what was
 delivered, the known limitations, the installed version/build/environment/package
 identity, and whether native device authentication is available on the device,
-without opening the repository. The owner rejected a licences page, so none is
-added.
+without opening the repository. The owner rejected a licences page and any
+in-app list of limitations, so neither is added; limitations stay in the
+repository documentation only.
 
 The installed version, build number, and package identifier are platform facts
 that the Dart runtime cannot read without a plugin. The active environment is
@@ -24,8 +25,8 @@ Device-authentication availability is already exposed by
 
 Add an About section to the existing settings screen rather than a second
 settings surface or a separate route. The section has a static part (what the
-app does, what is included, known limitations) authored as English ARB
-resources, and a dynamic part loaded once per visit.
+app does and what is included) authored as English ARB resources, and a dynamic
+part loaded once per visit.
 
 Adopt `package_info_plus` to read the installed build identity. Alternatives
 considered: hardcoding the `pubspec.yaml` version through a generated constant
@@ -76,8 +77,8 @@ same reason.
   their consumers allow, never in the router, never globally for page-local
   state; resolve localized copy in the rendering widget.
 - `DELIVERY-03` records the in-app handover summary as an acceptance criterion;
-  the static copy must be kept truthful as features and limitations change.
-- No licences page is added; the owner rejected it.
+  the static copy must be kept truthful as delivered features change.
+- No licences page and no limitations list are added; the owner rejected both.
 
 ## Verification
 

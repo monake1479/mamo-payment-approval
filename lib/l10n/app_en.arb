@@ -219,17 +219,5 @@
   "aboutFeatureReviewerDelivery": "Reviewer Android build produced from the repository",
   "@aboutFeatureReviewerDelivery": {"description": "Delivered feature: the reviewer APK delivery."},
   "aboutFeatureAppearance": "System, light, and dark appearance with a remembered choice",
-  "@aboutFeatureAppearance": {"description": "Delivered feature: the persistent appearance mode."},
-  "aboutLimitationsHeading": "Known limitations",
-  "@aboutLimitationsHeading": {"description": "Heading above the list of known limitations and future improvements."},
-  "aboutLimitationDemoBackend": "Payments come from an in-memory demo backend. Nothing is sent to a server and the data resets when the app restarts.",
-  "@aboutLimitationDemoBackend": {"description": "Known limitation: session-only demo data."},
-  "aboutLimitationPendingScreen": "Pending requests appear only in the approval overlay. A dedicated pending list is not implemented.",
-  "@aboutLimitationPendingScreen": {"description": "Known limitation: no pending payments screen."},
-  "aboutLimitationSessionLock": "There is no app PIN or session expiry. Only revealing and approving an incoming request is protected.",
-  "@aboutLimitationSessionLock": {"description": "Known limitation: no app-entry lock."},
-  "aboutLimitationIosDistribution": "iOS is supported and tested from source, but no installable iOS build is distributed.",
-  "@aboutLimitationIosDistribution": {"description": "Known limitation: Android-only reviewer distribution."},
-  "aboutLimitationEndToEnd": "End-to-end journeys run locally with Maestro; continuous integration runs the Flutter test suite only.",
-  "@aboutLimitationEndToEnd": {"description": "Known limitation: native end-to-end coverage is manual."}
+  "@aboutFeatureAppearance": {"description": "Delivered feature: the persistent appearance mode."}
 }

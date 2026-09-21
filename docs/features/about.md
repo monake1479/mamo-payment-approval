@@ -39,16 +39,17 @@ Environment, Package, and Device authentication — each with a stable
 `settings.about.<row>` semantics identifier and a selectable value. The
 device-authentication row conveys availability through its text and icon
 (fingerprint versus blocked), never colour alone. `AboutSummaryCard` holds the
-static description, the "What is included" list, and the "Known limitations"
-list as `AboutBulletList`s; bullets are decorative and excluded from semantics.
+static description and the "What is included" list as an `AboutBulletList`;
+bullets are decorative and excluded from semantics.
 All copy is English ARB resolved through `AppLocalizations`.
 
 ## Scope and limits
 
-The section is read-only: it reads availability but never authenticates, and it
-adds no licences page (rejected by the owner). Static copy must be updated when
-delivered features or limitations change; it summarises, it does not replace,
-the repository documentation. The package identifier shown is the installed
+The section is read-only: it reads availability but never authenticates. It
+adds no licences page and no list of limitations (both rejected by the owner);
+limitations live only in the repository documentation. Static copy must be
+updated when delivered features change; it summarises, it does not replace, the
+repository documentation. The package identifier shown is the installed
 one, so a `dev` or `staging` install shows that flavor's suffixed identifier.
 
 ## Verification

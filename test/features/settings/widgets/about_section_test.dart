@@ -72,7 +72,6 @@ void main() {
       expect(find.text('Available'), findsOneWidget);
       expect(find.byIcon(Icons.fingerprint), findsOneWidget);
       expect(find.text('What is included'), findsOneWidget);
-      expect(find.text('Known limitations'), findsOneWidget);
       expect(
         find.bySemanticsIdentifier('settings.about.deviceAuthentication'),
         findsOneWidget,
@@ -154,7 +153,6 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('1.2.3'), findsOneWidget);
-        expect(find.text('Known limitations'), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );

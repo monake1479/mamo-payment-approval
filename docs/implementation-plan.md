@@ -71,8 +71,8 @@ case, all lazy singletons. A screen-scoped `AboutCubit`, an `@injectable`
 factory provided at the top of the settings page, loads that result once together with device-authentication availability
 from the existing `IsLocalAuthSupportedUseCase` and the composed
 `AppEnvironment`; it never starts authentication. The section renders loading,
-failed-with-retry, and loaded states plus a static description, delivered
-features, and known limitations from ARB copy. Data-source, use-case, Cubit,
+failed-with-retry, and loaded states plus a static description and delivered
+features from ARB copy; limitations stay in the repository documentation. Data-source, use-case, Cubit,
 section, settings-page, and bootstrap DI tests cover mapping and exception
 translation, every state including duplicate and post-close loads, all detail
 rows, availability true/false, retry, and both appearances at 200% text.
