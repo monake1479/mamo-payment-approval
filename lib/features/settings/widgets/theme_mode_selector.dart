@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/models/theme_preference.dart';
-import 'package:mamo_payment_approval_challenge/features/settings/models/theme_mode_option_data.dart';
-import 'package:mamo_payment_approval_challenge/features/settings/widgets/theme_mode_option.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
+import 'package:mamo_approval/features/settings/models/theme_mode_option_data.dart';
+import 'package:mamo_approval/features/settings/widgets/theme_mode_option.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 /// A mutually exclusive appearance-mode chooser offering System, Light, and
 /// Dark. Each option is rendered by a [ThemeModeOption] and the group carries a

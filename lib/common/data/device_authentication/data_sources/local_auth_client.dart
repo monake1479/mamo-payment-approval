@@ -5,10 +5,10 @@
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/error_handling/device_authentication_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
+import 'package:mamo_approval/common/data/device_authentication/error_handling/device_authentication_failure.dart';
+import 'package:mamo_approval/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/common/result/models/unit.dart';
 
 /// Device-authentication data source over the `local_auth` plugin.
 ///

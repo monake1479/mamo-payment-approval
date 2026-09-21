@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/local_auth_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/is_local_auth_supported_use_case.dart';
+import 'package:mamo_approval/common/data/device_authentication/local_auth_repository.dart';
+import 'package:mamo_approval/common/data/device_authentication/use_cases/is_local_auth_supported_use_case.dart';
 
 import '../../../../support/device_authentication_test_support.dart';
 

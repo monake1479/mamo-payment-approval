@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/formatters/payment_formatters.dart';
+import 'package:mamo_approval/features/payments/formatters/payment_formatters.dart';
 
 void main() {
   final PaymentFormatters formatter = PaymentFormatters(

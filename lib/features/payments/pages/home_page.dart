@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/formatters/payment_formatters.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_state.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/widgets/monthly_summary_card.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/widgets/payment_page_scaffold.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/widgets/payment_state_views.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/widgets/recent_payments_section.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/theme/app_motion.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/features/payments/formatters/payment_formatters.dart';
+import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_approval/features/payments/states/payments/payments_state.dart';
+import 'package:mamo_approval/features/payments/widgets/monthly_summary_card.dart';
+import 'package:mamo_approval/features/payments/widgets/payment_page_scaffold.dart';
+import 'package:mamo_approval/features/payments/widgets/payment_state_views.dart';
+import 'package:mamo_approval/features/payments/widgets/recent_payments_section.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({

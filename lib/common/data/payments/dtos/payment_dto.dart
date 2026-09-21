@@ -1,8 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mamo_payment_approval_challenge/common/converters/utc_datetime_json_converter.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/converters/payment_amount_json_converter.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/converters/utc_datetime_json_converter.dart';
+import 'package:mamo_approval/common/data/payments/converters/payment_amount_json_converter.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
 
 part 'payment_dto.freezed.dart';
 part 'payment_dto.g.dart';

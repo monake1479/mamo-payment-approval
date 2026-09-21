@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/models/theme_preference.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/use_cases/load_theme_preference_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/use_cases/save_theme_preference_use_case.dart';
-import 'package:mamo_payment_approval_challenge/features/settings/states/theme_mode/theme_mode_state.dart';
+import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
+import 'package:mamo_approval/common/data/appearance/use_cases/load_theme_preference_use_case.dart';
+import 'package:mamo_approval/common/data/appearance/use_cases/save_theme_preference_use_case.dart';
+import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_state.dart';
 
 /// Owns the selected appearance mode and drives `MaterialApp.themeMode`.
 ///

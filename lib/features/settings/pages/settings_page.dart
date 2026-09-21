@@ -2,12 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/models/theme_preference.dart';
-import 'package:mamo_payment_approval_challenge/features/settings/states/theme_mode/theme_mode_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/settings/states/theme_mode/theme_mode_state.dart';
-import 'package:mamo_payment_approval_challenge/features/settings/widgets/theme_mode_selector.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
+import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
+import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_state.dart';
+import 'package:mamo_approval/features/settings/widgets/theme_mode_selector.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 /// Settings screen. Currently hosts the appearance-mode chooser; it is the
 /// discoverable home for future application preferences.

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/mock_backend/payments/mock_payments_backend.dart';
-import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_exception.dart';
+import 'package:mamo_approval/mock_backend/payments/mock_payments_backend.dart';
+import 'package:mamo_approval/mock_backend/payments/payments_backend_exception.dart';
 
 void main() {
   final DateTime now = DateTime.utc(2026, 9, 17, 8);

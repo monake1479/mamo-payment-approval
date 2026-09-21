@@ -1,16 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/error_handling/device_authentication_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/approval/approval_failure.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/approval/approval_state.dart';
+import 'package:mamo_approval/common/data/device_authentication/error_handling/device_authentication_failure.dart';
+import 'package:mamo_approval/common/data/device_authentication/models/device_authentication_cancellation_result.dart';
+import 'package:mamo_approval/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
+import 'package:mamo_approval/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/common/result/models/unit.dart';
+import 'package:mamo_approval/features/payments/states/approval/approval_failure.dart';
+import 'package:mamo_approval/features/payments/states/approval/approval_state.dart';
 
 typedef ApprovalDecisionCallback =
     Future<Result<PaymentsFailure, Payment>> Function({

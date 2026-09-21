@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mamo_payment_approval_challenge/app/app.dart';
-import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/models/theme_preference.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/local_auth_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/settings/states/theme_mode/theme_mode_cubit.dart';
+import 'package:mamo_approval/app/app.dart';
+import 'package:mamo_approval/app/navigation/app_router.dart';
+import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
+import 'package:mamo_approval/common/data/device_authentication/local_auth_repository.dart';
+import 'package:mamo_approval/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
+import 'package:mamo_approval/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../support/appearance_test_support.dart';

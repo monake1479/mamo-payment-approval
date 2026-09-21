@@ -1,0 +1,21 @@
+# Placeholder native splash for "Mamo Approval".
+# Regenerate after replacing the source art: `dart run flutter_native_splash:create`.
+# Light uses the brand colour (#6938EF); dark uses the dark surface token
+# (#211E29) from app_theme so the splash stays consistent with the theme.
+# Replace before release.
+flutter_native_splash:
+  color: "#6938EF"
+  image: "assets/branding/splash_logo.png"
+  color_dark: "#211E29"
+  image_dark: "assets/branding/splash_logo.png"
+
+  android: true
+  ios: true
+  web: false
+  fullscreen: false
+
+  android_12:
+    color: "#6938EF"
+    image: "assets/branding/splash_logo.png"
+    color_dark: "#211E29"
+    image_dark: "assets/branding/splash_logo.png"

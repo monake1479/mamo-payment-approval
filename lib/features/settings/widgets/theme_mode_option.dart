@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/models/theme_preference.dart';
-import 'package:mamo_payment_approval_challenge/features/settings/models/theme_mode_option_data.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
+import 'package:mamo_approval/features/settings/models/theme_mode_option_data.dart';
 
 /// A single row of the appearance-mode chooser. The selected state is conveyed
 /// by a filled indicator icon and radio selection semantics, never by colour

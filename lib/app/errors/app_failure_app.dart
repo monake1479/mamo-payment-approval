@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/app_failure_view.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/errors/app_failure.dart';
+import 'package:mamo_approval/app/errors/app_failure_view.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 /// Startup and build errors must remain renderable without dependency injection.
 class AppFailureApp extends StatelessWidget {

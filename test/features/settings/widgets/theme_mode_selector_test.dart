@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/models/theme_preference.dart';
-import 'package:mamo_payment_approval_challenge/features/settings/widgets/theme_mode_selector.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
+import 'package:mamo_approval/features/settings/widgets/theme_mode_selector.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 Widget _wrap(Widget child, Brightness brightness) => MaterialApp(
   theme: AppTheme.light,

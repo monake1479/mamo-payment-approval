@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/models/theme_preference.dart';
+import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
 
 part 'theme_mode_option_data.freezed.dart';
 

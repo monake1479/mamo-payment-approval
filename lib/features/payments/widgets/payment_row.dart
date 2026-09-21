@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/formatters/payment_formatters.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/payment_status_presentation.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/widgets/payment_status_chip.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/features/payments/formatters/payment_formatters.dart';
+import 'package:mamo_approval/features/payments/payment_status_presentation.dart';
+import 'package:mamo_approval/features/payments/widgets/payment_status_chip.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 class PaymentRow extends StatelessWidget {
   const PaymentRow({

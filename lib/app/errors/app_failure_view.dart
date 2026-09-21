@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/errors/app_failure.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 class AppFailureView extends StatelessWidget {
   const AppFailureView({required this.failure, super.key});

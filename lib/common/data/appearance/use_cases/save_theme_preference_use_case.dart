@@ -1,9 +1,9 @@
 import 'package:injectable/injectable.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/error_handling/appearance_failure.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/models/theme_preference.dart';
-import 'package:mamo_payment_approval_challenge/common/data/appearance/theme_preference_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
-import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
+import 'package:mamo_approval/common/data/appearance/error_handling/appearance_failure.dart';
+import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
+import 'package:mamo_approval/common/data/appearance/theme_preference_repository.dart';
+import 'package:mamo_approval/common/result/models/result.dart';
+import 'package:mamo_approval/common/result/models/unit.dart';
 
 /// Persists the selected appearance preference, returning a typed failure when
 /// the write cannot be completed.

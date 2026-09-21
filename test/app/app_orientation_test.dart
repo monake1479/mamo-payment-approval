@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/app/platform/app_orientation.dart';
+import 'package:mamo_approval/app/platform/app_orientation.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

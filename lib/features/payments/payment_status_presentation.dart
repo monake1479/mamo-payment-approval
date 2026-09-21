@@ -1,5 +1,5 @@
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/widgets/payment_status_chip.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/features/payments/widgets/payment_status_chip.dart';
 
 extension PaymentStatusPresentation on PaymentStatus {
   PaymentStatusVisual get visual => switch (this) {

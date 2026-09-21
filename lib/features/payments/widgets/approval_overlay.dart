@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_motion.dart';
-import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/formatters/payment_formatters.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/approval/approval_cubit.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/approval/approval_failure.dart';
-import 'package:mamo_payment_approval_challenge/features/payments/states/approval/approval_state.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/theme/app_motion.dart';
+import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/features/payments/formatters/payment_formatters.dart';
+import 'package:mamo_approval/features/payments/states/approval/approval_cubit.dart';
+import 'package:mamo_approval/features/payments/states/approval/approval_failure.dart';
+import 'package:mamo_approval/features/payments/states/approval/approval_state.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 Route<void> createApprovalOverlayRoute({
   required BuildContext context,
