@@ -11,6 +11,9 @@ import 'package:mamo_approval/app/diagnostics/local_diagnostics.dart';
 import 'package:mamo_approval/app/errors/app_failure.dart';
 import 'package:mamo_approval/app/errors/configure_error_handling.dart';
 import 'package:mamo_approval/app/navigation/app_router.dart';
+import 'package:mamo_approval/common/data/app_info/app_info_repository.dart';
+import 'package:mamo_approval/common/data/app_info/data_sources/package_info_client.dart';
+import 'package:mamo_approval/common/data/app_info/use_cases/load_app_build_info_use_case.dart';
 import 'package:mamo_approval/common/data/appearance/data_sources/theme_preference_local_data_source.dart';
 import 'package:mamo_approval/common/data/appearance/error_handling/appearance_failure.dart';
 import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
@@ -30,9 +33,11 @@ import 'package:mamo_approval/common/data/payments/use_cases/load_payments_use_c
 import 'package:mamo_approval/common/data/payments/use_cases/refresh_payments_use_case.dart';
 import 'package:mamo_approval/common/data/payments/use_cases/search_payments_use_case.dart';
 import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_approval/features/settings/states/about/about_cubit.dart';
 import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
 import 'package:mamo_approval/mock_backend/payments/mock_payments_backend.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart';
+import 'package:package_info_plus_platform_interface/package_info_platform_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../support/appearance_test_support.dart';
@@ -114,6 +119,19 @@ void main() {
         same(getIt<SaveThemePreferenceUseCase>()),
       );
       expect(getIt<ThemeModeCubit>(), same(getIt<ThemeModeCubit>()));
+      expect(getIt<PackageInfoPlatform>(), same(PackageInfoPlatform.instance));
+      expect(getIt<PackageInfoClient>(), same(getIt<PackageInfoClient>()));
+      expect(getIt<AppInfoRepository>(), same(getIt<AppInfoRepository>()));
+      expect(
+        getIt<LoadAppBuildInfoUseCase>(),
+        same(getIt<LoadAppBuildInfoUseCase>()),
+      );
+      // Screen-scoped: every settings visit gets a fresh About cubit.
+      final AboutCubit firstAbout = getIt<AboutCubit>();
+      final AboutCubit secondAbout = getIt<AboutCubit>();
+      addTearDown(firstAbout.close);
+      addTearDown(secondAbout.close);
+      expect(firstAbout, isNot(same(secondAbout)));
     });
   }
 

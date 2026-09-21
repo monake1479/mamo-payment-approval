@@ -18,7 +18,7 @@ An earlier version of the workflow received an [independent audit and targeted c
 | 3. Incoming request and rejection | Draggable global action, masked non-dismissible overlay, rejection, canonical update; `DEBUG-01..04`, `APPROVAL-01..03/05/07..09`, rejection part of `PAY-04` | One active request, no queue/replacement; agree masks and equal-timestamp tie-breaker; test dismissal blocking, disabled creation, safe drag, origin preservation, duplicate/stale operations |
 | 4. Native authentication and approval | Real adapter, reveal, explicit approve, list navigation; `APPROVAL-04/05/06/08/10`, remaining `PAY-04` | Q9–Q11 accept biometrics/device credentials, authentication before approval, and remasking on actual backgrounding; test native-prompt lifecycle separately from leaving the app, stale completions, cancellation/unavailability, and rejection without authentication; fake contract tests plus native iOS/Android verification; no shipping fake success |
 | 5. Original addition: payments search | Text search over visible fields, decided-status chips, decision-date window, sort menu, pull-to-refresh; `SEARCH-01..07`, `PAY-05` | ADR 0014 selects an event-driven BLoC with one debounce/restart transformer for this concern only; masked pending data is excluded at the backend and data-source boundary; tests per layer plus page and app navigation coverage |
-| 6. Delivery and reviewer guide | Installable Android APK, supported/tested iOS, critical journeys; `DELIVERY-01/02` | Native builds, APK install/access checks, recordings, provenance, limitations; no store/TestFlight requirement |
+| 6. Delivery and reviewer guide | Installable Android APK, supported/tested iOS, critical journeys, in-app About section; `DELIVERY-01/02/03` | Native builds, APK install/access checks, recordings, provenance, limitations; no store/TestFlight requirement |
 
 Split slices further when useful. Domain/data/state/UI types arrive when the runnable increment needs them. Introduce native CI/build artifacts with platform delivery work.
 
@@ -54,6 +54,28 @@ default, each stored value, a surfaced and retried persistence failure,
 composition over an unavailable store, applying and persisting a selection, and
 opening in and toggling to the persisted appearance; the selector is verified in
 both appearances at 200% text.
+
+## About section increment
+
+This increment adds an About section to the existing settings screen,
+satisfying `DELIVERY-03` as the in-app counterpart of `DELIVERY-02`. The
+coordinator requested it under delegated authority on 2026-09-21;
+[ADR 0015](decisions/0015-about-section-and-package-info.md) records the
+`package_info_plus` dependency, the screen-scoped Cubit ownership, and the
+alternatives. See [the feature note](features/about.md).
+
+An application-information domain under `lib/common/data/app_info/` reads the
+installed version, build number, and package identifier through the
+`package_info_plus` platform seam behind a data source, repository, and use
+case, all lazy singletons. A section-scoped `AboutCubit`, an `@injectable`
+factory provided by the About section itself, loads that result once together with device-authentication availability
+from the existing `IsLocalAuthSupportedUseCase` and the composed
+`AppEnvironment`; it never starts authentication. The section renders loading,
+failed-with-retry, and loaded states plus a static description and delivered
+features from ARB copy; limitations stay in the repository documentation. Data-source, use-case, Cubit,
+section, settings-page, and bootstrap DI tests cover mapping and exception
+translation, every state including duplicate and post-close loads, all detail
+rows, availability true/false, retry, and both appearances at 200% text.
 
 ## Payments search increment
 

@@ -104,6 +104,7 @@ A payment request contains an identifier, counterparty, amount, reference, creat
 
 - `DELIVERY-01`: Reviewers can try the app without compiling or configuring it.
 - `DELIVERY-02`: The repository explains key decisions and what would be improved with more time.
+- `DELIVERY-03`: The settings screen has an About section that summarises what the app does and what was delivered, and shows the installed version, build number, environment, package identifier, and whether device authentication is available. It is read-only, never starts authentication, and adds no licences page or list of limitations. Coordinator-requested under delegated authority on 2026-09-21; see [ADR 0015](../decisions/0015-about-section-and-package-info.md).
 
 ### Appearance and money display
 

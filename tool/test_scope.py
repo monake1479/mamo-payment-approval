@@ -68,6 +68,24 @@ THEME_MODE_APP_TESTS = [
     "test/app/approval_flow_test.dart",
 ]
 
+# The About slice: the application-information data layer, its screen-scoped
+# state owner, the About section, and the settings/app surfaces that host it.
+APP_INFO_DATA_TESTS = [
+    "test/common/data/app_info/package_info_client_test.dart",
+    "test/common/data/app_info/load_app_build_info_use_case_test.dart",
+]
+ABOUT_STATE_TESTS = [
+    "test/features/settings/states/about/about_cubit_test.dart",
+    "test/features/settings/widgets/about_section_test.dart",
+    "test/features/settings/pages/settings_page_test.dart",
+    "test/app/app_theme_mode_test.dart",
+]
+ABOUT_UI_TESTS = [
+    "test/features/settings/widgets/about_section_test.dart",
+    "test/features/settings/pages/settings_page_test.dart",
+    "test/app/app_theme_mode_test.dart",
+]
+
 FLUTTER_TESTS = {
     "lib/common/data/device_authentication/data_sources/local_auth_client.dart": [
         "test/app/bootstrap_test.dart",
@@ -80,10 +98,12 @@ FLUTTER_TESTS = {
     "lib/common/data/device_authentication/local_auth_repository.dart": [
         "test/app/bootstrap_test.dart",
         *DEVICE_AUTH_TESTS,
+        *ABOUT_STATE_TESTS,
     ],
     "lib/common/data/device_authentication/use_cases/is_local_auth_supported_use_case.dart": [
         "test/app/bootstrap_test.dart",
         "test/common/data/device_authentication/use_cases/is_local_auth_supported_use_case_test.dart",
+        *ABOUT_STATE_TESTS,
     ],
     "lib/common/data/device_authentication/use_cases/local_authentication_use_case.dart": [
         "test/app/bootstrap_test.dart",
@@ -143,9 +163,6 @@ FLUTTER_TESTS = {
         "test/features/settings/pages/settings_page_test.dart",
         "test/app/app_theme_mode_test.dart",
     ],
-    "lib/features/settings/appearance_failure_messages.dart": [
-        "test/features/settings/pages/settings_page_test.dart",
-    ],
     "lib/features/settings/states/theme_mode/theme_mode_cubit.dart": [
         "test/app/bootstrap_test.dart",
         "test/features/settings/states/theme_mode/theme_mode_cubit_test.dart",
@@ -193,6 +210,48 @@ FLUTTER_TESTS = {
     "lib/app/di/device_authentication_module.dart": [
         "test/app/bootstrap_test.dart",
     ],
+    "lib/app/di/app_info_module.dart": [
+        "test/app/bootstrap_test.dart",
+    ],
+    "lib/common/data/app_info/models/app_build_info.dart": [
+        *APP_INFO_DATA_TESTS,
+        *ABOUT_STATE_TESTS,
+    ],
+    "lib/common/data/app_info/error_handling/app_info_failure.dart": [
+        *APP_INFO_DATA_TESTS,
+        *ABOUT_STATE_TESTS,
+    ],
+    "lib/common/data/app_info/data_sources/package_info_client.dart": [
+        "test/app/bootstrap_test.dart",
+        *APP_INFO_DATA_TESTS,
+        *ABOUT_STATE_TESTS,
+    ],
+    "lib/common/data/app_info/app_info_repository.dart": [
+        "test/app/bootstrap_test.dart",
+        *APP_INFO_DATA_TESTS,
+        *ABOUT_STATE_TESTS,
+    ],
+    "lib/common/data/app_info/use_cases/load_app_build_info_use_case.dart": [
+        "test/app/bootstrap_test.dart",
+        *APP_INFO_DATA_TESTS,
+        *ABOUT_STATE_TESTS,
+    ],
+    "test/support/app_info_test_support.dart": [
+        *APP_INFO_DATA_TESTS,
+        *ABOUT_STATE_TESTS,
+    ],
+    "lib/features/settings/states/about/about_cubit.dart": [
+        "test/app/bootstrap_test.dart",
+        *ABOUT_STATE_TESTS,
+    ],
+    "lib/features/settings/states/about/about_state.dart": ABOUT_STATE_TESTS,
+    "lib/features/settings/about_failure_messages.dart": ABOUT_UI_TESTS,
+    "lib/features/settings/app_environment_labels.dart": ABOUT_UI_TESTS,
+    "lib/features/settings/widgets/about_detail_row.dart": ABOUT_UI_TESTS,
+    "lib/features/settings/widgets/about_details_card.dart": ABOUT_UI_TESTS,
+    "lib/features/settings/widgets/about_bullet_list.dart": ABOUT_UI_TESTS,
+    "lib/features/settings/widgets/about_summary_card.dart": ABOUT_UI_TESTS,
+    "lib/features/settings/widgets/about_section.dart": ABOUT_UI_TESTS,
     "lib/app/di/mock_backend_module.dart": [
         "test/app/bootstrap_test.dart",
     ],
@@ -437,6 +496,12 @@ for generated, source in {
         "lib/features/settings/models/theme_mode_option_data.dart",
     "lib/common/data/device_authentication/error_handling/device_authentication_failure.freezed.dart":
         "lib/common/data/device_authentication/error_handling/device_authentication_failure.dart",
+    "lib/common/data/app_info/models/app_build_info.freezed.dart":
+        "lib/common/data/app_info/models/app_build_info.dart",
+    "lib/common/data/app_info/error_handling/app_info_failure.freezed.dart":
+        "lib/common/data/app_info/error_handling/app_info_failure.dart",
+    "lib/features/settings/states/about/about_state.freezed.dart":
+        "lib/features/settings/states/about/about_state.dart",
     "lib/common/data/payments/models/payment.freezed.dart":
         "lib/common/data/payments/models/payment.dart",
     "lib/common/data/payments/dtos/payment_dto.freezed.dart":

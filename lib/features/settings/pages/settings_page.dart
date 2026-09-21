@@ -3,18 +3,30 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mamo_approval/app/theme/app_theme.dart';
+import 'package:mamo_approval/common/data/appearance/error_handling/appearance_failure.dart';
 import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
 import 'package:mamo_approval/common/widgets/scrolled_page_body.dart';
-import 'package:mamo_approval/features/settings/appearance_failure_messages.dart';
 import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
 import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_state.dart';
+import 'package:mamo_approval/features/settings/widgets/about_section.dart';
 import 'package:mamo_approval/features/settings/widgets/theme_mode_selector.dart';
 import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
-/// Settings screen. Currently hosts the appearance-mode chooser; it is the
-/// discoverable home for future application preferences.
+/// Settings screen. Hosts the appearance-mode chooser and the About section;
+/// it is the discoverable home for application preferences and information.
+/// It reads the process-wide `ThemeModeCubit` from above; the About section
+/// owns its own state.
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
+
+  /// Resolves the appearance failure to safe localized copy; the failure
+  /// contract itself carries no user-facing text.
+  String _appearanceFailureMessage(
+    AppearanceFailure failure,
+    AppLocalizations l10n,
+  ) => switch (failure) {
+    AppearancePersistenceFailedFailure() => l10n.appearancePersistenceFailed,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +53,7 @@ class SettingsPage extends StatelessWidget {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  appearanceFailureMessage(state.persistenceFailure!, l10n),
+                  _appearanceFailureMessage(state.persistenceFailure!, l10n),
                 ),
               ),
             );
@@ -70,6 +82,8 @@ class SettingsPage extends StatelessWidget {
                       );
                     },
                   ),
+                  const SizedBox(height: AppTheme.sectionGap),
+                  const AboutSection(),
                 ],
               ),
             ),

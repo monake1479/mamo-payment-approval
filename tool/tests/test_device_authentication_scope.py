@@ -28,6 +28,14 @@ STOP_USE_CASE_TEST = (
     "stop_local_authentication_use_case_test.dart"
 )
 BOOTSTRAP_TEST = "test/app/bootstrap_test.dart"
+# The About section reads device-authentication availability through the
+# repository, so repository changes also exercise its state and surfaces.
+ABOUT_STATE_TESTS = [
+    "test/features/settings/states/about/about_cubit_test.dart",
+    "test/features/settings/widgets/about_section_test.dart",
+    "test/features/settings/pages/settings_page_test.dart",
+    "test/app/app_theme_mode_test.dart",
+]
 
 
 class DeviceAuthenticationScopeTest(unittest.TestCase):
@@ -50,6 +58,7 @@ class DeviceAuthenticationScopeTest(unittest.TestCase):
                     IS_SUPPORTED_USE_CASE_TEST,
                     AUTH_USE_CASE_TEST,
                     STOP_USE_CASE_TEST,
+                    *ABOUT_STATE_TESTS,
                 ]
             ),
         )
