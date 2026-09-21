@@ -207,7 +207,7 @@ return unavailable();case _:
 
 class InvalidPaymentFailure extends PaymentsFailure {
   const InvalidPaymentFailure(this.reason): super._();
-
+  
 
  final  InvalidPaymentReason reason;
 
@@ -275,7 +275,7 @@ as InvalidPaymentReason,
 
 class DuplicateRequestFailure extends PaymentsFailure {
   const DuplicateRequestFailure(): super._();
-
+  
 
 
 
@@ -307,7 +307,7 @@ String toString() {
 
 class PaymentNotFoundFailure extends PaymentsFailure {
   const PaymentNotFoundFailure(): super._();
-
+  
 
 
 
@@ -339,7 +339,7 @@ String toString() {
 
 class PaymentAlreadyDecidedFailure extends PaymentsFailure {
   const PaymentAlreadyDecidedFailure(): super._();
-
+  
 
 
 
@@ -371,7 +371,7 @@ String toString() {
 
 class PaymentBusyFailure extends PaymentsFailure {
   const PaymentBusyFailure(): super._();
-
+  
 
 
 
@@ -403,7 +403,7 @@ String toString() {
 
 class OperationCancelledFailure extends PaymentsFailure {
   const OperationCancelledFailure(): super._();
-
+  
 
 
 
@@ -435,7 +435,7 @@ String toString() {
 
 class PaymentsUnavailableFailure extends PaymentsFailure {
   const PaymentsUnavailableFailure(): super._();
-
+  
 
 
 

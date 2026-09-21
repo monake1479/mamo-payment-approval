@@ -177,7 +177,7 @@ return failure(_that.failure);case _:
 
 class Success<F,T> extends Result<F, T> {
   const Success(this.value): super._();
-
+  
 
  final  T value;
 
@@ -245,7 +245,7 @@ as T,
 
 class Failure<F,T> extends Result<F, T> {
   const Failure(this.failure): super._();
-
+  
 
  final  F failure;
 

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/data_sources/payments_remote_data_source.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment_mutation.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payments_collection.dart';
@@ -7,7 +8,6 @@ import 'package:mamo_payment_approval_challenge/common/data/payments/payments_re
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/create_payment_request_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/decide_payment_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/load_payments_use_case.dart';
-import 'package:mamo_payment_approval_challenge/common/error_handling/payments_failure.dart';
 import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
 import 'package:mamo_payment_approval_challenge/mock_backend/payments/mock_payments_backend.dart';
 

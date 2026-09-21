@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payments_collection.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/payments_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/error_handling/payments_failure.dart';
 import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
 
 @lazySingleton

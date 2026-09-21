@@ -11,6 +11,11 @@ import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostic
 import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
 import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/data_sources/local_auth_client.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/local_auth_repository.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/is_local_auth_supported_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/data_sources/payments_remote_data_source.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/payments_repository.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/use_cases/create_payment_request_use_case.dart';
@@ -59,6 +64,20 @@ void main() {
       expect(
         getIt<RefreshPaymentsUseCase>(),
         same(getIt<RefreshPaymentsUseCase>()),
+      );
+      expect(getIt<LocalAuthClient>(), same(getIt<LocalAuthClient>()));
+      expect(getIt<LocalAuthRepository>(), same(getIt<LocalAuthRepository>()));
+      expect(
+        getIt<IsLocalAuthSupportedUseCase>(),
+        same(getIt<IsLocalAuthSupportedUseCase>()),
+      );
+      expect(
+        getIt<LocalAuthenticationUseCase>(),
+        same(getIt<LocalAuthenticationUseCase>()),
+      );
+      expect(
+        getIt<StopLocalAuthenticationUseCase>(),
+        same(getIt<StopLocalAuthenticationUseCase>()),
       );
       expect(getIt<PaymentsCubit>(), same(getIt<PaymentsCubit>()));
     });

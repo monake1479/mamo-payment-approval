@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/data_sources/payments_remote_data_source.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/dtos/payment_dto.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/payments_repository.dart';
-import 'package:mamo_payment_approval_challenge/common/error_handling/payments_failure.dart';
 import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
 import 'package:mamo_payment_approval_challenge/mock_backend/payments/mock_payments_backend.dart';
 

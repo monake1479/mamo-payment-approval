@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mamo_payment_approval_challenge/app/theme/app_theme.dart';
-import 'package:mamo_payment_approval_challenge/common/error_handling/payments_failure.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
 
 class PaymentsLoadingView extends StatelessWidget {

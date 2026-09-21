@@ -1,8 +1,8 @@
 import 'package:injectable/injectable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/dtos/payment_dto.dart';
+import 'package:mamo_payment_approval_challenge/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
-import 'package:mamo_payment_approval_challenge/common/error_handling/payments_failure.dart';
 import 'package:mamo_payment_approval_challenge/common/result/models/result.dart';
 import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_client.dart';
 import 'package:mamo_payment_approval_challenge/mock_backend/payments/payments_backend_exception.dart';

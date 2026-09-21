@@ -59,12 +59,15 @@ inactive and removed when active again. It resizes with the window and does not
 replace navigation/content. It contains no readable copy or interaction. A native
 cover is needed before the OS captures a snapshot, independently of Dart frames.
 On Android 13+, disable recents screenshots through the Activity API; the system
-may substitute its window background. Normal foreground screenshots remain allowed.
-
-Android 12 and older are **not protected yet**: approval of the broader
-`FLAG_SECURE` screenshot restriction is pending. This is an explicit incomplete
-criterion, not a claim of complete cross-version protection. No foreground
-screenshot restriction is added without that choice.
+may substitute its window background. The delegated implementation keeps ordinary
+foreground screenshots and screen recording allowed on these versions; it does not
+apply a broader `FLAG_SECURE` restriction. On Android API 24–32, which do not offer
+the recents-only API, the delegated implementation applies `FLAG_SECURE` as a
+stronger privacy boundary, blocking ordinary foreground screenshots and screen
+recording while the activity is visible. This API 24–32 choice is subject to owner
+review. App-switcher snapshot behavior on those older devices remains unverified
+until native evidence is collected, so this document makes no claim of complete
+cross-version preview coverage.
 
 Native checks must verify the preview visually, repeated background/resume,
 preserved content, and no reauthentication. Swift tests cover opaque/idempotent
