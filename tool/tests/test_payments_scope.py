@@ -7,7 +7,12 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tool"))
-from test_scope import APPROVAL_TESTS, PAYMENTS_UI_TESTS, select_scope
+from test_scope import (
+    APPEARANCE_TESTS,
+    APPROVAL_TESTS,
+    PAYMENTS_UI_TESTS,
+    select_scope,
+)
 
 
 def with_ui(*tests):
@@ -123,7 +128,7 @@ class PaymentsScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            sorted({*PAYMENTS_UI_TESTS, *APPROVAL_TESTS}),
+            sorted({*PAYMENTS_UI_TESTS, *APPROVAL_TESTS, *APPEARANCE_TESTS}),
         )
         self.assertFalse(scope["hook_tests"])
 

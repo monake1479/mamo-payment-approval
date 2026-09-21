@@ -13,9 +13,18 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:local_auth/local_auth.dart' as _i152;
+import 'package:mamo_approval/app/di/app_preferences_module.dart' as _i353;
 import 'package:mamo_approval/app/di/device_authentication_module.dart'
     as _i925;
 import 'package:mamo_approval/app/di/mock_backend_module.dart' as _i994;
+import 'package:mamo_approval/common/data/appearance/data_sources/theme_preference_local_data_source.dart'
+    as _i609;
+import 'package:mamo_approval/common/data/appearance/theme_preference_repository.dart'
+    as _i617;
+import 'package:mamo_approval/common/data/appearance/use_cases/load_theme_preference_use_case.dart'
+    as _i950;
+import 'package:mamo_approval/common/data/appearance/use_cases/save_theme_preference_use_case.dart'
+    as _i422;
 import 'package:mamo_approval/common/data/device_authentication/data_sources/local_auth_client.dart'
     as _i192;
 import 'package:mamo_approval/common/data/device_authentication/local_auth_repository.dart'
@@ -40,27 +49,51 @@ import 'package:mamo_approval/common/data/payments/use_cases/refresh_payments_us
     as _i245;
 import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart'
     as _i643;
+import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
-  _i174.GetIt init({
+  Future<_i174.GetIt> init({
     String? environment,
     _i526.EnvironmentFilter? environmentFilter,
-  }) {
+  }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
+    final appPreferencesModule = _$AppPreferencesModule();
     final deviceAuthenticationModule = _$DeviceAuthenticationModule();
     final mockBackendModule = _$MockBackendModule();
+    await gh.factoryAsync<_i460.SharedPreferences>(
+      () => appPreferencesModule.sharedPreferences(),
+      preResolve: true,
+    );
     gh.lazySingleton<_i152.LocalAuthentication>(
       () => deviceAuthenticationModule.localAuthentication(),
     );
     gh.lazySingleton<_i643.PaymentsBackendClient>(
       () => mockBackendModule.paymentsBackendClient(),
     );
+    gh.lazySingleton<_i609.ThemePreferenceLocalDataSource>(
+      () => _i609.ThemePreferenceLocalDataSource(gh<_i460.SharedPreferences>()),
+    );
     gh.lazySingleton<_i192.LocalAuthClient>(
       () => _i192.LocalAuthClient(gh<_i152.LocalAuthentication>()),
     );
+    gh.lazySingleton<_i617.ThemePreferenceRepository>(
+      () => _i617.ThemePreferenceRepository(
+        gh<_i609.ThemePreferenceLocalDataSource>(),
+      ),
+    );
     gh.lazySingleton<_i891.PaymentsRemoteDataSource>(
       () => _i891.PaymentsRemoteDataSource(gh<_i643.PaymentsBackendClient>()),
+    );
+    gh.lazySingleton<_i950.LoadThemePreferenceUseCase>(
+      () => _i950.LoadThemePreferenceUseCase(
+        gh<_i617.ThemePreferenceRepository>(),
+      ),
+    );
+    gh.lazySingleton<_i422.SaveThemePreferenceUseCase>(
+      () => _i422.SaveThemePreferenceUseCase(
+        gh<_i617.ThemePreferenceRepository>(),
+      ),
     );
     gh.lazySingleton<_i133.LocalAuthRepository>(
       () => _i133.LocalAuthRepository(gh<_i192.LocalAuthClient>()),
@@ -93,6 +126,8 @@ extension GetItInjectableX on _i174.GetIt {
     return this;
   }
 }
+
+class _$AppPreferencesModule extends _i353.AppPreferencesModule {}
 
 class _$DeviceAuthenticationModule extends _i925.DeviceAuthenticationModule {}
 

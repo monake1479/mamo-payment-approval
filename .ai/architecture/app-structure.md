@@ -15,6 +15,7 @@ feature presentation -> common use cases -> repositories -> data sources
 - `lib/app/`: app composition, router, root shell, global theme, and dependency wiring.
 - `lib/mock_backend/<domain>/`: demo-only backend contracts and deterministic in-memory implementations that return transport-shaped data and backend error codes. They must not import application DTOs, repositories, use cases, Cubits, or UI.
 - `lib/common/converters/`: reusable typed converters that are not owned by one data domain, such as UTC `DateTime` JSON conversion.
+- `lib/common/widgets/`: presentation building blocks shared by more than one feature, such as the scrolled page body used by payment details and settings. Feature-specific widgets stay under their feature.
 - `lib/common/data/<domain>/error_handling/`: each domain's typed application failures, colocated with that domain's data so related types stay together instead of in a global bucket. A domain failure is a shared type consumed across that domain's data, use-case, and presentation boundaries. Transport/SDK exception mapping remains in the owning data source or domain-specific data error boundary.
 - `lib/common/result/models/`: shared `Result` and `Unit` primitives that are independent of any data domain.
 - `lib/common/data/<domain>/`: one bounded shared-data area per domain; do not mix unrelated models, sources, repositories, and use cases at the root of `common/data`.

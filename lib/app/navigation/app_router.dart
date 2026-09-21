@@ -8,11 +8,13 @@ import 'package:mamo_approval/app/theme/app_motion.dart';
 import 'package:mamo_approval/features/payments/pages/home_page.dart';
 import 'package:mamo_approval/features/payments/pages/payment_details_page.dart';
 import 'package:mamo_approval/features/payments/pages/payments_page.dart';
+import 'package:mamo_approval/features/settings/pages/settings_page.dart';
 
 abstract final class AppRoutes {
   static const String home = 'home';
   static const String payments = 'payments';
   static const String paymentDetails = 'payment-details';
+  static const String settings = 'settings';
 }
 
 final class MamoPaymentRouter {
@@ -30,6 +32,15 @@ final class MamoPaymentRouter {
               child: PaymentDetailsPage(
                 paymentId: state.pathParameters['paymentId'] ?? '',
               ),
+            ),
+          ),
+          GoRoute(
+            path: '/settings',
+            name: AppRoutes.settings,
+            pageBuilder: (context, state) => AppMotionPage<void>(
+              key: state.pageKey,
+              name: state.name,
+              child: const SettingsPage(),
             ),
           ),
           StatefulShellRoute(
@@ -59,6 +70,8 @@ final class MamoPaymentRouter {
                         ),
                       ),
                       onViewAll: () => context.goNamed(AppRoutes.payments),
+                      onOpenSettings: () =>
+                          unawaited(context.pushNamed(AppRoutes.settings)),
                     ),
                   ),
                 ],

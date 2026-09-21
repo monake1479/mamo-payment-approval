@@ -11,6 +11,12 @@ import 'package:mamo_approval/app/diagnostics/local_diagnostics.dart';
 import 'package:mamo_approval/app/errors/app_failure.dart';
 import 'package:mamo_approval/app/errors/configure_error_handling.dart';
 import 'package:mamo_approval/app/navigation/app_router.dart';
+import 'package:mamo_approval/common/data/appearance/data_sources/theme_preference_local_data_source.dart';
+import 'package:mamo_approval/common/data/appearance/error_handling/appearance_failure.dart';
+import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
+import 'package:mamo_approval/common/data/appearance/theme_preference_repository.dart';
+import 'package:mamo_approval/common/data/appearance/use_cases/load_theme_preference_use_case.dart';
+import 'package:mamo_approval/common/data/appearance/use_cases/save_theme_preference_use_case.dart';
 import 'package:mamo_approval/common/data/device_authentication/data_sources/local_auth_client.dart';
 import 'package:mamo_approval/common/data/device_authentication/local_auth_repository.dart';
 import 'package:mamo_approval/common/data/device_authentication/use_cases/is_local_auth_supported_use_case.dart';
@@ -23,11 +29,16 @@ import 'package:mamo_approval/common/data/payments/use_cases/decide_payment_use_
 import 'package:mamo_approval/common/data/payments/use_cases/load_payments_use_case.dart';
 import 'package:mamo_approval/common/data/payments/use_cases/refresh_payments_use_case.dart';
 import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
 import 'package:mamo_approval/mock_backend/payments/mock_payments_backend.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../support/appearance_test_support.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  setUp(() => SharedPreferences.setMockInitialValues(const <String, Object>{}));
   tearDown(getIt.reset);
 
   for (final AppEnvironment environment in AppEnvironment.values) {
@@ -80,8 +91,46 @@ void main() {
         same(getIt<StopLocalAuthenticationUseCase>()),
       );
       expect(getIt<PaymentsCubit>(), same(getIt<PaymentsCubit>()));
+      expect(getIt<SharedPreferences>(), same(getIt<SharedPreferences>()));
+      expect(
+        getIt<ThemePreferenceLocalDataSource>(),
+        same(getIt<ThemePreferenceLocalDataSource>()),
+      );
+      expect(
+        getIt<ThemePreferenceRepository>(),
+        same(getIt<ThemePreferenceRepository>()),
+      );
+      expect(
+        getIt<LoadThemePreferenceUseCase>(),
+        same(getIt<LoadThemePreferenceUseCase>()),
+      );
+      expect(
+        getIt<SaveThemePreferenceUseCase>(),
+        same(getIt<SaveThemePreferenceUseCase>()),
+      );
+      expect(getIt<ThemeModeCubit>(), same(getIt<ThemeModeCubit>()));
     });
   }
+
+  test(
+    'composes over a session-only store when preferences are unavailable',
+    () async {
+      installUnavailableSharedPreferencesStore();
+      validateAppEnvironment(AppEnvironment.dev, AppEnvironment.dev.name);
+
+      await configureDependencies(AppEnvironment.dev);
+      final ThemeModeCubit cubit = getIt<ThemeModeCubit>();
+      expect(cubit.state.preference, ThemePreference.system);
+
+      await cubit.select(ThemePreference.dark);
+
+      expect(cubit.state.preference, ThemePreference.dark);
+      expect(
+        cubit.state.persistenceFailure,
+        const AppearanceFailure.persistenceFailed(),
+      );
+    },
+  );
 
   test('rejects missing, unknown, or mismatched native flavors', () {
     for (final String? native in <String?>[null, 'unknown', 'prod']) {
