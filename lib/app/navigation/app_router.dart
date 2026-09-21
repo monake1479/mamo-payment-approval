@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mamo_approval/app/errors/app_failure.dart';
 import 'package:mamo_approval/app/errors/app_failure_view.dart';
@@ -9,6 +10,7 @@ import 'package:mamo_approval/features/payments/pages/home_page.dart';
 import 'package:mamo_approval/features/payments/pages/payment_details_page.dart';
 import 'package:mamo_approval/features/payments/pages/payments_page.dart';
 import 'package:mamo_approval/features/settings/pages/settings_page.dart';
+import 'package:mamo_approval/features/settings/states/about/about_cubit.dart';
 
 abstract final class AppRoutes {
   static const String home = 'home';
@@ -17,8 +19,11 @@ abstract final class AppRoutes {
   static const String settings = 'settings';
 }
 
+/// Builds the application router. [createAboutCubit] is supplied by composition
+/// so the settings route can own a fresh `AboutCubit` per visit: the provider
+/// creates it, starts its single load, and closes it when the route is popped.
 final class MamoPaymentRouter {
-  MamoPaymentRouter()
+  MamoPaymentRouter({required AboutCubit Function() createAboutCubit})
     : _router = GoRouter(
         initialLocation: '/home',
         routes: <RouteBase>[
@@ -40,7 +45,10 @@ final class MamoPaymentRouter {
             pageBuilder: (context, state) => AppMotionPage<void>(
               key: state.pageKey,
               name: state.name,
-              child: const SettingsPage(),
+              child: BlocProvider<AboutCubit>(
+                create: (_) => createAboutCubit()..load(),
+                child: const SettingsPage(),
+              ),
             ),
           ),
           StatefulShellRoute(

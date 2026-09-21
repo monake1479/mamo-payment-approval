@@ -8,11 +8,13 @@ import 'package:mamo_approval/common/widgets/scrolled_page_body.dart';
 import 'package:mamo_approval/features/settings/appearance_failure_messages.dart';
 import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
 import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_state.dart';
+import 'package:mamo_approval/features/settings/widgets/about_section.dart';
 import 'package:mamo_approval/features/settings/widgets/theme_mode_selector.dart';
 import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
-/// Settings screen. Currently hosts the appearance-mode chooser; it is the
-/// discoverable home for future application preferences.
+/// Settings screen. Hosts the appearance-mode chooser and the About section;
+/// it is the discoverable home for application preferences and information.
+/// Requires `ThemeModeCubit` and `AboutCubit` above it in the tree.
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
@@ -70,6 +72,8 @@ class SettingsPage extends StatelessWidget {
                       );
                     },
                   ),
+                  const SizedBox(height: AppTheme.sectionGap),
+                  const AboutSection(),
                 ],
               ),
             ),

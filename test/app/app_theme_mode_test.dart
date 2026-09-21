@@ -12,6 +12,7 @@ import 'package:mamo_approval/features/payments/states/payments/payments_cubit.d
 import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../support/app_info_test_support.dart';
 import '../support/appearance_test_support.dart';
 import '../support/device_authentication_test_support.dart';
 import '../support/payments_test_support.dart';
@@ -33,7 +34,7 @@ void main() {
     );
     authenticate = LocalAuthenticationUseCase(authRepository);
     stop = StopLocalAuthenticationUseCase(authRepository);
-    appRouter = MamoPaymentRouter();
+    appRouter = MamoPaymentRouter(createAboutCubit: createAboutCubit);
     router = appRouter.router;
   });
 

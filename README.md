@@ -16,6 +16,7 @@ The app will provide:
 - an approval overlay with masked sensitive data;
 - an explicit device-authentication step before sensitive data is revealed;
 - a draggable debug action available on every screen to simulate an incoming payment request.
+- a settings screen with the appearance mode and an About section that summarises the delivered scope, known limitations, installed version/build/environment/package, and device-authentication availability.
 
 See [the product requirements](docs/product/requirements.md) for the complete acceptance-criteria map.
 
@@ -142,5 +143,7 @@ The final submission will include:
 - an installable Android APK with instructions;
 - iOS source support and verification, without a TestFlight/store delivery requirement;
 - a short implementation note covering decisions, trade-offs, and what would be improved with more time.
+
+The About section on the settings screen carries an in-app summary of the same decisions and limitations (`DELIVERY-03`, [ADR 0014](docs/decisions/0014-about-section-and-package-info.md)); the repository documentation remains the full record.
 
 Reviewer access without compilation remains required. Candidate original additions live in [the extension backlog](docs/product/extension-backlog.md) for joint selection after the baseline flow works.

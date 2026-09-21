@@ -14,6 +14,7 @@ import 'package:mamo_approval/common/data/device_authentication/use_cases/stop_l
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
 import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
 
+import '../support/app_info_test_support.dart';
 import '../support/appearance_test_support.dart';
 import '../support/device_authentication_test_support.dart';
 import '../support/payments_test_support.dart';
@@ -127,7 +128,9 @@ void main() {
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
-        final MamoPaymentRouter appRouter = MamoPaymentRouter();
+        final MamoPaymentRouter appRouter = MamoPaymentRouter(
+          createAboutCubit: createAboutCubit,
+        );
         addTearDown(appRouter.dispose);
         final backend = StubPaymentsBackend(
           onLoad: () async => const <Payment>[],
