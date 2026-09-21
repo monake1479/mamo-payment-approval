@@ -7,7 +7,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tool"))
-from test_scope import PAYMENTS_UI_TESTS, select_scope
+from test_scope import APPROVAL_TESTS, PAYMENTS_UI_TESTS, select_scope
 
 
 def with_ui(*tests):
@@ -107,6 +107,24 @@ class PaymentsScopeTest(unittest.TestCase):
         )
 
         self.assertEqual(scope["flutter_tests"], sorted(PAYMENTS_UI_TESTS))
+        self.assertFalse(scope["hook_tests"])
+
+    def test_approval_cubit_change_selects_approval_tests(self):
+        scope = select_scope(
+            ["lib/features/payments/states/approval/approval_cubit.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(scope["flutter_tests"], sorted(APPROVAL_TESTS))
+        self.assertFalse(scope["hook_tests"])
+
+    def test_app_shell_change_reaches_the_approval_journey(self):
+        scope = select_scope(["lib/app/app.dart"], ROOT)
+
+        self.assertEqual(
+            scope["flutter_tests"],
+            sorted({*PAYMENTS_UI_TESTS, *APPROVAL_TESTS}),
+        )
         self.assertFalse(scope["hook_tests"])
 
 

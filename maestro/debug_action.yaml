@@ -1,0 +1,19 @@
+appId: ${APP_ID}
+name: Draggable incoming request action survives navigation
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: debug.incomingRequest
+- swipe:
+    start: 90%, 80%
+    end: 35%, 35%
+- assertVisible:
+    id: debug.incomingRequest
+- tapOn:
+    id: navigation.destination.payments
+- assertVisible:
+    id: payments.page
+- assertVisible:
+    id: debug.incomingRequest
+- takeScreenshot: debug-action-payments

@@ -1,0 +1,39 @@
+appId: ${APP_ID}
+name: Reject an incoming request without authentication
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: home.page
+- tapOn:
+    id: debug.incomingRequest
+- assertVisible:
+    id: approval.overlay
+- assertVisible:
+    id: approval.counterparty
+- assertVisible:
+    id: approval.amount
+- assertVisible:
+    id: approval.reference
+- assertVisible:
+    id: debug.incomingRequest
+- pressKey: Back
+- assertVisible:
+    id: approval.overlay
+- tapOn:
+    id: approval.reject
+- assertNotVisible:
+    id: approval.overlay
+- assertVisible:
+    id: home.page
+- tapOn:
+    id: navigation.destination.payments
+- assertVisible:
+    id: payment.row.request-0001
+- tapOn:
+    id: payment.row.request-0001
+- assertVisible:
+    id: payment.details
+- assertVisible:
+    id: payment.status.rejected
+- takeScreenshot: approval-rejected

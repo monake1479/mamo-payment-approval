@@ -16,6 +16,10 @@ abstract final class AppTheme {
   static const double controlRadius = 14;
   static const double minimumTouchTarget = 48;
 
+  /// Approximate compact bottom-navigation height, used only to seed the
+  /// draggable debug action's resting position above the navigation bar.
+  static const double compactNavigationHeight = 80;
+
   static ThemeData get light => _create(Brightness.light);
   static ThemeData get dark => _create(Brightness.dark);
 

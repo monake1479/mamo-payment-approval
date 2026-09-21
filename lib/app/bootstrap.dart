@@ -9,6 +9,8 @@ import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart'
 import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
 import 'package:mamo_payment_approval_challenge/app/navigation/app_router.dart';
 import 'package:mamo_payment_approval_challenge/app/platform/app_orientation.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
+import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
 
 Future<void> bootstrap(AppEnvironment environment) async {
@@ -35,6 +37,8 @@ Future<void> bootstrap(AppEnvironment environment) async {
     MamoPaymentApprovalApp(
       router: getIt<MamoPaymentRouter>().router,
       paymentsCubit: getIt<PaymentsCubit>(),
+      authenticate: getIt<LocalAuthenticationUseCase>(),
+      stopAuthentication: getIt<StopLocalAuthenticationUseCase>(),
     ),
   );
 }
