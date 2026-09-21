@@ -3,6 +3,8 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mamo_approval/common/data/payments/dtos/payment_dto.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_search_criteria.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_sort.dart';
 import 'package:mamo_approval/common/result/models/result.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_exception.dart';
@@ -22,6 +24,56 @@ final class PaymentsRemoteDataSource {
       final List<Map<String, Object?>> records = await _backendClient
           .loadPayments();
       return _decodeCollection(records);
+    } on PaymentsBackendException catch (exception) {
+      return Failure<PaymentsFailure, List<Payment>>(
+        _mapBackendFailure(exception),
+      );
+    } on Exception {
+      return const Failure<PaymentsFailure, List<Payment>>(
+        PaymentsUnavailableFailure(),
+      );
+    }
+  }
+
+  /// Searches decided payments by the fields the history list already shows
+  /// without authentication: counterparty and reference. A pending request is
+  /// never part of the result, so masked approval data cannot leak through a
+  /// search; [PaymentStatus.pending] is dropped from the statuses for the same
+  /// reason. The backend applies the date window and sort; records come back
+  /// in that order.
+  Future<Result<PaymentsFailure, List<Payment>>> search(
+    PaymentsSearchCriteria criteria,
+  ) async {
+    try {
+      final List<Map<String, Object?>> records = await _backendClient
+          .searchPayments(
+            query: criteria.query,
+            statuses: criteria.statuses
+                .where(
+                  (PaymentStatus status) => status != PaymentStatus.pending,
+                )
+                .map((PaymentStatus status) => status.name)
+                .toList(growable: false),
+            sortBy: criteria.sort.field.name,
+            sortDirection: switch (criteria.sort.direction) {
+              SortDirection.ascending => 'asc',
+              SortDirection.descending => 'desc',
+            },
+            decidedFrom: criteria.dateRange?.startUtc.toUtc().toIso8601String(),
+            decidedTo: criteria.dateRange?.endUtc.toUtc().toIso8601String(),
+          );
+      return switch (_decodeCollection(records)) {
+        Failure<PaymentsFailure, List<Payment>>(:final failure) =>
+          Failure<PaymentsFailure, List<Payment>>(failure),
+        Success<PaymentsFailure, List<Payment>>(:final value) =>
+          Success<PaymentsFailure, List<Payment>>(
+            List<Payment>.unmodifiable(
+              value.where(
+                (Payment payment) => payment.status != PaymentStatus.pending,
+              ),
+            ),
+          ),
+      };
     } on PaymentsBackendException catch (exception) {
       return Failure<PaymentsFailure, List<Payment>>(
         _mapBackendFailure(exception),

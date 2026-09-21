@@ -78,14 +78,17 @@ AboutCubit createAboutCubit({
   environment: environment,
 );
 
-/// Registers an [AboutCubit] factory in `getIt` for widget tests that render
-/// `SettingsPage`, which provides the cubit from the locator at its top. The
-/// locator is reset when the test ends.
+/// Registers the section-scoped [AboutCubit] factory that `AboutSection`
+/// resolves through `getIt`, replacing any earlier registration, and
+/// unregisters it when the test ends.
 void registerAboutCubitFactory({
   FakePackageInfoPlatform? packageInfo,
   bool isDeviceAuthenticationSupported = true,
   AppEnvironment environment = AppEnvironment.dev,
 }) {
+  if (getIt.isRegistered<AboutCubit>()) {
+    getIt.unregister<AboutCubit>();
+  }
   getIt.registerFactory<AboutCubit>(
     () => createAboutCubit(
       packageInfo: packageInfo,
@@ -93,5 +96,9 @@ void registerAboutCubitFactory({
       environment: environment,
     ),
   );
-  addTearDown(getIt.reset);
+  addTearDown(() {
+    if (getIt.isRegistered<AboutCubit>()) {
+      getIt.unregister<AboutCubit>();
+    }
+  });
 }

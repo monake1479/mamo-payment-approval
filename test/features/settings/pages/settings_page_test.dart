@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_approval/app/di/configure_dependencies.dart';
 import 'package:mamo_approval/app/theme/app_theme.dart';
 import 'package:mamo_approval/common/data/appearance/models/theme_preference.dart';
 import 'package:mamo_approval/features/settings/pages/settings_page.dart';
@@ -121,7 +120,6 @@ void main() {
   testWidgets('keeps the appearance chooser usable while About is loading', (
     WidgetTester tester,
   ) async {
-    await getIt.reset();
     registerAboutCubitFactory(
       packageInfo: FakePackageInfoPlatform(
         pending: Completer<PackageInfoData>(),

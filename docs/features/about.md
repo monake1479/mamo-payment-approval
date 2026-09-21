@@ -2,7 +2,7 @@
 
 This slice adds an About section to the settings screen (`DELIVERY-03`), the
 in-app counterpart of the repository handover notes required by `DELIVERY-02`.
-See [ADR 0014](../decisions/0014-about-section-and-package-info.md) for the
+See [ADR 0015](../decisions/0015-about-section-and-package-info.md) for the
 dependency and ownership decisions.
 
 ## Contract and integration
@@ -22,11 +22,11 @@ device-authentication availability through the existing
 authentication. A repeated `load()` while one is in flight is ignored; a call
 after a failure retries through `loading`; nothing is emitted after close. The
 validated `AppEnvironment` is injected (the plugin reports no flavor) and
-rendered as the environment row. The page owns the Cubit: `AboutCubit` is an
-`@injectable` factory, and `SettingsPage` provides it at its top with
-`BlocProvider(create: (_) => getIt<AboutCubit>()..load())`, so the provider
-creates, loads, and closes a fresh instance per visit. The router provides
-nothing. Failure and environment copy are private methods of
+rendered as the environment row. The section owns the Cubit: `AboutCubit` is an
+`@injectable` factory, and `AboutSection`, its only consumer, provides it with
+`BlocProvider(create: (_) => getIt<AboutCubit>()..load())` directly above the
+details card, so the provider creates, loads, and closes a fresh instance per
+visit. Neither the router nor the page provides it. Failure and environment copy are private methods of
 `AboutDetailsCard`.
 
 ## Surface and accessibility

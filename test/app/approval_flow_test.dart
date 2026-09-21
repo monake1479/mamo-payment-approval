@@ -60,6 +60,7 @@ void main() {
     );
     paymentsCubit = createPaymentsCubitFromRepository(repository);
     themeCubit = await loadThemeModeCubit();
+    registerPaymentsSearchBlocFromRepository(repository);
     appRouter = MamoPaymentRouter();
     router = appRouter.router;
   });
@@ -211,6 +212,7 @@ void main() {
 
       expect(stop.calls, 0);
       expect(find.text('👩‍💼 Vendor'), findsOneWidget);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
       await tester.pumpAndSettle();
       expect(
@@ -221,6 +223,10 @@ void main() {
             .isRevealed,
         isFalse,
       );
+      // Return through the framework's legal sequence; the Payments search
+      // field's EditableText observes it and asserts on skipped states.
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
       tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
       await tester.pumpAndSettle();
       expect(find.text('👩‍💼 Vendor'), findsNothing);
@@ -265,6 +271,7 @@ void main() {
 
     expect(repository.decideCalls, 1);
     expect(find.bySemanticsIdentifier('approval.overlay'), findsOneWidget);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pumpAndSettle();
     expect(find.bySemanticsIdentifier('approval.overlay'), findsNothing);

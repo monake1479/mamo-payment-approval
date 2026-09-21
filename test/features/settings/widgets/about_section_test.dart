@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,35 +8,40 @@ import 'package:mamo_approval/app/theme/app_theme.dart';
 import 'package:mamo_approval/common/data/app_info/error_handling/app_info_failure.dart';
 import 'package:mamo_approval/features/settings/states/about/about_cubit.dart';
 import 'package:mamo_approval/features/settings/states/about/about_state.dart';
+import 'package:mamo_approval/features/settings/widgets/about_details_card.dart';
 import 'package:mamo_approval/features/settings/widgets/about_section.dart';
 import 'package:mamo_approval/l10n/generated/app_localizations.dart';
+import 'package:package_info_plus_platform_interface/package_info_data.dart';
 
 import '../../../support/app_info_test_support.dart';
 
-Widget _wrap(AboutCubit cubit, {ThemeData? theme}) =>
-    BlocProvider<AboutCubit>.value(
-      value: cubit,
-      child: MaterialApp(
-        theme: theme ?? AppTheme.light,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: const Scaffold(
-          body: SingleChildScrollView(
-            padding: EdgeInsets.all(AppTheme.compactPadding),
-            child: AboutSection(),
-          ),
-        ),
-      ),
-    );
+Widget _wrap({ThemeData? theme}) => MaterialApp(
+  theme: theme ?? AppTheme.light,
+  localizationsDelegates: AppLocalizations.localizationsDelegates,
+  supportedLocales: AppLocalizations.supportedLocales,
+  home: const Scaffold(
+    body: SingleChildScrollView(
+      padding: EdgeInsets.all(AppTheme.compactPadding),
+      child: AboutSection(),
+    ),
+  ),
+);
+
+/// The cubit the section resolved from the locator, for state assertions.
+AboutCubit _cubitOf(WidgetTester tester) =>
+    tester.element(find.byType(AboutDetailsCard)).read<AboutCubit>();
 
 void main() {
   testWidgets('shows a loading indicator before details arrive', (
     WidgetTester tester,
   ) async {
-    final AboutCubit cubit = createAboutCubit();
-    addTearDown(cubit.close);
+    registerAboutCubitFactory(
+      packageInfo: FakePackageInfoPlatform(
+        pending: Completer<PackageInfoData>(),
+      ),
+    );
 
-    await tester.pumpWidget(_wrap(cubit));
+    await tester.pumpWidget(_wrap());
     await tester.pump();
 
     expect(find.bySemanticsIdentifier('settings.about'), findsOneWidget);
@@ -50,13 +57,9 @@ void main() {
   testWidgets(
     'renders version, build, environment, package, and availability',
     (WidgetTester tester) async {
-      final AboutCubit cubit = createAboutCubit(
-        environment: AppEnvironment.staging,
-      );
-      addTearDown(cubit.close);
-      await cubit.load();
+      registerAboutCubitFactory(environment: AppEnvironment.staging);
 
-      await tester.pumpWidget(_wrap(cubit));
+      await tester.pumpWidget(_wrap());
       await tester.pumpAndSettle();
 
       expect(find.text('About'), findsOneWidget);
@@ -94,13 +97,9 @@ void main() {
   testWidgets('shows device authentication as not available', (
     WidgetTester tester,
   ) async {
-    final AboutCubit cubit = createAboutCubit(
-      isDeviceAuthenticationSupported: false,
-    );
-    addTearDown(cubit.close);
-    await cubit.load();
+    registerAboutCubitFactory(isDeviceAuthenticationSupported: false);
 
-    await tester.pumpWidget(_wrap(cubit));
+    await tester.pumpWidget(_wrap());
     await tester.pumpAndSettle();
 
     expect(find.text('Not available'), findsOneWidget);
@@ -112,13 +111,11 @@ void main() {
   testWidgets('shows the failure with a retry that reloads', (
     WidgetTester tester,
   ) async {
-    final AboutCubit cubit = createAboutCubit(
+    registerAboutCubitFactory(
       packageInfo: FakePackageInfoPlatform(error: Exception('channel down')),
     );
-    addTearDown(cubit.close);
-    await cubit.load();
 
-    await tester.pumpWidget(_wrap(cubit));
+    await tester.pumpWidget(_wrap());
     await tester.pumpAndSettle();
 
     expect(find.bySemanticsIdentifier('settings.about.error'), findsOneWidget);
@@ -135,11 +132,26 @@ void main() {
     // The fake keeps failing, so a retry reports the same failure again
     // rather than pretending the platform recovered.
     expect(
-      cubit.state,
+      _cubitOf(tester).state,
       const AboutState.failed(failure: AppInfoFailure.unavailable()),
     );
     expect(find.bySemanticsIdentifier('settings.about.error'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('closes its cubit when the section leaves the tree', (
+    WidgetTester tester,
+  ) async {
+    registerAboutCubitFactory();
+
+    await tester.pumpWidget(_wrap());
+    await tester.pumpAndSettle();
+    final AboutCubit cubit = _cubitOf(tester);
+    expect(cubit.isClosed, isFalse);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+
+    expect(cubit.isClosed, isTrue);
   });
 
   for (final ThemeData theme in <ThemeData>[AppTheme.light, AppTheme.dark]) {
@@ -152,14 +164,13 @@ void main() {
         addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
         addTearDown(tester.view.resetPhysicalSize);
         addTearDown(tester.view.resetDevicePixelRatio);
-        final AboutCubit cubit = createAboutCubit();
-        addTearDown(cubit.close);
-        await cubit.load();
+        registerAboutCubitFactory();
 
-        await tester.pumpWidget(_wrap(cubit, theme: theme));
+        await tester.pumpWidget(_wrap(theme: theme));
         await tester.pumpAndSettle();
 
         expect(find.text('1.2.3'), findsOneWidget);
+        expect(find.text('What is included'), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );

@@ -136,6 +136,7 @@ void main() {
         addTearDown(cubit.close);
         final ThemeModeCubit themeCubit = await loadThemeModeCubit();
         addTearDown(themeCubit.close);
+        registerPaymentsSearchBloc(backend);
         final LocalAuthRepository authRepository = LocalAuthRepository(
           FakeLocalAuthClient(),
         );

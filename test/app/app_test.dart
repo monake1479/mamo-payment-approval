@@ -33,6 +33,7 @@ void main() {
     );
     cubit = createPaymentsCubit(backend);
     themeCubit = await loadThemeModeCubit();
+    registerPaymentsSearchBloc(backend);
     final LocalAuthRepository authRepository = LocalAuthRepository(
       FakeLocalAuthClient(),
     );
@@ -330,6 +331,95 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('system Back leaves an active search intact for the return', (
+    WidgetTester tester,
+  ) async {
+    // Keep the focused search field's cursor deterministic so settling works.
+    EditableText.debugDeterministicCursor = true;
+    addTearDown(() => EditableText.debugDeterministicCursor = false);
+    await tester.pumpWidget(
+      MamoPaymentApprovalApp(
+        router: router,
+        paymentsCubit: cubit,
+        authenticate: authenticate,
+        stopAuthentication: stop,
+        themeModeCubit: themeCubit,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('View all'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'marina');
+    await tester.pumpAndSettle();
+    expect(find.text('1 matching payment'), findsOneWidget);
+    expect(find.text('Atlas Office Supplies'), findsNothing);
+
+    // Back still returns to Home without leaving the app; the search is
+    // page-scoped session state, not a pushed route, so it is not popped.
+    final bool popped = await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(popped, isTrue);
+    expect(find.bySemanticsIdentifier('home.page'), findsOneWidget);
+    expect(find.text('Atlas Office Supplies'), findsWidgets);
+
+    await tester.tap(find.text('Payments'));
+    await tester.pumpAndSettle();
+    expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
+    expect(find.text('1 matching payment'), findsOneWidget);
+    expect(
+      tester.widget<TextField>(find.byType(TextField)).controller!.text,
+      'marina',
+    );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('search menus open above the pager without moving it', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MamoPaymentApprovalApp(
+        router: router,
+        paymentsCubit: cubit,
+        authenticate: authenticate,
+        stopAuthentication: stop,
+        themeModeCubit: themeCubit,
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('View all'));
+    await tester.pumpAndSettle();
+    final PageView pager = tester.widget<PageView>(find.byType(PageView));
+    expect(pager.controller!.page, 1);
+    final double paymentsTop = tester
+        .getTopLeft(find.bySemanticsIdentifier('payments.page'))
+        .dy;
+
+    for (final String menu in <String>[
+      'payments.search.filter.status',
+      'payments.search.sort',
+    ]) {
+      await tester.tap(find.bySemanticsIdentifier(menu));
+      await tester.pumpAndSettle();
+      expect(
+        find.byWidgetPredicate((Widget w) => w is PopupMenuItem),
+        findsWidgets,
+      );
+      // The menu route sits on the root navigator, so the indexed pager and
+      // the Payments surface stay exactly where they were.
+      expect(pager.controller!.page, 1);
+      expect(
+        tester.getTopLeft(find.bySemanticsIdentifier('payments.page')).dy,
+        paymentsTop,
+      );
+      await tester.tapAt(const Offset(1, 1));
+      await tester.pumpAndSettle();
+    }
+    expect(find.bySemanticsIdentifier('payments.page'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('iOS edge-back gesture returns from details to its origin', (
     WidgetTester tester,
   ) async {
@@ -448,7 +538,13 @@ void main() {
     expect(find.text('September 2026 · Asia/Dubai'), findsOneWidget);
 
     now = DateTime.utc(2026, 10, 2);
+    // Walk the framework's legal lifecycle sequence; the search field's
+    // EditableText observes it and asserts on skipped states.
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
+    tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
     tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
     await tester.pumpAndSettle();
     expect(find.text('AED 10.00'), findsWidgets);

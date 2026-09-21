@@ -144,6 +144,6 @@ The final submission will include:
 - iOS source support and verification, without a TestFlight/store delivery requirement;
 - a short implementation note covering decisions, trade-offs, and what would be improved with more time.
 
-The About section on the settings screen carries an in-app summary of the delivered scope (`DELIVERY-03`, [ADR 0014](docs/decisions/0014-about-section-and-package-info.md)); decisions and limitations remain only in the repository documentation.
+The About section on the settings screen carries an in-app summary of the delivered scope (`DELIVERY-03`, [ADR 0015](docs/decisions/0015-about-section-and-package-info.md)); decisions and limitations remain only in the repository documentation.
 
 Reviewer access without compilation remains required. Candidate original additions live in [the extension backlog](docs/product/extension-backlog.md) for joint selection after the baseline flow works.

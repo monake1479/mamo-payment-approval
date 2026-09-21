@@ -5,7 +5,7 @@ Status: implemented on the feature branch; rebased onto the accepted shared paym
 ## Behaviour
 
 - Home shows the current `Asia/Dubai` account month, approved-only amount/count, and up to five recent decided payments.
-- Payments shows every approved or rejected payment newest decision first, labels its timestamps with the account reporting zone, and never includes pending requests.
+- Payments shows every approved or rejected payment newest decision first, labels its timestamps with the account reporting zone, and never includes pending requests. Text search and status filtering over this history are described in [payments-search.md](payments-search.md).
 - Home and Payments form one directly manipulated horizontal pager: the surfaces follow the pointer during a drag, then settle on the destination or return to the origin. Compact/expanded navigation controls remain equivalent entry points.
 - Home is the start destination: reaching Payments (View all, a navigation control, or a swipe) pushes no route, so system Back returns to Home instead of leaving the app, and only Home exits.
 - Selecting a row pushes `/payments/payment/:paymentId` above the Home/Payments shell, so details have no bottom navigation or rail and system Back returns to the exact origin.

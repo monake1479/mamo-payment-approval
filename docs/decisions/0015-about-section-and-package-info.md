@@ -1,4 +1,4 @@
-# ADR 0014: In-app About section and the package_info_plus dependency
+# ADR 0015: In-app About section and the package_info_plus dependency
 
 - Status: Accepted (coordinator-selected under delegated authority; subject to owner review)
 - Date: 2026-09-21
@@ -54,12 +54,12 @@ single request-to-result operation over two ready-to-emit inputs (the build
 identity result and the availability boolean), not a stream of events, so a
 Cubit is used rather than a BLoC. The Cubit never starts authentication; it only
 reads availability. It is registered as an `@injectable` factory and provided
-at the top of `SettingsPage` with `BlocProvider(create: (_) =>
-getIt<AboutCubit>()..load())`, so every visit gets a fresh instance that the
-page's provider closes; nothing about the device is cached in presentation. The
-router provides nothing: providers in route builders and process-wide
-singletons for page-local state are recorded as anti-patterns in the state and
-structure rules. The validated `AppEnvironment` is injected because
+by `AboutSection`, its only consumer, with `BlocProvider(create: (_) =>
+getIt<AboutCubit>()..load())` directly above the subtree that reads it, so
+every visit gets a fresh instance that the section's provider closes; nothing
+about the device is cached in presentation. The router and the page provide
+nothing, per the placement rule in the state and structure rules (provide as
+close as possible to the consuming subtree; never in route builders). The validated `AppEnvironment` is injected because
 `package_info_plus` reports no flavor (only name, package, version, build
 number, signature, installer store); it is a static launch fact, and the shared
 data layer must not depend on `lib/app/`. Failure and environment copy are
@@ -71,11 +71,10 @@ same reason.
 
 - The app gains a second platform plugin, confined to the application-information
   domain behind a narrow data source. It reads no sensitive data.
-- `SettingsPage` resolves `AboutCubit` from the locator at its top; widget
-  tests that render it register a factory in `getIt` first.
-- The rules gain an explicit placement principle: provide controllers as low as
-  their consumers allow, never in the router, never globally for page-local
-  state; resolve localized copy in the rendering widget.
+- `AboutSection` resolves `AboutCubit` from the locator; widget tests that
+  render it register a factory in `getIt` first.
+- Localized failure and environment copy is resolved in the rendering widget;
+  the flutter-ui rule records that no single-function mapper files are added.
 - `DELIVERY-03` records the in-app handover summary as an acceptance criterion;
   the static copy must be kept truthful as delivered features change.
 - No licences page and no limitations list are added; the owner rejected both.

@@ -17,7 +17,7 @@ An earlier version of the workflow received an [independent audit and targeted c
 | 2. Home and details | Approved-only summary, decided recent payments and details, origin back navigation; `HOME-01..04`, `PAY-03`, `DETAIL-01/02` | Decision time drives ordering and monthly membership in the account reporting zone (demo: `Asia/Dubai`); test pending/rejected exclusion, UTC-converted month boundaries, device-zone independence, navigation, and layout |
 | 3. Incoming request and rejection | Draggable global action, masked non-dismissible overlay, rejection, canonical update; `DEBUG-01..04`, `APPROVAL-01..03/05/07..09`, rejection part of `PAY-04` | One active request, no queue/replacement; agree masks and equal-timestamp tie-breaker; test dismissal blocking, disabled creation, safe drag, origin preservation, duplicate/stale operations |
 | 4. Native authentication and approval | Real adapter, reveal, explicit approve, list navigation; `APPROVAL-04/05/06/08/10`, remaining `PAY-04` | Q9–Q11 accept biometrics/device credentials, authentication before approval, and remasking on actual backgrounding; test native-prompt lifecycle separately from leaving the app, stale completions, cancellation/unavailability, and rejection without authentication; fake contract tests plus native iOS/Android verification; no shipping fake success |
-| 5. Original addition | Jointly select from extension backlog | New criteria, proportional design, tests, evidence, own PR |
+| 5. Original addition: payments search | Text search over visible fields, decided-status chips, decision-date window, sort menu, pull-to-refresh; `SEARCH-01..07`, `PAY-05` | ADR 0014 selects an event-driven BLoC with one debounce/restart transformer for this concern only; masked pending data is excluded at the backend and data-source boundary; tests per layer plus page and app navigation coverage |
 | 6. Delivery and reviewer guide | Installable Android APK, supported/tested iOS, critical journeys, in-app About section; `DELIVERY-01/02/03` | Native builds, APK install/access checks, recordings, provenance, limitations; no store/TestFlight requirement |
 
 Split slices further when useful. Domain/data/state/UI types arrive when the runnable increment needs them. Introduce native CI/build artifacts with platform delivery work.
@@ -60,15 +60,15 @@ both appearances at 200% text.
 This increment adds an About section to the existing settings screen,
 satisfying `DELIVERY-03` as the in-app counterpart of `DELIVERY-02`. The
 coordinator requested it under delegated authority on 2026-09-21;
-[ADR 0014](decisions/0014-about-section-and-package-info.md) records the
+[ADR 0015](decisions/0015-about-section-and-package-info.md) records the
 `package_info_plus` dependency, the screen-scoped Cubit ownership, and the
 alternatives. See [the feature note](features/about.md).
 
 An application-information domain under `lib/common/data/app_info/` reads the
 installed version, build number, and package identifier through the
 `package_info_plus` platform seam behind a data source, repository, and use
-case, all lazy singletons. A screen-scoped `AboutCubit`, an `@injectable`
-factory provided at the top of the settings page, loads that result once together with device-authentication availability
+case, all lazy singletons. A section-scoped `AboutCubit`, an `@injectable`
+factory provided by the About section itself, loads that result once together with device-authentication availability
 from the existing `IsLocalAuthSupportedUseCase` and the composed
 `AppEnvironment`; it never starts authentication. The section renders loading,
 failed-with-retry, and loaded states plus a static description and delivered
@@ -76,6 +76,12 @@ features from ARB copy; limitations stay in the repository documentation. Data-s
 section, settings-page, and bootstrap DI tests cover mapping and exception
 translation, every state including duplicate and post-close loads, all detail
 rows, availability true/false, retry, and both appearances at 200% text.
+
+## Payments search increment
+
+Slice 5 implements `SEARCH-01..07` and `PAY-05` as a vertical path through the accepted layers: `PaymentsBackendClient.searchPayments` on the authoritative mock backend, `PaymentsRemoteDataSource.search`, `PaymentsRepository.searchPayments`, `SearchPaymentsUseCase`, `PaymentsSearchBloc` under `states/search/`, and a search field with status chips on the Payments page. Search reads the same session-only record list; there is no second store or persistence, and the approved-only summary and approval/debug behaviour are untouched.
+
+The bloc is the one deliberately event-driven state owner ([ADR 0014](decisions/0014-event-driven-bloc-for-payments-search.md)) with one handler per event: query edits are debounced, a clear discards a waiting edit, and newer criteria restart the in-flight search. The page provides the bloc and selects views per state; the backend orders results from the sort parameters it receives. Text matches only the counterparty and reference, which the history row and details already show without authentication; the pending request is never returned, so `APPROVAL-02/04` masking cannot leak through search. Criterion-to-test mapping: `SEARCH-01/04` page tests; `SEARCH-02` backend, data-source, and page tests; `SEARCH-03` bloc tests with `fakeAsync` and the page debounce test; `SEARCH-05` the page collection-refresh test and the app Back-navigation test; `SEARCH-06` formatter, backend window, bloc, and page date-chip tests; `SEARCH-07` backend ordering, bloc, and page sort-menu tests; `PAY-05` the page pull-to-refresh test. Maestro coverage for the search journey is a follow-up.
 
 ## Native foundation increment
 
@@ -151,7 +157,7 @@ The slice questions below are historical planning gates resolved for the baselin
 - Before slice 1: the minimum deterministic fixture contract. Pending requests are explicitly excluded from Home/Payments history; tests must prove the filter rather than relying only on decided fixtures.
 - Before slice 2: additional seed scenarios and date formatting. Approved-only membership, decision-time ordering, UTC/ISO 8601 storage, and account-level reporting zone are settled in Q6. The demo uses `Asia/Dubai`; no country/account management UI is required.
 - Before slices 3/4: masks, equal-decision-time tie-breaker, process termination, and backgrounding during an already submitted decision. Q7–Q11 settle non-dismissible approval, one active request without queue/replacement, native credential fallback, authentication before approval, rejection without authentication, and remasking after actual backgrounding without a global app lock.
-- Before slice 5: choose an original addition with user/reviewer value and manageable scope. Retain the [deferred app PIN and session-expiry request](product/extension-backlog.md#deferred-owner-request-app-pin-and-session-expiry); its timeout and security policy remain undecided, and recording it does not authorize implementation.
+- Before slice 5: the coordinator selected search and status filtering from the backlog under delegated authority (`SEARCH-01..05`, ADR 0014 proposed); the owner may still revise it in review. Retain the [deferred app PIN and session-expiry request](product/extension-backlog.md#deferred-owner-request-app-pin-and-session-expiry); its timeout and security policy remain undecided, and recording it does not authorize implementation.
 - Before delivery: APK installation and reviewer artifact permissions. iOS distribution is not required; iOS support and native verification remain required.
 
 ## Promotion

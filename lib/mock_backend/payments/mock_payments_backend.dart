@@ -66,6 +66,88 @@ final class MockPaymentsBackend implements PaymentsBackendClient {
   }
 
   @override
+  Future<List<Map<String, Object?>>> searchPayments({
+    required String query,
+    required List<String> statuses,
+    required String sortBy,
+    required String sortDirection,
+    String? decidedFrom,
+    String? decidedTo,
+  }) async {
+    await _beforeOperation();
+    final Comparator<Map<String, Object?>> compare = _comparator(
+      sortBy,
+      sortDirection,
+    );
+    final DateTime? from = decidedFrom == null
+        ? null
+        : DateTime.parse(decidedFrom).toUtc();
+    final DateTime? to = decidedTo == null
+        ? null
+        : DateTime.parse(decidedTo).toUtc();
+    final String needle = query.trim().toLowerCase();
+    return _records
+        .where((Map<String, Object?> record) {
+          final String status = record['status']! as String;
+          if (status == 'pending') {
+            return false;
+          }
+          if (statuses.isNotEmpty && !statuses.contains(status)) {
+            return false;
+          }
+          final DateTime decidedAt = DateTime.parse(
+            record['decidedAt']! as String,
+          ).toUtc();
+          if (from != null && decidedAt.isBefore(from)) {
+            return false;
+          }
+          if (to != null && !decidedAt.isBefore(to)) {
+            return false;
+          }
+          if (needle.isEmpty) {
+            return true;
+          }
+          final String counterparty = (record['counterparty']! as String)
+              .toLowerCase();
+          final String reference = (record['reference']! as String)
+              .toLowerCase();
+          return counterparty.contains(needle) || reference.contains(needle);
+        })
+        .map(Map<String, Object?>.from)
+        .toList()
+      ..sort(compare);
+  }
+
+  /// Orders decided records by one field in one direction, then by identifier
+  /// so equal values stay deterministic. Unknown parameters are caller bugs.
+  static Comparator<Map<String, Object?>> _comparator(
+    String sortBy,
+    String sortDirection,
+  ) {
+    final int sign = switch (sortDirection) {
+      'asc' => 1,
+      'desc' => -1,
+      _ => throw ArgumentError.value(sortDirection, 'sortDirection'),
+    };
+    final Comparable<Object> Function(Map<String, Object?> record) key =
+        switch (sortBy) {
+          'decidedAt' => (record) => record['decidedAt']! as String,
+          'createdAt' => (record) => record['createdAt']! as String,
+          'amount' => (record) => double.parse(record['amount']! as String),
+          'counterparty' => (
+            record,
+          ) => (record['counterparty']! as String).toLowerCase(),
+          _ => throw ArgumentError.value(sortBy, 'sortBy'),
+        };
+    return (Map<String, Object?> left, Map<String, Object?> right) {
+      final int byField = sign * key(left).compareTo(key(right));
+      return byField != 0
+          ? byField
+          : (left['id']! as String).compareTo(right['id']! as String);
+    };
+  }
+
+  @override
   Future<Map<String, Object?>> createPaymentRequest() async {
     await _beforeOperation();
     if (_records.any((record) => record['status'] == 'pending')) {

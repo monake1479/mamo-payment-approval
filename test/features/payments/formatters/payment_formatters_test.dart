@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_date_range.dart';
 import 'package:mamo_approval/features/payments/formatters/payment_formatters.dart';
 
 void main() {
@@ -28,5 +29,21 @@ void main() {
     final DateTime instant = DateTime.utc(2026, 12, 31, 23, 9);
     expect(formatter.dateTime(instant), '01 Jan 2027, 03:09');
     expect(formatter.month(instant), 'January 2027');
+  });
+
+  test('turns account-zone calendar days into a UTC window and back', () {
+    final PaymentsDateRange window = formatter.accountDays(
+      DateTime(2026, 9, 15),
+      DateTime(2026, 9, 17),
+    );
+
+    // Asia/Dubai is UTC+4 all year.
+    expect(window.startUtc, DateTime.utc(2026, 9, 14, 20));
+    expect(window.endUtc, DateTime.utc(2026, 9, 17, 20));
+    expect(formatter.dateRange(window), '15 Sep 2026 – 17 Sep 2026');
+    expect(
+      formatter.accountDay(DateTime.utc(2026, 9, 14, 21)),
+      DateTime(2026, 9, 15),
+    );
   });
 }

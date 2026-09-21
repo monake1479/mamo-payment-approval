@@ -3,6 +3,8 @@ import 'package:mamo_approval/common/data/payments/data_sources/payments_remote_
 import 'package:mamo_approval/common/data/payments/dtos/payment_dto.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_search_criteria.dart';
+
 import 'package:mamo_approval/common/data/payments/payments_repository.dart';
 import 'package:mamo_approval/common/result/models/result.dart';
 import 'package:mamo_approval/mock_backend/payments/mock_payments_backend.dart';
@@ -177,6 +179,34 @@ void main() {
             .singleWhere((Payment payment) => payment.id == pending.id)
             .status,
         PaymentStatus.approved,
+      );
+    });
+
+    test('searches decided history and preserves typed failures', () async {
+      final PaymentsRepository repository = _repository(
+        clock: () => fixedNow,
+        simulatedFailureInterval: 2,
+      );
+
+      final Result<PaymentsFailure, List<Payment>> found = await repository
+          .searchPayments(
+            const PaymentsSearchCriteria(
+              query: 'marina',
+              statuses: <PaymentStatus>{PaymentStatus.rejected},
+            ),
+          );
+      final Result<PaymentsFailure, List<Payment>> failed = await repository
+          .searchPayments(const PaymentsSearchCriteria(query: 'marina'));
+
+      expect(
+        (found as Success<PaymentsFailure, List<Payment>>).value.map(
+          (Payment payment) => payment.id,
+        ),
+        <String>['seed-rejected-current'],
+      );
+      expect(
+        (failed as Failure<PaymentsFailure, List<Payment>>).failure,
+        const PaymentsUnavailableFailure(),
       );
     });
 

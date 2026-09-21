@@ -9,8 +9,8 @@ import 'package:mamo_approval/common/result/models/result.dart';
 import 'package:mamo_approval/features/settings/states/about/about_state.dart';
 
 /// Owns the About section state for one visit to the settings screen. It is
-/// registered as a factory and provided at the top of `SettingsPage`, so each
-/// visit gets a fresh instance that the page's provider closes.
+/// registered as a factory and provided by `AboutSection`, its only consumer,
+/// so each visit gets a fresh instance that the section's provider closes.
 ///
 /// [load] is a single request-to-result operation: it reads the installed
 /// build identity and probes device-authentication availability once, then
