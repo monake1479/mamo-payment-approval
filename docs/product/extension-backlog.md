@@ -4,7 +4,7 @@
 
 This backlog contains discussion candidates and explicitly deferred owner requests. The owner will choose an original contribution after the core flow works. Neither a candidate nor a deferred request authorizes implementation.
 
-Choose a small addition with clear user value, a demonstrable journey, explainable architecture, realistic effort, and focused tests. Preserve baseline criteria and session-only storage unless explicitly changed.
+Choose a small addition with clear user value, a demonstrable journey, explainable architecture, realistic effort, and focused tests. Preserve baseline criteria and session-only storage unless explicitly changed. The owner explicitly changed the storage guardrail once, for the non-sensitive appearance preference only: `UI-03` persists the selected theme mode via `shared_preferences` (see [ADR 0012](../decisions/0012-persistent-theme-mode.md)). This does not authorize persisting payment or authentication data, or a general local database.
 
 | Candidate | User value | Questions and costs |
 |---|---|---|

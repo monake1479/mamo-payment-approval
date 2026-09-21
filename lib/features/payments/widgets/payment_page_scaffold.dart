@@ -6,12 +6,17 @@ class PaymentPageScaffold extends StatelessWidget {
     required this.title,
     required this.child,
     required this.semanticIdentifier,
+    this.trailing,
     super.key,
   });
 
   final String title;
   final Widget child;
   final String semanticIdentifier;
+
+  /// Optional action aligned to the end of the page heading, such as an entry
+  /// point into Settings.
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +45,24 @@ class PaymentPageScaffold extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
-                        Semantics(
-                          header: true,
-                          child: Text(
-                            title,
-                            style: Theme.of(context).textTheme.headlineLarge,
-                          ),
+                        Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Semantics(
+                                header: true,
+                                child: Text(
+                                  title,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineLarge,
+                                ),
+                              ),
+                            ),
+                            if (trailing != null) ...<Widget>[
+                              const SizedBox(width: AppTheme.smallGap),
+                              trailing!,
+                            ],
+                          ],
                         ),
                         const SizedBox(height: AppTheme.sectionGap),
                         Expanded(child: child),

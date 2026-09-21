@@ -12,6 +12,7 @@ import 'package:mamo_payment_approval_challenge/app/platform/app_orientation.dar
 import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/features/settings/states/theme_mode/theme_mode_cubit.dart';
 
 Future<void> bootstrap(AppEnvironment environment) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +38,7 @@ Future<void> bootstrap(AppEnvironment environment) async {
     MamoPaymentApprovalApp(
       router: getIt<MamoPaymentRouter>().router,
       paymentsCubit: getIt<PaymentsCubit>(),
+      themeModeCubit: getIt<ThemeModeCubit>(),
       authenticate: getIt<LocalAuthenticationUseCase>(),
       stopAuthentication: getIt<StopLocalAuthenticationUseCase>(),
     ),

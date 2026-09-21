@@ -20,7 +20,9 @@ import 'package:mamo_payment_approval_challenge/common/result/models/result.dart
 import 'package:mamo_payment_approval_challenge/common/result/models/unit.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/states/approval/approval_cubit.dart';
 import 'package:mamo_payment_approval_challenge/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_payment_approval_challenge/features/settings/states/theme_mode/theme_mode_cubit.dart';
 
+import '../support/appearance_test_support.dart';
 import '../support/device_authentication_test_support.dart';
 import '../support/payments_test_support.dart';
 
@@ -28,13 +30,14 @@ void main() {
   late MamoPaymentRouter appRouter;
   late GoRouter router;
   late PaymentsCubit paymentsCubit;
+  late ThemeModeCubit themeCubit;
   late StubPaymentsRepository repository;
   late _StubAuthenticate authenticate;
   late _StubStop stop;
   late Payment request;
   late List<PaymentDecision> decisions;
 
-  setUp(() {
+  setUp(() async {
     request = pendingPayment(counterparty: '👩‍💼 Vendor');
     decisions = <PaymentDecision>[];
     authenticate = _StubAuthenticate();
@@ -56,6 +59,7 @@ void main() {
       },
     );
     paymentsCubit = createPaymentsCubitFromRepository(repository);
+    themeCubit = await loadThemeModeCubit();
     appRouter = MamoPaymentRouter();
     router = appRouter.router;
   });
@@ -63,6 +67,7 @@ void main() {
   tearDown(() async {
     appRouter.dispose();
     await paymentsCubit.close();
+    await themeCubit.close();
   });
 
   Future<void> pumpApp(WidgetTester tester) async {
@@ -70,6 +75,7 @@ void main() {
       MamoPaymentApprovalApp(
         router: router,
         paymentsCubit: paymentsCubit,
+        themeModeCubit: themeCubit,
         authenticate: authenticate,
         stopAuthentication: stop,
       ),
@@ -187,6 +193,7 @@ void main() {
         MamoPaymentApprovalApp(
           router: router,
           paymentsCubit: paymentsCubit,
+          themeModeCubit: themeCubit,
           authenticate: controlled,
           stopAuthentication: stop,
         ),

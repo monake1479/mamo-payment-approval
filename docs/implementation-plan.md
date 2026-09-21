@@ -22,7 +22,7 @@ An earlier version of the workflow received an [independent audit and targeted c
 
 Split slices further when useful. Domain/data/state/UI types arrive when the runnable increment needs them. Introduce native CI/build artifacts with platform delivery work.
 
-Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01/02`). Verify both appearances at compact/expanded portrait widths and with large text as screens arrive. No manual theme selector is included. A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
+Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01/02`). Verify both appearances at compact/expanded portrait widths and with large text as screens arrive. The initial baseline followed the system appearance with no manual selector; a user-selectable, persistent appearance mode (`UI-03`) was added later by the appearance increment below (see [ADR 0012](decisions/0012-persistent-theme-mode.md)). A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
 
 ## Read-only payments screen increment
 
@@ -33,6 +33,26 @@ Compact layouts use bottom navigation; expanded layouts use a rail. Loading, emp
 Success content follows the accepted motion contract: Home and Payments wait for the loading label to fade before their first reveal, then replay meaningful-group entrance whenever their indexed destination becomes active; decided-payment detail groups start only after the pushed route is visibly on screen. These entrances do not replay for collection rebuilds or scrolling and resolve immediately when reduced motion is requested.
 
 Local review follow-up for `MONEY-01` rejects any positive input that would normalize to zero fils, including values inside the binary-noise tolerance. Regression tests cover the shared validator and payment model. Date display delegates English month names to `intl` with an explicit locale, preserving the accepted format and account zone even when the device locale differs.
+
+## Appearance mode increment
+
+This increment adds a user-selectable, persistent appearance mode — System,
+Light, or Dark, defaulting to System — satisfying `UI-03`. The owner explicitly
+extended the system-following baseline (Q1) on 2026-09-21; [ADR 0012](decisions/0012-persistent-theme-mode.md)
+records the decision, the new `shared_preferences` dependency, and its
+alternatives. See [the feature note](features/appearance.md).
+
+An appearance domain under `lib/common/data/appearance/` persists a Flutter-free
+`ThemePreference` through a `SharedPreferences` data source, repository, and
+load/save use cases, all lazy singletons like the device-authentication feature.
+A process-wide `ThemeModeCubit` hydrates the stored preference during composition
+and drives `MaterialApp.themeMode`; a Settings screen reachable from the Home
+heading hosts an accessible System/Light/Dark chooser. Only the non-sensitive
+appearance preference is stored. Data-source, use-case, Cubit, selector,
+settings, and app-level theme-mode tests plus bootstrap DI checks cover the
+default, each stored value, a persistence failure, applying and persisting a
+selection, and opening in and toggling to the persisted appearance in both
+appearances at 200% text.
 
 ## Native foundation increment
 

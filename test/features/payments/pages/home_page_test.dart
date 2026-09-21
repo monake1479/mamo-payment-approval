@@ -62,6 +62,7 @@ void main() {
               child: HomePage(
                 onOpenPayment: (String id) => openedId = id,
                 onViewAll: () => viewedAll = true,
+                onOpenSettings: () {},
               ),
             ),
           );
@@ -116,7 +117,11 @@ void main() {
       _HomeTestApp(
         brightness: Brightness.light,
         cubit: cubit,
-        child: HomePage(onOpenPayment: (_) {}, onViewAll: () {}),
+        child: HomePage(
+          onOpenPayment: (_) {},
+          onViewAll: () {},
+          onOpenSettings: () {},
+        ),
       ),
     );
     await tester.pumpAndSettle();

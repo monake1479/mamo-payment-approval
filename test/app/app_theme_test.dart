@@ -12,7 +12,9 @@ import 'package:mamo_payment_approval_challenge/common/data/device_authenticatio
 import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/local_authentication_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/device_authentication/use_cases/stop_local_authentication_use_case.dart';
 import 'package:mamo_payment_approval_challenge/common/data/payments/models/payment.dart';
+import 'package:mamo_payment_approval_challenge/features/settings/states/theme_mode/theme_mode_cubit.dart';
 
+import '../support/appearance_test_support.dart';
 import '../support/device_authentication_test_support.dart';
 import '../support/payments_test_support.dart';
 
@@ -132,6 +134,8 @@ void main() {
         );
         final cubit = createPaymentsCubit(backend);
         addTearDown(cubit.close);
+        final ThemeModeCubit themeCubit = await loadThemeModeCubit();
+        addTearDown(themeCubit.close);
         final LocalAuthRepository authRepository = LocalAuthRepository(
           FakeLocalAuthClient(),
         );
@@ -139,6 +143,7 @@ void main() {
           MamoPaymentApprovalApp(
             router: appRouter.router,
             paymentsCubit: cubit,
+            themeModeCubit: themeCubit,
             authenticate: LocalAuthenticationUseCase(authRepository),
             stopAuthentication: StopLocalAuthenticationUseCase(authRepository),
           ),

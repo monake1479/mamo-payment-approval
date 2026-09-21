@@ -259,13 +259,13 @@ $ApprovalDecisionErrorCopyWith<ApprovalDecisionError> get copyWith => _$Approval
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is ApprovalDecisionError&&const DeepCollectionEquality().equals(other.failure, failure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is ApprovalDecisionError&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(failure));
+    return Object.hash(runtimeType,failure);
 }
 
 @override
@@ -285,7 +285,7 @@ $Res call({
 });
 
 
-
+$PaymentsFailureCopyWith<$Res> get failure;
 
 }
 /// @nodoc
@@ -298,14 +298,23 @@ class _$ApprovalDecisionErrorCopyWithImpl<$Res>
 
 /// Create a copy of ApprovalFailure
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? failure = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? failure = null,}) {
   return _then(ApprovalDecisionError(
-freezed == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+null == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as PaymentsFailure,
   ));
 }
 
-
+/// Create a copy of ApprovalFailure
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PaymentsFailureCopyWith<$Res> get failure {
+  
+  return $PaymentsFailureCopyWith<$Res>(_self.failure, (value) {
+    return _then(_self.copyWith(failure: value));
+  });
+}
 }
 
 // dart format on
