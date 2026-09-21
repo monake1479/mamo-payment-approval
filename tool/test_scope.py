@@ -71,12 +71,6 @@ ABOUT_UI_TESTS = [
     "test/features/settings/pages/settings_page_test.dart",
     "test/app/app_theme_mode_test.dart",
 ]
-# Every router construction supplies the AboutCubit factory from the About
-# test support, so its changes exercise each app-level composition test.
-ABOUT_APP_TESTS = [
-    *THEME_MODE_APP_TESTS,
-    "test/app/app_theme_mode_test.dart",
-]
 
 FLUTTER_TESTS = {
     "lib/common/data/device_authentication/data_sources/local_auth_client.dart": [
@@ -155,9 +149,6 @@ FLUTTER_TESTS = {
         "test/features/settings/pages/settings_page_test.dart",
         "test/app/app_theme_mode_test.dart",
     ],
-    "lib/features/settings/appearance_failure_messages.dart": [
-        "test/features/settings/pages/settings_page_test.dart",
-    ],
     "lib/features/settings/states/theme_mode/theme_mode_cubit.dart": [
         "test/app/bootstrap_test.dart",
         "test/features/settings/states/theme_mode/theme_mode_cubit_test.dart",
@@ -234,12 +225,10 @@ FLUTTER_TESTS = {
     "test/support/app_info_test_support.dart": [
         *APP_INFO_DATA_TESTS,
         *ABOUT_STATE_TESTS,
-        *ABOUT_APP_TESTS,
     ],
     "lib/features/settings/states/about/about_cubit.dart": [
         "test/app/bootstrap_test.dart",
         *ABOUT_STATE_TESTS,
-        *ABOUT_APP_TESTS,
     ],
     "lib/features/settings/states/about/about_state.dart": ABOUT_STATE_TESTS,
     "lib/features/settings/about_failure_messages.dart": ABOUT_UI_TESTS,

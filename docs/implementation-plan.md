@@ -67,8 +67,8 @@ alternatives. See [the feature note](features/about.md).
 An application-information domain under `lib/common/data/app_info/` reads the
 installed version, build number, and package identifier through the
 `package_info_plus` platform seam behind a data source, repository, and use
-case, all lazy singletons. A screen-scoped `AboutCubit`, created by the settings
-route, loads that result once together with device-authentication availability
+case, all lazy singletons. A screen-scoped `AboutCubit`, an `@injectable`
+factory provided at the top of the settings page, loads that result once together with device-authentication availability
 from the existing `IsLocalAuthSupportedUseCase` and the composed
 `AppEnvironment`; it never starts authentication. The section renders loading,
 failed-with-retry, and loaded states plus a static description, delivered

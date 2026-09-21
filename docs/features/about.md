@@ -21,10 +21,13 @@ device-authentication availability through the existing
 `IsLocalAuthSupportedUseCase`, then emits one combined result. It never starts
 authentication. A repeated `load()` while one is in flight is ignored; a call
 after a failure retries through `loading`; nothing is emitted after close. The
-active `AppEnvironment` is injected by composition and rendered as the
-environment row. The settings route owns the Cubit: `MamoPaymentRouter` takes a
-`createAboutCubit` factory from composition, and the route's `BlocProvider`
-creates the Cubit, starts its load, and closes it when the route is popped.
+validated `AppEnvironment` is injected (the plugin reports no flavor) and
+rendered as the environment row. The page owns the Cubit: `AboutCubit` is an
+`@injectable` factory, and `SettingsPage` provides it at its top with
+`BlocProvider(create: (_) => getIt<AboutCubit>()..load())`, so the provider
+creates, loads, and closes a fresh instance per visit. The router provides
+nothing. Failure and environment copy are private methods of
+`AboutDetailsCard`.
 
 ## Surface and accessibility
 

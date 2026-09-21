@@ -32,6 +32,7 @@ import 'package:mamo_approval/common/data/payments/use_cases/decide_payment_use_
 import 'package:mamo_approval/common/data/payments/use_cases/load_payments_use_case.dart';
 import 'package:mamo_approval/common/data/payments/use_cases/refresh_payments_use_case.dart';
 import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
+import 'package:mamo_approval/features/settings/states/about/about_cubit.dart';
 import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
 import 'package:mamo_approval/mock_backend/payments/mock_payments_backend.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart';
@@ -120,6 +121,12 @@ void main() {
         getIt<LoadAppBuildInfoUseCase>(),
         same(getIt<LoadAppBuildInfoUseCase>()),
       );
+      // Screen-scoped: every settings visit gets a fresh About cubit.
+      final AboutCubit firstAbout = getIt<AboutCubit>();
+      final AboutCubit secondAbout = getIt<AboutCubit>();
+      addTearDown(firstAbout.close);
+      addTearDown(secondAbout.close);
+      expect(firstAbout, isNot(same(secondAbout)));
     });
   }
 

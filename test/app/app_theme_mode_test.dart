@@ -25,6 +25,7 @@ void main() {
   late StopLocalAuthenticationUseCase stop;
 
   setUp(() {
+    registerAboutCubitFactory();
     final StubPaymentsBackend backend = StubPaymentsBackend(
       onLoad: () async => const <Payment>[],
     );
@@ -34,7 +35,7 @@ void main() {
     );
     authenticate = LocalAuthenticationUseCase(authRepository);
     stop = StopLocalAuthenticationUseCase(authRepository);
-    appRouter = MamoPaymentRouter(createAboutCubit: createAboutCubit);
+    appRouter = MamoPaymentRouter();
     router = appRouter.router;
   });
 

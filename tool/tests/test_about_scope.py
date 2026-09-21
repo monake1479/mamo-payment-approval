@@ -20,13 +20,6 @@ APP_THEME_MODE_TEST = "test/app/app_theme_mode_test.dart"
 APP_INFO_DATA_TESTS = [CLIENT_TEST, USE_CASE_TEST]
 ABOUT_STATE_TESTS = [CUBIT_TEST, SECTION_TEST, SETTINGS_PAGE_TEST, APP_THEME_MODE_TEST]
 ABOUT_UI_TESTS = [SECTION_TEST, SETTINGS_PAGE_TEST, APP_THEME_MODE_TEST]
-# App-level tests that construct the router with the About cubit factory.
-APP_SHELL_TESTS = [
-    "test/app/app_test.dart",
-    "test/app/app_theme_test.dart",
-    "test/app/approval_flow_test.dart",
-    APP_THEME_MODE_TEST,
-]
 
 
 class AboutScopeTest(unittest.TestCase):
@@ -42,7 +35,7 @@ class AboutScopeTest(unittest.TestCase):
         )
         self.assertFalse(scope["hook_tests"])
 
-    def test_cubit_change_selects_state_and_app_consumers(self):
+    def test_cubit_change_selects_state_consumers_and_di(self):
         scope = select_scope(
             ["lib/features/settings/states/about/about_cubit.dart"],
             ROOT,
@@ -50,7 +43,7 @@ class AboutScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            sorted(set([BOOTSTRAP_TEST, *ABOUT_STATE_TESTS, *APP_SHELL_TESTS])),
+            sorted([BOOTSTRAP_TEST, *ABOUT_STATE_TESTS]),
         )
         self.assertFalse(scope["hook_tests"])
 
@@ -77,7 +70,7 @@ class AboutScopeTest(unittest.TestCase):
 
         self.assertEqual(
             scope["flutter_tests"],
-            sorted(set([*APP_INFO_DATA_TESTS, *ABOUT_STATE_TESTS, *APP_SHELL_TESTS])),
+            sorted([*APP_INFO_DATA_TESTS, *ABOUT_STATE_TESTS]),
         )
         self.assertFalse(scope["hook_tests"])
 

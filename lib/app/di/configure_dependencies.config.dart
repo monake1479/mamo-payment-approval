@@ -13,6 +13,7 @@
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:local_auth/local_auth.dart' as _i152;
+import 'package:mamo_approval/app/config/app_environment.dart' as _i565;
 import 'package:mamo_approval/app/di/app_info_module.dart' as _i207;
 import 'package:mamo_approval/app/di/app_preferences_module.dart' as _i353;
 import 'package:mamo_approval/app/di/device_authentication_module.dart'
@@ -54,6 +55,8 @@ import 'package:mamo_approval/common/data/payments/use_cases/load_payments_use_c
     as _i402;
 import 'package:mamo_approval/common/data/payments/use_cases/refresh_payments_use_case.dart'
     as _i245;
+import 'package:mamo_approval/features/settings/states/about/about_cubit.dart'
+    as _i455;
 import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart'
     as _i643;
 import 'package:package_info_plus_platform_interface/package_info_platform_interface.dart'
@@ -144,6 +147,13 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i245.RefreshPaymentsUseCase>(
       () => _i245.RefreshPaymentsUseCase(gh<_i823.PaymentsRepository>()),
+    );
+    gh.factory<_i455.AboutCubit>(
+      () => _i455.AboutCubit(
+        loadBuildInfo: gh<_i15.LoadAppBuildInfoUseCase>(),
+        isLocalAuthSupported: gh<_i70.IsLocalAuthSupportedUseCase>(),
+        environment: gh<_i565.AppEnvironment>(),
+      ),
     );
     return this;
   }

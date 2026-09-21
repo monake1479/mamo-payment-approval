@@ -45,7 +45,7 @@ Create directories and abstractions when the first real type needs them; do not 
 - Navigation is application infrastructure. Domain and data layers know nothing about routes or `BuildContext`.
 - The payment collection has one authoritative state owner so decisions update the home summary, list, and details consistently.
 - Temporary overlay concerns, such as revealing masked data, should not leak into the persisted payment entity.
-- Prefer constructor injection and explicit composition in `lib/app/`. If `get_it` is introduced with a documented reason, resolve dependencies in composition/provider creation, not inside business methods.
+- Prefer constructor injection and explicit composition in `lib/app/`. Resolve `getIt` only in composition and in a page's own `BlocProvider(create:)`, never inside business methods and never in router route builders. Process-wide singletons are reserved for genuinely global state; a page-local controller is an `@injectable` factory provided at the top of its page (see [state rules](state-and-side-effects.md)).
 - Keep feature-only visual state out of `common/data`. Shared placement is justified by cross-feature consumption, not by a generic preference for global folders.
 
 ## Anchors

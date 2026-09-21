@@ -5,7 +5,7 @@
 - Use `const` constructors wherever practical.
 - Keep Flutter user-facing copy in `lib/l10n/app_en.arb` and read it through generated `AppLocalizations`, including titles, errors, tooltips, and semantic labels. Do not hardcode or concatenate translated sentences. Use ARB placeholders/plurals and keep metadata in English. See [ADR 0008](../../docs/decisions/0008-localization.md) for generation and native-string boundaries.
 - Extract reusable or meaningful subtrees into widget classes. Do not create private methods that return widgets.
-- Translate typed failure codes/slugs into `AppLocalizations` messages in a presentation method or mapper, with a safe unknown-error fallback. Repositories and BLoC/Cubit state carry failures, not user-facing sentences. See [failure boundaries](../architecture/failures-and-boundaries.md).
+- Translate typed failure codes/slugs and other domain values into `AppLocalizations` messages in a method of the widget that renders them, with a safe unknown-error fallback. Do not create separate single-function mapper files for this. Repositories and BLoC/Cubit state carry failures, not user-facing sentences. See [failure boundaries](../architecture/failures-and-boundaries.md).
 - Keep side effects out of `build` methods.
 - Rebuild only the subtree that consumes changed state; use selectors or `buildWhen` when measurement shows value.
 - Preserve the current route beneath the approval confirmation overlay.

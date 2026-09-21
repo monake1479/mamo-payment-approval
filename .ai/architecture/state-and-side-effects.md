@@ -14,6 +14,7 @@
 - Every timer, stream subscription, and controller must have an explicit owner and disposal path.
 - BLoC/Cubit implementations must not accept, retain, or use `BuildContext`, navigation APIs, or dialog APIs. They report outcomes; application composition reacts through listeners and callbacks.
 - Widgets may use `context.read`, `context.select`, `context.watch`, `BlocBuilder`, and `BlocSelector`. `BlocProvider(create:)` owns a newly created instance; an existing instance passed by value keeps its original owner.
+- Provide a BLoC/Cubit as low in the widget tree as its consumers allow. A screen-scoped controller is registered as an `@injectable` factory and provided at the top of the page that needs it with `BlocProvider(create: (_) => getIt<XCubit>()..load(), child: ...)`; the page's provider owns and closes it. Never wrap route builders in `lib/app/navigation/` with providers, and never register a controller as a process-wide singleton unless its state is genuinely global (the authoritative payment collection, the appearance mode). A provider in the router or a global singleton for page-local state is an anti-pattern.
 - Do not subscribe one Cubit directly to another. Keep collection writes in one authoritative path and document how successful decisions reach it before navigation.
 - Guard against stale async completions, emissions after disposal, and repeated terminal effects. Test races relevant to the operation.
 - Derive empty state from a successfully loaded empty collection, without a separate mutable empty flag.

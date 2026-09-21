@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:mamo_approval/app/config/app_environment.dart';
 import 'package:mamo_approval/common/data/app_info/error_handling/app_info_failure.dart';
 import 'package:mamo_approval/common/data/app_info/models/app_build_info.dart';
@@ -7,13 +8,16 @@ import 'package:mamo_approval/common/data/device_authentication/use_cases/is_loc
 import 'package:mamo_approval/common/result/models/result.dart';
 import 'package:mamo_approval/features/settings/states/about/about_state.dart';
 
-/// Owns the About section state for one visit to the settings screen.
+/// Owns the About section state for one visit to the settings screen. It is
+/// registered as a factory and provided at the top of `SettingsPage`, so each
+/// visit gets a fresh instance that the page's provider closes.
 ///
 /// [load] is a single request-to-result operation: it reads the installed
 /// build identity and probes device-authentication availability once, then
-/// emits the combined result. It never starts authentication. The active
-/// [AppEnvironment] is supplied by composition because it is a static launch
-/// fact, not something fetched.
+/// emits the combined result. It never starts authentication. The validated
+/// [AppEnvironment] is injected because `package_info_plus` reports no flavor;
+/// it is a static launch fact, not something fetched.
+@injectable
 final class AboutCubit extends Cubit<AboutState> {
   factory AboutCubit({
     required LoadAppBuildInfoUseCase loadBuildInfo,

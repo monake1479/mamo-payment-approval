@@ -52,20 +52,29 @@ sealed `AboutState` (`loading`, `loaded`, `failed`). Loading the section is a
 single request-to-result operation over two ready-to-emit inputs (the build
 identity result and the availability boolean), not a stream of events, so a
 Cubit is used rather than a BLoC. The Cubit never starts authentication; it only
-reads availability. The router's settings route creates the Cubit through a
-factory supplied by composition, starts its single load, and closes it when the
-route is popped, so every visit re-reads availability and nothing about the
-device is cached in presentation. `AppEnvironment` is injected into the Cubit
-by composition because it is a static launch fact, not fetched data, and the
-shared data layer must not depend on `lib/app/`.
+reads availability. It is registered as an `@injectable` factory and provided
+at the top of `SettingsPage` with `BlocProvider(create: (_) =>
+getIt<AboutCubit>()..load())`, so every visit gets a fresh instance that the
+page's provider closes; nothing about the device is cached in presentation. The
+router provides nothing: providers in route builders and process-wide
+singletons for page-local state are recorded as anti-patterns in the state and
+structure rules. The validated `AppEnvironment` is injected because
+`package_info_plus` reports no flavor (only name, package, version, build
+number, signature, installer store); it is a static launch fact, and the shared
+data layer must not depend on `lib/app/`. Failure and environment copy are
+resolved by private methods of the rendering widget, not by separate mapper
+files; the appearance failure mapping was folded into `SettingsPage` for the
+same reason.
 
 ## Consequences
 
 - The app gains a second platform plugin, confined to the application-information
   domain behind a narrow data source. It reads no sensitive data.
-- `MamoPaymentRouter` now requires an `AboutCubit` factory; composition and
-  app-level tests supply it.
-- The settings screen requires an `AboutCubit` above it, provided by the route.
+- `SettingsPage` resolves `AboutCubit` from the locator at its top; widget
+  tests that render it register a factory in `getIt` first.
+- The rules gain an explicit placement principle: provide controllers as low as
+  their consumers allow, never in the router, never globally for page-local
+  state; resolve localized copy in the rendering widget.
 - `DELIVERY-03` records the in-app handover summary as an acceptance criterion;
   the static copy must be kept truthful as features and limitations change.
 - No licences page is added; the owner rejected it.

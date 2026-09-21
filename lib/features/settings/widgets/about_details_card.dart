@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mamo_approval/app/config/app_environment.dart';
 import 'package:mamo_approval/app/theme/app_theme.dart';
-import 'package:mamo_approval/features/settings/about_failure_messages.dart';
-import 'package:mamo_approval/features/settings/app_environment_labels.dart';
+import 'package:mamo_approval/common/data/app_info/error_handling/app_info_failure.dart';
 import 'package:mamo_approval/features/settings/states/about/about_cubit.dart';
 import 'package:mamo_approval/features/settings/states/about/about_state.dart';
 import 'package:mamo_approval/features/settings/widgets/about_detail_row.dart';
@@ -16,6 +16,20 @@ import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 /// retry), and loaded states of [AboutCubit].
 class AboutDetailsCard extends StatelessWidget {
   const AboutDetailsCard({super.key});
+
+  /// Resolves the typed failure to safe localized copy; the failure contract
+  /// itself carries no user-facing text.
+  String _failureMessage(AppInfoFailure failure, AppLocalizations l10n) =>
+      switch (failure) {
+        AppInfoUnavailableFailure() => l10n.aboutDetailsUnavailable,
+      };
+
+  String _environmentLabel(AppEnvironment environment, AppLocalizations l10n) =>
+      switch (environment) {
+        AppEnvironment.dev => l10n.aboutEnvironmentDev,
+        AppEnvironment.staging => l10n.aboutEnvironmentStaging,
+        AppEnvironment.prod => l10n.aboutEnvironmentProd,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +76,7 @@ class AboutDetailsCard extends StatelessWidget {
                       const SizedBox(width: AppTheme.itemGap),
                       Expanded(
                         child: Text(
-                          aboutFailureMessage(failure, l10n),
+                          _failureMessage(failure, l10n),
                           style: theme.textTheme.bodyLarge,
                         ),
                       ),
@@ -109,7 +123,7 @@ class AboutDetailsCard extends StatelessWidget {
                 AboutDetailRow(
                   icon: Icons.layers_outlined,
                   label: l10n.aboutEnvironmentLabel,
-                  value: appEnvironmentLabel(environment, l10n),
+                  value: _environmentLabel(environment, l10n),
                   semanticIdentifier: 'settings.about.environment',
                 ),
                 const Divider(height: 1),
