@@ -23,4 +23,8 @@ abstract class PaymentsSearchCriteria with _$PaymentsSearchCriteria {
 
   /// True when the criteria would only reproduce the plain history.
   bool get isEmpty => this == none;
+
+  /// True when a status, date window, or non-default order is set; the query
+  /// text alone is not a filter.
+  bool get hasFilters => copyWith(query: '') != none;
 }

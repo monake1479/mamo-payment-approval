@@ -313,21 +313,21 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.bySemanticsIdentifier('payments.search.empty'), findsOne);
 
-      await choose('all');
+      // Clear drops the filter but leaves the typed text alone.
+      await tester.tap(find.bySemanticsIdentifier('payments.search.clear'));
+      await tester.pumpAndSettle();
+      expect(find.bySemanticsIdentifier('payments.search.clear'), findsNothing);
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller!.text,
+        'atlas',
+      );
+      expect(find.text('All statuses'), findsOneWidget);
       expect(find.text(atlas.counterparty), findsOneWidget);
       expect(find.text(marina.counterparty), findsNothing);
 
-      // Clear drops the text and every filter and empties the field.
-      await tester.tap(find.bySemanticsIdentifier('payments.search.clear'));
-      await tester.pumpAndSettle();
-      expect(searchBlocOf(tester).state.isActive, isFalse);
-      expect(
-        tester.widget<TextField>(find.byType(TextField)).controller!.text,
-        '',
-      );
+      // Text alone never shows the filters' Clear action.
+      await choose('all');
       expect(find.bySemanticsIdentifier('payments.search.clear'), findsNothing);
-      expect(find.text(atlas.counterparty), findsOneWidget);
-      expect(find.text(marina.counterparty), findsOneWidget);
     });
 
     testWidgets('search failure is recoverable from the error state', (

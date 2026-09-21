@@ -38,7 +38,10 @@ final class PaymentsSearchBloc
       transformer: _restartable(),
     );
     on<PaymentsSearchSortChanged>(_onSortChanged, transformer: _restartable());
-    on<PaymentsSearchCleared>(_onCleared);
+    on<PaymentsSearchFiltersCleared>(
+      _onFiltersCleared,
+      transformer: _restartable(),
+    );
     on<PaymentsSearchRefreshRequested>(
       _onRefreshRequested,
       transformer: _restartable(),
@@ -53,10 +56,6 @@ final class PaymentsSearchBloc
   /// sequence is no longer current was superseded by another event type
   /// (the per-handler restart only covers events of the same type).
   int _searchSequence = 0;
-
-  /// Bumped by [_onCleared] so a query edit that was still waiting for its
-  /// debounce window when the user cleared the search is discarded.
-  int _clearGeneration = 0;
 
   Future<void> _onQueryChanged(
     PaymentsSearchQueryChanged event,
@@ -91,13 +90,11 @@ final class PaymentsSearchBloc
     return _search(emit, state.criteria.copyWith(sort: event.sort));
   }
 
-  void _onCleared(
-    PaymentsSearchCleared event,
+  Future<void> _onFiltersCleared(
+    PaymentsSearchFiltersCleared event,
     Emitter<PaymentsSearchState> emit,
   ) {
-    _clearGeneration += 1;
-    _searchSequence += 1;
-    emit(const PaymentsSearchState.idle());
+    return _search(emit, PaymentsSearchCriteria(query: state.criteria.query));
   }
 
   Future<void> _onRefreshRequested(
@@ -148,42 +145,32 @@ final class PaymentsSearchBloc
   }
 
   /// Holds each query edit for [debounce] and forwards only the last one,
-  /// drops an edit that was waiting when the search was cleared, then restarts
-  /// the handler for the forwarded edit.
-  EventTransformer<PaymentsSearchQueryChanged> _debouncedRestartable(
+  /// then restarts the handler for the forwarded edit.
+  static EventTransformer<PaymentsSearchQueryChanged> _debouncedRestartable(
     Duration debounce,
   ) {
     return (
       Stream<PaymentsSearchQueryChanged> events,
       EventMapper<PaymentsSearchQueryChanged> mapper,
-    ) {
-      return _debounce(events, debounce)
-          .where((_TaggedQuery tagged) => tagged.generation == _clearGeneration)
-          .map((_TaggedQuery tagged) => tagged.event)
-          .switchMap(mapper);
-    };
+    ) => _debounce(events, debounce).switchMap(mapper);
   }
 
-  Stream<_TaggedQuery> _debounce(
+  static Stream<PaymentsSearchQueryChanged> _debounce(
     Stream<PaymentsSearchQueryChanged> events,
     Duration debounce,
   ) {
     Timer? pending;
     StreamSubscription<PaymentsSearchQueryChanged>? input;
-    late final StreamController<_TaggedQuery> output;
-    output = StreamController<_TaggedQuery>(
+    late final StreamController<PaymentsSearchQueryChanged> output;
+    output = StreamController<PaymentsSearchQueryChanged>(
       sync: true,
       onListen: () {
         input = events.listen(
           (PaymentsSearchQueryChanged event) {
-            final _TaggedQuery tagged = (
-              event: event,
-              generation: _clearGeneration,
-            );
             pending?.cancel();
             pending = Timer(debounce, () {
               pending = null;
-              output.add(tagged);
+              output.add(event);
             });
           },
           onError: output.addError,
@@ -203,5 +190,3 @@ final class PaymentsSearchBloc
     return output.stream;
   }
 }
-
-typedef _TaggedQuery = ({PaymentsSearchQueryChanged event, int generation});

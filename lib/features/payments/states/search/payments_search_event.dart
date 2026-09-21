@@ -26,9 +26,10 @@ sealed class PaymentsSearchEvent with _$PaymentsSearchEvent {
   const factory PaymentsSearchEvent.sortChanged(PaymentsSort sort) =
       PaymentsSearchSortChanged;
 
-  /// Drops every criterion and any query edit still waiting for its debounce
-  /// window.
-  const factory PaymentsSearchEvent.cleared() = PaymentsSearchCleared;
+  /// Drops the status, date window, and order; the query text stays, since
+  /// the field owns clearing it.
+  const factory PaymentsSearchEvent.filtersCleared() =
+      PaymentsSearchFiltersCleared;
 
   /// Re-runs the active criteria after the authoritative collection changed,
   /// so a fresh decision reaches an open search result immediately.

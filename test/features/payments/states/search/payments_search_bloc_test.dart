@@ -244,7 +244,7 @@ void main() {
     );
 
     blocTest<PaymentsSearchBloc, PaymentsSearchState>(
-      'cleared drops every criterion',
+      'filtersCleared drops the filters and the order but keeps the query',
       setUp: () {
         repository = repositoryReturning(
           Success<PaymentsFailure, List<Payment>>(<Payment>[approved]),
@@ -253,14 +253,36 @@ void main() {
       build: () => createPaymentsSearchBlocFromRepository(repository),
       seed: () => PaymentsSearchState.empty(
         criteria: PaymentsSearchCriteria(
-          query: 'x',
+          query: 'Atlas',
           statuses: approvedOnly,
           dateRange: september,
           sort: oldestFirst,
         ),
       ),
       act: (PaymentsSearchBloc bloc) =>
-          bloc.add(const PaymentsSearchEvent.cleared()),
+          bloc.add(const PaymentsSearchEvent.filtersCleared()),
+      expect: () => <PaymentsSearchState>[
+        const PaymentsSearchState.loading(
+          criteria: PaymentsSearchCriteria(query: 'Atlas'),
+        ),
+        PaymentsSearchState.results(
+          criteria: const PaymentsSearchCriteria(query: 'Atlas'),
+          payments: <Payment>[approved],
+        ),
+      ],
+    );
+
+    blocTest<PaymentsSearchBloc, PaymentsSearchState>(
+      'filtersCleared with no query returns to idle without searching',
+      setUp: () {
+        repository = repositoryReturning(
+          Success<PaymentsFailure, List<Payment>>(<Payment>[approved]),
+        );
+      },
+      build: () => createPaymentsSearchBlocFromRepository(repository),
+      seed: () => const PaymentsSearchState.empty(criteria: approvedCriteria),
+      act: (PaymentsSearchBloc bloc) =>
+          bloc.add(const PaymentsSearchEvent.filtersCleared()),
       expect: () => const <PaymentsSearchState>[PaymentsSearchState.idle()],
       verify: (PaymentsSearchBloc _) => expect(repository.searches, isEmpty),
     );
@@ -355,41 +377,6 @@ void main() {
             payments: <Payment>[approved],
           ),
         ]);
-
-        unawaited(subscription.cancel());
-        unawaited(bloc.close());
-        async.flushMicrotasks();
-      });
-    });
-
-    test('cleared discards a query edit still waiting for its debounce', () {
-      fakeAsync((FakeAsync async) {
-        final StubPaymentsRepository repository = repositoryReturning(
-          Success<PaymentsFailure, List<Payment>>(<Payment>[approved]),
-        );
-        final PaymentsSearchBloc bloc = createPaymentsSearchBlocFromRepository(
-          repository,
-          debounceDuration: const Duration(milliseconds: 300),
-        );
-        final List<PaymentsSearchState> states = <PaymentsSearchState>[];
-        final StreamSubscription<PaymentsSearchState> subscription = bloc.stream
-            .listen(states.add);
-
-        bloc.add(const PaymentsSearchEvent.statusFilterChanged(approvedOnly));
-        async.flushMicrotasks();
-        bloc.add(const PaymentsSearchEvent.queryChanged('Atlas'));
-        async.elapse(const Duration(milliseconds: 100));
-        bloc.add(const PaymentsSearchEvent.cleared());
-        async.elapse(const Duration(seconds: 1));
-
-        expect(repository.searches, <PaymentsSearchCriteria>[approvedCriteria]);
-        expect(states.last, const PaymentsSearchState.idle());
-        expect(
-          states.whereType<PaymentsSearchLoading>().map(
-            (PaymentsSearchLoading state) => state.criteria.query,
-          ),
-          isNot(contains('Atlas')),
-        );
 
         unawaited(subscription.cancel());
         unawaited(bloc.close());

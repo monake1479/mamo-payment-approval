@@ -13,7 +13,7 @@ Search over the decided history is different. Its primary input is a stream of k
 
 1. **Cubit with hand-rolled timers.** A `search(query)` method that owns a `Timer`, a version counter, and cancellation bookkeeping. Works, but reimplements what `Bloc.on` transformers already model, scatters the timing rules across methods, and is harder to test than a declarative event pipeline.
 2. **`bloc_concurrency` + `stream_transform`.** `restartable()` is a one-line wrapper over `switchMap`, and `bloc_concurrency` offers no debounce, so the project would still need `stream_transform` plus a custom debounce that also honours the clear rule. Two packages for one line of value.
-3. **Event-driven `Bloc` with one handler per event (chosen).** Each event (`queryChanged`, `statusFilterChanged`, `dateRangeChanged`, `sortChanged`, `cleared`, `refreshRequested`) has its own private handler, following the project's `NewsListBloc`-style convention. Timing rules live in the transformers attached to those handlers: the query handler debounces edits and drops an edit that was waiting when the search was cleared; the query, filter, and refresh handlers restart with `switchMap` from `stream_transform`. A sequence counter guards completions superseded by a different event type.
+3. **Event-driven `Bloc` with one handler per event (chosen).** Each event (`queryChanged`, `statusFilterChanged`, `dateRangeChanged`, `sortChanged`, `filtersCleared`, `refreshRequested`) has its own private handler, following the project's `NewsListBloc`-style convention. Timing rules live in the transformers attached to those handlers: the query handler debounces edits; the query, filter, and refresh handlers restart with `switchMap` from `stream_transform`. A sequence counter guards completions superseded by a different event type.
 
 ## Decision
 
@@ -27,7 +27,7 @@ The rest of the payment screens keep their Cubits. This ADR does not make BLoC t
 
 ## Consequences
 
-- Each handler is small and reads as one event's rule; the timing and cancellation rules are covered by focused tests (debounce window, discarded edit on clear, in-flight restart across event types, no timer left after close).
+- Each handler is small and reads as one event's rule; the timing and cancellation rules are covered by focused tests (debounce window, in-flight restart across event types, no timer left after close).
 - The page-scoped `BlocProvider` inside `PaymentsPage` owns the bloc for the session (the preloaded branch keeps the page alive), so an active search survives the Home/Payments switch and system Back, matching the pushed-route-free navigation contract.
 - The bloc does not subscribe to `PaymentsCubit`; a widget `BlocListener` re-dispatches `refreshRequested` when the authoritative collection changes so a fresh decision reaches an open result immediately.
 - Search reads the same authoritative mock backend through the production-shaped data source; there is no second store, cache, or persistence.
