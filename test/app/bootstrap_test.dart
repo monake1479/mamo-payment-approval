@@ -28,6 +28,7 @@ import 'package:mamo_approval/common/data/payments/use_cases/create_payment_requ
 import 'package:mamo_approval/common/data/payments/use_cases/decide_payment_use_case.dart';
 import 'package:mamo_approval/common/data/payments/use_cases/load_payments_use_case.dart';
 import 'package:mamo_approval/common/data/payments/use_cases/refresh_payments_use_case.dart';
+import 'package:mamo_approval/common/data/payments/use_cases/search_payments_use_case.dart';
 import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
 import 'package:mamo_approval/features/settings/states/theme_mode/theme_mode_cubit.dart';
 import 'package:mamo_approval/mock_backend/payments/mock_payments_backend.dart';
@@ -75,6 +76,10 @@ void main() {
       expect(
         getIt<RefreshPaymentsUseCase>(),
         same(getIt<RefreshPaymentsUseCase>()),
+      );
+      expect(
+        getIt<SearchPaymentsUseCase>(),
+        same(getIt<SearchPaymentsUseCase>()),
       );
       expect(getIt<LocalAuthClient>(), same(getIt<LocalAuthClient>()));
       expect(getIt<LocalAuthRepository>(), same(getIt<LocalAuthRepository>()));

@@ -47,6 +47,10 @@ import 'package:mamo_approval/common/data/payments/use_cases/load_payments_use_c
     as _i402;
 import 'package:mamo_approval/common/data/payments/use_cases/refresh_payments_use_case.dart'
     as _i245;
+import 'package:mamo_approval/common/data/payments/use_cases/search_payments_use_case.dart'
+    as _i637;
+import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart'
+    as _i237;
 import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart'
     as _i643;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
@@ -122,6 +126,12 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i245.RefreshPaymentsUseCase>(
       () => _i245.RefreshPaymentsUseCase(gh<_i823.PaymentsRepository>()),
+    );
+    gh.lazySingleton<_i637.SearchPaymentsUseCase>(
+      () => _i637.SearchPaymentsUseCase(gh<_i823.PaymentsRepository>()),
+    );
+    gh.factory<_i237.PaymentsSearchBloc>(
+      () => _i237.PaymentsSearchBloc(gh<_i637.SearchPaymentsUseCase>()),
     );
     return this;
   }

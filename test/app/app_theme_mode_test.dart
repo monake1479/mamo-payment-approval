@@ -28,6 +28,7 @@ void main() {
       onLoad: () async => const <Payment>[],
     );
     paymentsCubit = createPaymentsCubit(backend);
+    registerPaymentsSearchBloc(backend);
     final LocalAuthRepository authRepository = LocalAuthRepository(
       FakeLocalAuthClient(),
     );

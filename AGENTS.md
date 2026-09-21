@@ -22,6 +22,7 @@ These instructions apply to every human or AI contributor in this repository.
 - Use the Flutter SDK pinned in `.fvmrc` through FVM for local commands. Do not change the global SDK. CI reads the same version file.
 - Widgets must not perform repository or authentication work directly.
 - BLoC/Cubit implementations must not accept or retain `BuildContext` or invoke navigation APIs. Widgets may use `context.read`, `context.select`, providers, builders, and listeners.
+- Provide a BLoC/Cubit (`@injectable`, `BlocProvider(create: (_) => getIt<...>())`) as close as possible to the subtree that uses it. Lift it to the top of the page only when several parts of that page consume it; only process-wide owners are created in app composition. The router and DI composition never wrap pages in providers or accept bloc factories; see `.ai/architecture/state-and-side-effects.md`.
 - Do not silently swallow failures. Convert infrastructure exceptions into explicit application failures at the boundary.
 - User-facing error text is resolved in presentation from stable failure codes through `AppLocalizations`, never supplied as a ready-made sentence by repositories or controllers.
 - Never commit secrets, local signing material, generated build output, or machine-specific configuration.

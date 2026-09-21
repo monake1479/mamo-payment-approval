@@ -64,6 +64,17 @@ A payment request contains an identifier, counterparty, amount, reference, creat
 - `PAY-03`: Selecting a decided payment opens its details.
 - `PAY-04`: A newly approved or rejected payment appears at the top immediately.
 
+### Payments search (extension slice)
+
+- `SEARCH-01`: The Payments screen offers a text search and a status dropdown (all, approved, rejected) over the decided history; with no criteria it shows the unchanged full history, and a Clear action removes the status, date, and order filters whenever one is set; the search text has its own clear icon and never shows that action by itself.
+- `SEARCH-02`: Text search matches only the counterparty and reference fields already shown without authentication, case-insensitively; the pending request is never returned by any search or filter.
+- `SEARCH-03`: Rapid query edits produce one search for the final text; clearing discards a waiting edit and every newer criterion cancels the search still in flight.
+- `SEARCH-04`: Results keep the history ordering and rows, show a result count, and expose search-specific empty and recoverable error states without altering the history load states.
+- `SEARCH-05`: An active search re-runs when the authoritative collection changes and survives the Home/Payments switch, including system Back, for the session.
+- `SEARCH-06`: A decision-date window, chosen as calendar days in the account's reporting zone, filters the decided history; the chip shows the selected days and removes the window in one action.
+- `SEARCH-07`: The history order can be changed (newest/oldest decision, highest/lowest amount, counterparty A to Z); the backend applies the order and the default order with no other criterion shows the plain history.
+- `PAY-05`: Pulling down on the Payments history reloads the authoritative collection and re-runs any open search.
+
 ### Payment details
 
 - `DETAIL-01`: Details are available only for approved or rejected payments.

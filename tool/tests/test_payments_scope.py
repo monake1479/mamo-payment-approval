@@ -10,7 +10,9 @@ sys.path.insert(0, str(ROOT / "tool"))
 from test_scope import (
     APPEARANCE_TESTS,
     APPROVAL_TESTS,
+    PAYMENTS_DATA_SOURCE_TESTS,
     PAYMENTS_UI_TESTS,
+    SEARCH_TESTS,
     select_scope,
 )
 
@@ -54,7 +56,7 @@ class PaymentsScopeTest(unittest.TestCase):
             scope["flutter_tests"],
             with_ui(
                 "test/common/data/payments/models/payment_serialization_test.dart",
-                "test/common/data/payments/payments_repository_test.dart",
+                *PAYMENTS_DATA_SOURCE_TESTS,
             ),
         )
         self.assertFalse(scope["hook_tests"])
@@ -71,6 +73,60 @@ class PaymentsScopeTest(unittest.TestCase):
                 "test/common/data/payments/payments_repository_test.dart",
                 "test/common/data/payments/use_cases/payment_use_cases_test.dart",
                 "test/features/payments/states/payments/payments_cubit_test.dart",
+                *SEARCH_TESTS,
+                *APPROVAL_TESTS,
+            ),
+        )
+
+    def test_search_bloc_change_selects_bloc_page_and_router_consumers(self):
+        scope = select_scope(
+            ["lib/features/payments/states/search/payments_search_bloc.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(
+            scope["flutter_tests"],
+            with_ui(
+                "test/features/payments/states/search/payments_search_bloc_test.dart",
+                *APPROVAL_TESTS,
+            ),
+        )
+        self.assertFalse(scope["hook_tests"])
+
+    def test_search_use_case_change_selects_search_and_composition_consumers(self):
+        scope = select_scope(
+            ["lib/common/data/payments/use_cases/search_payments_use_case.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(
+            scope["flutter_tests"],
+            with_ui("test/app/bootstrap_test.dart", *SEARCH_TESTS, *APPROVAL_TESTS),
+        )
+
+    def test_search_widget_change_selects_screen_and_router_consumers(self):
+        scope = select_scope(
+            ["lib/features/payments/widgets/payments_search_field.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(
+            scope["flutter_tests"],
+            sorted({*PAYMENTS_UI_TESTS, *APPROVAL_TESTS}),
+        )
+
+    def test_backend_contract_change_selects_data_source_tests(self):
+        scope = select_scope(
+            ["lib/mock_backend/payments/payments_backend_client.dart"],
+            ROOT,
+        )
+
+        self.assertEqual(
+            scope["flutter_tests"],
+            with_ui(
+                "test/app/bootstrap_test.dart",
+                "test/mock_backend/payments/mock_payments_backend_test.dart",
+                *PAYMENTS_DATA_SOURCE_TESTS,
             ),
         )
 
