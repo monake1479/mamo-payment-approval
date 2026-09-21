@@ -1,4 +1,4 @@
-# ADR 0012: User-selectable, persistent theme mode
+# ADR 0013: User-selectable, persistent theme mode
 
 - Status: Accepted
 - Date: 2026-09-21

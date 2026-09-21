@@ -2,7 +2,7 @@
 
 This slice adds a user-selectable, persistent appearance mode — System, Light, or
 Dark — satisfying `UI-03`. It builds on the existing system-following light/dark
-themes in `AppTheme`; see [ADR 0012](../decisions/0012-persistent-theme-mode.md)
+themes in `AppTheme`; see [ADR 0013](../decisions/0013-persistent-theme-mode.md)
 for why the baseline changed.
 
 ## Contract and integration

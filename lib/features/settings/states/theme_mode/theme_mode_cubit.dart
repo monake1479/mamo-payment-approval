@@ -33,7 +33,7 @@ final class ThemeModeCubit extends Cubit<ThemeModeState> {
   /// afterwards; its typed result is intentionally not surfaced because
   /// appearance is non-critical and the selection is already effective for the
   /// session. A failed write simply will not survive a restart, and the user can
-  /// retry by selecting again (see ADR 0012).
+  /// retry by selecting again (see ADR 0013).
   Future<void> select(ThemePreference preference) async {
     if (preference == state.preference) {
       return;

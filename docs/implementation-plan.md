@@ -22,7 +22,7 @@ An earlier version of the workflow received an [independent audit and targeted c
 
 Split slices further when useful. Domain/data/state/UI types arrive when the runnable increment needs them. Introduce native CI/build artifacts with platform delivery work.
 
-Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01/02`). Verify both appearances at compact/expanded portrait widths and with large text as screens arrive. The initial baseline followed the system appearance with no manual selector; a user-selectable, persistent appearance mode (`UI-03`) was added later by the appearance increment below (see [ADR 0012](decisions/0012-persistent-theme-mode.md)). A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
+Parallel screen implementation follows the delegated UI contract and shared light/dark tokens (`UI-01/02`). Verify both appearances at compact/expanded portrait widths and with large text as screens arrive. The initial baseline followed the system appearance with no manual selector; a user-selectable, persistent appearance mode (`UI-03`) was added later by the appearance increment below (see [ADR 0013](decisions/0013-persistent-theme-mode.md)). A separate pending-payments screen remains a deferred extension, not an initial-slice dependency.
 
 ## Read-only payments screen increment
 
@@ -38,7 +38,7 @@ Local review follow-up for `MONEY-01` rejects any positive input that would norm
 
 This increment adds a user-selectable, persistent appearance mode — System,
 Light, or Dark, defaulting to System — satisfying `UI-03`. The owner explicitly
-extended the system-following baseline (Q1) on 2026-09-21; [ADR 0012](decisions/0012-persistent-theme-mode.md)
+extended the system-following baseline (Q1) on 2026-09-21; [ADR 0013](decisions/0013-persistent-theme-mode.md)
 records the decision, the new `shared_preferences` dependency, and its
 alternatives. See [the feature note](features/appearance.md).
 

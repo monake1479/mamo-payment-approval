@@ -18,7 +18,7 @@ These answers define the implementation scope; they do not claim that the behavi
 
 | Question | Accepted answer |
 |---|---|
-| Q1. Which appearance modes are required? | Both light and dark. The delegated UI contract selected system-following behaviour without a manual selector for the initial baseline. On 2026-09-21 the owner explicitly extended this with a persistent user selector (System, Light, Dark; default System); see `UI-03` and [ADR 0012](../decisions/0012-persistent-theme-mode.md). |
+| Q1. Which appearance modes are required? | Both light and dark. The delegated UI contract selected system-following behaviour without a manual selector for the initial baseline. On 2026-09-21 the owner explicitly extended this with a persistent user selector (System, Light, Dark; default System); see `UI-03` and [ADR 0013](../decisions/0013-persistent-theme-mode.md). |
 | Q2. Which statuses contribute to the monthly summary? | Approved only, for both the amount total and payment count. Pending and rejected are excluded. |
 | Q3. Where are pending requests visible initially? | Only in the approval overlay. Home recent payments and Payments contain approved/rejected history. A dedicated pending-payments screen is deferred to the [extension backlog](extension-backlog.md#deferred-owner-request-pending-payments-screen). |
 | Q4. Which currencies are supported initially? | The mock backend defaults to AED, but every payment carries its own validated currency code and the shared data flow supports another mock-backend account currency. Do not sum different currencies. |
@@ -98,7 +98,7 @@ A payment request contains an identifier, counterparty, amount, reference, creat
 
 - `UI-01`: Support light and dark appearances across screens, overlays, and loading/empty/error states, with readable contrast and status cues that do not rely on colour alone.
 - `UI-02`: Run in portrait-up orientation on iOS and Android. Compact phones and expanded portrait tablets remain responsive; landscape layouts are outside the baseline.
-- `UI-03`: Provide a user-selectable appearance mode with three states — System, Light, and Dark — that drives the application theme, defaults to System, and persists across app launches. The selection is reachable from a discoverable, accessible control and applies to normal app composition; the standalone failure UI continues to follow the system appearance. See [ADR 0012](../decisions/0012-persistent-theme-mode.md).
+- `UI-03`: Provide a user-selectable appearance mode with three states — System, Light, and Dark — that drives the application theme, defaults to System, and persists across app launches. The selection is reachable from a discoverable, accessible control and applies to normal app composition; the standalone failure UI continues to follow the system appearance. See [ADR 0013](../decisions/0013-persistent-theme-mode.md).
 - `MONEY-01`: The demo source uses AED, while each payment carries a validated three-letter currency code. Incoming amounts use at most two decimal places and display in fixed English form such as `AED 1,234.56` regardless of device locale. Do not sum different currencies or impose a client-side transaction maximum. Money remains represented as Dart `double`; no precision tolerance, hidden minor-unit model, or business-rounding feature is in scope.
 
 ## Product invariants
