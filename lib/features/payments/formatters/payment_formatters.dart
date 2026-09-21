@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_date_range.dart';
 import 'package:timezone/data/latest.dart' as time_zone_data;
 import 'package:timezone/timezone.dart' as time_zone;
 
@@ -26,6 +27,34 @@ final class PaymentFormatters {
 
   String month(DateTime instant) =>
       DateFormat('MMMM yyyy', 'en_US').format(_accountTime(instant));
+
+  /// Calendar days in the account zone as a UTC window: the start of
+  /// [firstDay] inclusive to the start of the day after [lastDay] exclusive.
+  PaymentsDateRange accountDays(DateTime firstDay, DateTime lastDay) {
+    return PaymentsDateRange(
+      startUtc: _accountDayStart(firstDay),
+      endUtc: _accountDayStart(lastDay.add(const Duration(days: 1))),
+    );
+  }
+
+  /// The calendar day of [instant] in the account zone, as a plain date.
+  DateTime accountDay(DateTime instant) {
+    final DateTime local = _accountTime(instant);
+    return DateTime(local.year, local.month, local.day);
+  }
+
+  /// Inclusive calendar-day label for a window built by [accountDays].
+  String dateRange(PaymentsDateRange range) {
+    final DateTime first = _accountTime(range.startUtc);
+    final DateTime last = _accountTime(
+      range.endUtc.subtract(const Duration(days: 1)),
+    );
+    final DateFormat day = DateFormat('dd MMM yyyy', 'en_US');
+    return '${day.format(first)} – ${day.format(last)}';
+  }
+
+  DateTime _accountDayStart(DateTime day) =>
+      time_zone.TZDateTime(_location, day.year, day.month, day.day).toUtc();
 
   DateTime _accountTime(DateTime instant) =>
       time_zone.TZDateTime.from(instant.toUtc(), _location);

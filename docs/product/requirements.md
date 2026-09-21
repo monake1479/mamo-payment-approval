@@ -71,6 +71,9 @@ A payment request contains an identifier, counterparty, amount, reference, creat
 - `SEARCH-03`: Rapid query edits produce one search for the final text; clearing discards a waiting edit and every newer criterion cancels the search still in flight.
 - `SEARCH-04`: Results keep the history ordering and rows, show a result count, and expose search-specific empty and recoverable error states without altering the history load states.
 - `SEARCH-05`: An active search re-runs when the authoritative collection changes and survives the Home/Payments switch, including system Back, for the session.
+- `SEARCH-06`: A decision-date window, chosen as calendar days in the account's reporting zone, filters the decided history; the chip shows the selected days and removes the window in one action.
+- `SEARCH-07`: The history order can be changed (newest/oldest decision, highest/lowest amount, counterparty A to Z); the backend applies the order and the default order with no other criterion shows the plain history.
+- `PAY-05`: Pulling down on the Payments history reloads the authoritative collection and re-runs any open search.
 
 ### Payment details
 

@@ -71,12 +71,20 @@ final class MockPaymentsBackend implements PaymentsBackendClient {
     required List<String> statuses,
     required String sortBy,
     required String sortDirection,
+    String? decidedFrom,
+    String? decidedTo,
   }) async {
     await _beforeOperation();
     final Comparator<Map<String, Object?>> compare = _comparator(
       sortBy,
       sortDirection,
     );
+    final DateTime? from = decidedFrom == null
+        ? null
+        : DateTime.parse(decidedFrom).toUtc();
+    final DateTime? to = decidedTo == null
+        ? null
+        : DateTime.parse(decidedTo).toUtc();
     final String needle = query.trim().toLowerCase();
     return _records
         .where((Map<String, Object?> record) {
@@ -85,6 +93,15 @@ final class MockPaymentsBackend implements PaymentsBackendClient {
             return false;
           }
           if (statuses.isNotEmpty && !statuses.contains(status)) {
+            return false;
+          }
+          final DateTime decidedAt = DateTime.parse(
+            record['decidedAt']! as String,
+          ).toUtc();
+          if (from != null && decidedAt.isBefore(from)) {
+            return false;
+          }
+          if (to != null && !decidedAt.isBefore(to)) {
             return false;
           }
           if (needle.isEmpty) {

@@ -138,7 +138,20 @@ FLUTTER_TESTS = {
         *PAYMENTS_UI_TESTS,
         *APPROVAL_TESTS,
     ],
-        "lib/common/data/payments/models/payments_sort.dart": [
+            "lib/common/data/payments/models/payments_date_range.dart": [
+        *PAYMENTS_DATA_SOURCE_TESTS,
+        "test/features/payments/formatters/payment_formatters_test.dart",
+        *SEARCH_TESTS,
+        *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
+    ],
+    "lib/common/data/payments/models/payments_search_criteria.dart": [
+        *PAYMENTS_DATA_SOURCE_TESTS,
+        *SEARCH_TESTS,
+        *PAYMENTS_UI_TESTS,
+        *APPROVAL_TESTS,
+    ],
+    "lib/common/data/payments/models/payments_sort.dart": [
         *PAYMENTS_DATA_SOURCE_TESTS,
         "test/mock_backend/payments/mock_payments_backend_test.dart",
         *SEARCH_TESTS,
@@ -246,7 +259,9 @@ FLUTTER_TESTS = {
     ],
         "lib/features/payments/widgets/payments_search_field.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
     "lib/features/payments/widgets/payment_status_filter_chips.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
-    "lib/features/payments/widgets/payments_search_controls.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+        "lib/features/payments/widgets/payments_search_controls.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/features/payments/widgets/payments_date_filter_chip.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
+    "lib/features/payments/widgets/payments_sort_menu.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
     "lib/features/payments/widgets/payments_list.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
     "lib/features/payments/views/payments_history_view.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
     "lib/features/payments/views/payments_search_results_view.dart": [*PAYMENTS_UI_TESTS, *APPROVAL_TESTS],
@@ -313,8 +328,12 @@ for generated, source in {
         "lib/features/payments/states/search/payments_search_state.dart",
         "lib/features/payments/states/search/payments_search_event.freezed.dart":
         "lib/features/payments/states/search/payments_search_event.dart",
-    "lib/common/data/payments/models/payments_sort.freezed.dart":
+        "lib/common/data/payments/models/payments_sort.freezed.dart":
         "lib/common/data/payments/models/payments_sort.dart",
+    "lib/common/data/payments/models/payments_date_range.freezed.dart":
+        "lib/common/data/payments/models/payments_date_range.dart",
+    "lib/common/data/payments/models/payments_search_criteria.freezed.dart":
+        "lib/common/data/payments/models/payments_search_criteria.dart",
     "lib/features/payments/states/approval/approval_state.freezed.dart":
         "lib/features/payments/states/approval/approval_state.dart",
     "lib/features/payments/states/approval/approval_failure.freezed.dart":

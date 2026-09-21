@@ -20,16 +20,16 @@ class PaymentStatusFilterChips extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final Set<PaymentStatus> selected = context.select(
-      (PaymentsSearchBloc bloc) => bloc.state.statuses,
+      (PaymentsSearchBloc bloc) => bloc.state.criteria.statuses,
     );
     return Semantics(
       identifier: 'payments.search.filters',
       label: l10n.paymentsSearchFiltersLabel,
       container: true,
       explicitChildNodes: true,
-      child: Wrap(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         spacing: AppTheme.smallGap,
-        runSpacing: AppTheme.smallGap,
         children: <Widget>[
           for (final PaymentStatus status in _filterableStatuses)
             _StatusFilterChip(

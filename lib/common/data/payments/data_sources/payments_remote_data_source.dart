@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:mamo_approval/common/data/payments/dtos/payment_dto.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_search_criteria.dart';
 import 'package:mamo_approval/common/data/payments/models/payments_sort.dart';
 import 'package:mamo_approval/common/result/models/result.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart';
@@ -37,28 +38,29 @@ final class PaymentsRemoteDataSource {
   /// Searches decided payments by the fields the history list already shows
   /// without authentication: counterparty and reference. A pending request is
   /// never part of the result, so masked approval data cannot leak through a
-  /// search; [PaymentStatus.pending] is dropped from [statuses] for the same
-  /// reason. The backend applies [sort]; records come back in that order.
-  Future<Result<PaymentsFailure, List<Payment>>> search({
-    required String query,
-    required Set<PaymentStatus> statuses,
-    required PaymentsSort sort,
-  }) async {
+  /// search; [PaymentStatus.pending] is dropped from the statuses for the same
+  /// reason. The backend applies the date window and sort; records come back
+  /// in that order.
+  Future<Result<PaymentsFailure, List<Payment>>> search(
+    PaymentsSearchCriteria criteria,
+  ) async {
     try {
       final List<Map<String, Object?>> records = await _backendClient
           .searchPayments(
-            query: query,
-            statuses: statuses
+            query: criteria.query,
+            statuses: criteria.statuses
                 .where(
                   (PaymentStatus status) => status != PaymentStatus.pending,
                 )
                 .map((PaymentStatus status) => status.name)
                 .toList(growable: false),
-            sortBy: sort.field.name,
-            sortDirection: switch (sort.direction) {
+            sortBy: criteria.sort.field.name,
+            sortDirection: switch (criteria.sort.direction) {
               SortDirection.ascending => 'asc',
               SortDirection.descending => 'desc',
             },
+            decidedFrom: criteria.dateRange?.startUtc.toUtc().toIso8601String(),
+            decidedTo: criteria.dateRange?.endUtc.toUtc().toIso8601String(),
           );
       return switch (_decodeCollection(records)) {
         Failure<PaymentsFailure, List<Payment>>(:final failure) =>

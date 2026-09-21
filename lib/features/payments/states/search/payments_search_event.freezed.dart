@@ -56,12 +56,14 @@ extension PaymentsSearchEventPatterns on PaymentsSearchEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PaymentsSearchQueryChanged value)?  queryChanged,TResult Function( PaymentsSearchStatusFilterChanged value)?  statusFilterChanged,TResult Function( PaymentsSearchCleared value)?  cleared,TResult Function( PaymentsSearchRefreshRequested value)?  refreshRequested,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PaymentsSearchQueryChanged value)?  queryChanged,TResult Function( PaymentsSearchStatusFilterChanged value)?  statusFilterChanged,TResult Function( PaymentsSearchDateRangeChanged value)?  dateRangeChanged,TResult Function( PaymentsSearchSortChanged value)?  sortChanged,TResult Function( PaymentsSearchCleared value)?  cleared,TResult Function( PaymentsSearchRefreshRequested value)?  refreshRequested,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case PaymentsSearchQueryChanged() when queryChanged != null:
 return queryChanged(_that);case PaymentsSearchStatusFilterChanged() when statusFilterChanged != null:
-return statusFilterChanged(_that);case PaymentsSearchCleared() when cleared != null:
+return statusFilterChanged(_that);case PaymentsSearchDateRangeChanged() when dateRangeChanged != null:
+return dateRangeChanged(_that);case PaymentsSearchSortChanged() when sortChanged != null:
+return sortChanged(_that);case PaymentsSearchCleared() when cleared != null:
 return cleared(_that);case PaymentsSearchRefreshRequested() when refreshRequested != null:
 return refreshRequested(_that);case _:
   return orElse();
@@ -81,12 +83,14 @@ return refreshRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PaymentsSearchQueryChanged value)  queryChanged,required TResult Function( PaymentsSearchStatusFilterChanged value)  statusFilterChanged,required TResult Function( PaymentsSearchCleared value)  cleared,required TResult Function( PaymentsSearchRefreshRequested value)  refreshRequested,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PaymentsSearchQueryChanged value)  queryChanged,required TResult Function( PaymentsSearchStatusFilterChanged value)  statusFilterChanged,required TResult Function( PaymentsSearchDateRangeChanged value)  dateRangeChanged,required TResult Function( PaymentsSearchSortChanged value)  sortChanged,required TResult Function( PaymentsSearchCleared value)  cleared,required TResult Function( PaymentsSearchRefreshRequested value)  refreshRequested,}){
 final _that = this;
 switch (_that) {
 case PaymentsSearchQueryChanged():
 return queryChanged(_that);case PaymentsSearchStatusFilterChanged():
-return statusFilterChanged(_that);case PaymentsSearchCleared():
+return statusFilterChanged(_that);case PaymentsSearchDateRangeChanged():
+return dateRangeChanged(_that);case PaymentsSearchSortChanged():
+return sortChanged(_that);case PaymentsSearchCleared():
 return cleared(_that);case PaymentsSearchRefreshRequested():
 return refreshRequested(_that);}
 }
@@ -102,12 +106,14 @@ return refreshRequested(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PaymentsSearchQueryChanged value)?  queryChanged,TResult? Function( PaymentsSearchStatusFilterChanged value)?  statusFilterChanged,TResult? Function( PaymentsSearchCleared value)?  cleared,TResult? Function( PaymentsSearchRefreshRequested value)?  refreshRequested,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PaymentsSearchQueryChanged value)?  queryChanged,TResult? Function( PaymentsSearchStatusFilterChanged value)?  statusFilterChanged,TResult? Function( PaymentsSearchDateRangeChanged value)?  dateRangeChanged,TResult? Function( PaymentsSearchSortChanged value)?  sortChanged,TResult? Function( PaymentsSearchCleared value)?  cleared,TResult? Function( PaymentsSearchRefreshRequested value)?  refreshRequested,}){
 final _that = this;
 switch (_that) {
 case PaymentsSearchQueryChanged() when queryChanged != null:
 return queryChanged(_that);case PaymentsSearchStatusFilterChanged() when statusFilterChanged != null:
-return statusFilterChanged(_that);case PaymentsSearchCleared() when cleared != null:
+return statusFilterChanged(_that);case PaymentsSearchDateRangeChanged() when dateRangeChanged != null:
+return dateRangeChanged(_that);case PaymentsSearchSortChanged() when sortChanged != null:
+return sortChanged(_that);case PaymentsSearchCleared() when cleared != null:
 return cleared(_that);case PaymentsSearchRefreshRequested() when refreshRequested != null:
 return refreshRequested(_that);case _:
   return null;
@@ -126,11 +132,13 @@ return refreshRequested(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String query)?  queryChanged,TResult Function( Set<PaymentStatus> statuses)?  statusFilterChanged,TResult Function()?  cleared,TResult Function()?  refreshRequested,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String query)?  queryChanged,TResult Function( Set<PaymentStatus> statuses)?  statusFilterChanged,TResult Function( PaymentsDateRange? dateRange)?  dateRangeChanged,TResult Function( PaymentsSort sort)?  sortChanged,TResult Function()?  cleared,TResult Function()?  refreshRequested,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case PaymentsSearchQueryChanged() when queryChanged != null:
 return queryChanged(_that.query);case PaymentsSearchStatusFilterChanged() when statusFilterChanged != null:
-return statusFilterChanged(_that.statuses);case PaymentsSearchCleared() when cleared != null:
+return statusFilterChanged(_that.statuses);case PaymentsSearchDateRangeChanged() when dateRangeChanged != null:
+return dateRangeChanged(_that.dateRange);case PaymentsSearchSortChanged() when sortChanged != null:
+return sortChanged(_that.sort);case PaymentsSearchCleared() when cleared != null:
 return cleared();case PaymentsSearchRefreshRequested() when refreshRequested != null:
 return refreshRequested();case _:
   return orElse();
@@ -150,11 +158,13 @@ return refreshRequested();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String query)  queryChanged,required TResult Function( Set<PaymentStatus> statuses)  statusFilterChanged,required TResult Function()  cleared,required TResult Function()  refreshRequested,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String query)  queryChanged,required TResult Function( Set<PaymentStatus> statuses)  statusFilterChanged,required TResult Function( PaymentsDateRange? dateRange)  dateRangeChanged,required TResult Function( PaymentsSort sort)  sortChanged,required TResult Function()  cleared,required TResult Function()  refreshRequested,}) {final _that = this;
 switch (_that) {
 case PaymentsSearchQueryChanged():
 return queryChanged(_that.query);case PaymentsSearchStatusFilterChanged():
-return statusFilterChanged(_that.statuses);case PaymentsSearchCleared():
+return statusFilterChanged(_that.statuses);case PaymentsSearchDateRangeChanged():
+return dateRangeChanged(_that.dateRange);case PaymentsSearchSortChanged():
+return sortChanged(_that.sort);case PaymentsSearchCleared():
 return cleared();case PaymentsSearchRefreshRequested():
 return refreshRequested();}
 }
@@ -170,11 +180,13 @@ return refreshRequested();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String query)?  queryChanged,TResult? Function( Set<PaymentStatus> statuses)?  statusFilterChanged,TResult? Function()?  cleared,TResult? Function()?  refreshRequested,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String query)?  queryChanged,TResult? Function( Set<PaymentStatus> statuses)?  statusFilterChanged,TResult? Function( PaymentsDateRange? dateRange)?  dateRangeChanged,TResult? Function( PaymentsSort sort)?  sortChanged,TResult? Function()?  cleared,TResult? Function()?  refreshRequested,}) {final _that = this;
 switch (_that) {
 case PaymentsSearchQueryChanged() when queryChanged != null:
 return queryChanged(_that.query);case PaymentsSearchStatusFilterChanged() when statusFilterChanged != null:
-return statusFilterChanged(_that.statuses);case PaymentsSearchCleared() when cleared != null:
+return statusFilterChanged(_that.statuses);case PaymentsSearchDateRangeChanged() when dateRangeChanged != null:
+return dateRangeChanged(_that.dateRange);case PaymentsSearchSortChanged() when sortChanged != null:
+return sortChanged(_that.sort);case PaymentsSearchCleared() when cleared != null:
 return cleared();case PaymentsSearchRefreshRequested() when refreshRequested != null:
 return refreshRequested();case _:
   return null;
@@ -324,6 +336,163 @@ as Set<PaymentStatus>,
 }
 
 
+}
+
+/// @nodoc
+
+
+class PaymentsSearchDateRangeChanged implements PaymentsSearchEvent {
+  const PaymentsSearchDateRangeChanged(this.dateRange);
+  
+
+ final  PaymentsDateRange? dateRange;
+
+/// Create a copy of PaymentsSearchEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PaymentsSearchDateRangeChangedCopyWith<PaymentsSearchDateRangeChanged> get copyWith => _$PaymentsSearchDateRangeChangedCopyWithImpl<PaymentsSearchDateRangeChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsSearchDateRangeChanged&&(identical(other.dateRange, dateRange) || other.dateRange == dateRange));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,dateRange);
+}
+
+@override
+String toString() {
+    return 'PaymentsSearchEvent.dateRangeChanged(dateRange: $dateRange)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PaymentsSearchDateRangeChangedCopyWith<$Res> implements $PaymentsSearchEventCopyWith<$Res> {
+  factory $PaymentsSearchDateRangeChangedCopyWith(PaymentsSearchDateRangeChanged value, $Res Function(PaymentsSearchDateRangeChanged) _then) = _$PaymentsSearchDateRangeChangedCopyWithImpl;
+@useResult
+$Res call({
+ PaymentsDateRange? dateRange
+});
+
+
+$PaymentsDateRangeCopyWith<$Res>? get dateRange;
+
+}
+/// @nodoc
+class _$PaymentsSearchDateRangeChangedCopyWithImpl<$Res>
+    implements $PaymentsSearchDateRangeChangedCopyWith<$Res> {
+  _$PaymentsSearchDateRangeChangedCopyWithImpl(this._self, this._then);
+
+  final PaymentsSearchDateRangeChanged _self;
+  final $Res Function(PaymentsSearchDateRangeChanged) _then;
+
+/// Create a copy of PaymentsSearchEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? dateRange = freezed,}) {
+  return _then(PaymentsSearchDateRangeChanged(
+freezed == dateRange ? _self.dateRange : dateRange // ignore: cast_nullable_to_non_nullable
+as PaymentsDateRange?,
+  ));
+}
+
+/// Create a copy of PaymentsSearchEvent
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PaymentsDateRangeCopyWith<$Res>? get dateRange {
+    if (_self.dateRange == null) {
+    return null;
+  }
+
+  return $PaymentsDateRangeCopyWith<$Res>(_self.dateRange!, (value) {
+    return _then(_self.copyWith(dateRange: value));
+  });
+}
+}
+
+/// @nodoc
+
+
+class PaymentsSearchSortChanged implements PaymentsSearchEvent {
+  const PaymentsSearchSortChanged(this.sort);
+  
+
+ final  PaymentsSort sort;
+
+/// Create a copy of PaymentsSearchEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PaymentsSearchSortChangedCopyWith<PaymentsSearchSortChanged> get copyWith => _$PaymentsSearchSortChangedCopyWithImpl<PaymentsSearchSortChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsSearchSortChanged&&(identical(other.sort, sort) || other.sort == sort));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,sort);
+}
+
+@override
+String toString() {
+    return 'PaymentsSearchEvent.sortChanged(sort: $sort)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PaymentsSearchSortChangedCopyWith<$Res> implements $PaymentsSearchEventCopyWith<$Res> {
+  factory $PaymentsSearchSortChangedCopyWith(PaymentsSearchSortChanged value, $Res Function(PaymentsSearchSortChanged) _then) = _$PaymentsSearchSortChangedCopyWithImpl;
+@useResult
+$Res call({
+ PaymentsSort sort
+});
+
+
+$PaymentsSortCopyWith<$Res> get sort;
+
+}
+/// @nodoc
+class _$PaymentsSearchSortChangedCopyWithImpl<$Res>
+    implements $PaymentsSearchSortChangedCopyWith<$Res> {
+  _$PaymentsSearchSortChangedCopyWithImpl(this._self, this._then);
+
+  final PaymentsSearchSortChanged _self;
+  final $Res Function(PaymentsSearchSortChanged) _then;
+
+/// Create a copy of PaymentsSearchEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? sort = null,}) {
+  return _then(PaymentsSearchSortChanged(
+null == sort ? _self.sort : sort // ignore: cast_nullable_to_non_nullable
+as PaymentsSort,
+  ));
+}
+
+/// Create a copy of PaymentsSearchEvent
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PaymentsSortCopyWith<$Res> get sort {
+  
+  return $PaymentsSortCopyWith<$Res>(_self.sort, (value) {
+    return _then(_self.copyWith(sort: value));
+  });
+}
 }
 
 /// @nodoc

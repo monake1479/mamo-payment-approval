@@ -3,7 +3,7 @@ import 'package:mamo_approval/common/data/payments/data_sources/payments_remote_
 import 'package:mamo_approval/common/data/payments/dtos/payment_dto.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
-import 'package:mamo_approval/common/data/payments/models/payments_sort.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_search_criteria.dart';
 
 import 'package:mamo_approval/common/data/payments/payments_repository.dart';
 import 'package:mamo_approval/common/result/models/result.dart';
@@ -190,16 +190,13 @@ void main() {
 
       final Result<PaymentsFailure, List<Payment>> found = await repository
           .searchPayments(
-            query: 'marina',
-            statuses: const <PaymentStatus>{PaymentStatus.rejected},
-            sort: PaymentsSort.decidedAtNewestFirst,
+            const PaymentsSearchCriteria(
+              query: 'marina',
+              statuses: <PaymentStatus>{PaymentStatus.rejected},
+            ),
           );
       final Result<PaymentsFailure, List<Payment>> failed = await repository
-          .searchPayments(
-            query: 'marina',
-            statuses: const <PaymentStatus>{},
-            sort: PaymentsSort.decidedAtNewestFirst,
-          );
+          .searchPayments(const PaymentsSearchCriteria(query: 'marina'));
 
       expect(
         (found as Success<PaymentsFailure, List<Payment>>).value.map(

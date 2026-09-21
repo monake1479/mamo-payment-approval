@@ -6,9 +6,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mamo_approval/app/theme/app_motion.dart';
 import 'package:mamo_approval/app/theme/app_theme.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/features/payments/formatters/payment_formatters.dart';
 import 'package:mamo_approval/features/payments/pages/payments_page.dart';
 import 'package:mamo_approval/features/payments/states/payments/payments_cubit.dart';
 import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart';
+import 'package:mamo_approval/features/payments/states/search/payments_search_event.dart';
 import 'package:mamo_approval/features/payments/widgets/payments_search_field.dart';
 import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_exception.dart';
@@ -369,6 +371,111 @@ void main() {
       expect(backend.searchCalls, 1);
       expect(find.text(atlas.counterparty), findsNothing);
       expect(find.text(marina.counterparty), findsOneWidget);
+    });
+
+    testWidgets('decision-date window filters and can be removed', (
+      WidgetTester tester,
+    ) async {
+      await pumpPage(tester, onLoad: () async => <Payment>[atlas, marina]);
+      final Finder dateChip = find.bySemanticsIdentifier(
+        'payments.search.filter.date',
+      );
+      expect(find.text('Decision date'), findsOneWidget);
+
+      await tester.tap(dateChip);
+      await tester.pumpAndSettle();
+      expect(find.byType(DateRangePickerDialog), findsOneWidget);
+      await tester.tap(
+        find.descendant(
+          of: find.byType(DateRangePickerDialog),
+          matching: find.byIcon(Icons.close),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(DateRangePickerDialog), findsNothing);
+
+      // 17 Sep in Asia/Dubai is 16 Sep 20:00 UTC to 17 Sep 20:00 UTC: it
+      // contains marina's decision and excludes atlas's.
+      searchBlocOf(tester).add(
+        PaymentsSearchEvent.dateRangeChanged(
+          PaymentFormatters(reportingTimeZone: 'Asia/Dubai')
+              .accountDays(DateTime(2026, 9, 17), DateTime(2026, 9, 17)),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('17 Sep 2026 – 17 Sep 2026'), findsOneWidget);
+      expect(find.text(marina.counterparty), findsOneWidget);
+      expect(find.text(atlas.counterparty), findsNothing);
+
+      // The controls row scrolls horizontally; bring the remove action into
+      // view before tapping it.
+      final Finder removeDate = find.descendant(
+        of: dateChip,
+        matching: find.byIcon(Icons.close),
+      );
+      await tester.ensureVisible(removeDate);
+      await tester.pumpAndSettle();
+      await tester.tap(removeDate);
+      await tester.pumpAndSettle();
+      expect(find.text('Decision date'), findsOneWidget);
+      expect(find.text(atlas.counterparty), findsOneWidget);
+      expect(find.text(marina.counterparty), findsOneWidget);
+    });
+
+    testWidgets('sort menu changes the order and restores the history', (
+      WidgetTester tester,
+    ) async {
+      await pumpPage(tester, onLoad: () async => <Payment>[atlas, marina]);
+      double topOf(String text) => tester.getTopLeft(find.text(text)).dy;
+      expect(topOf(marina.counterparty), lessThan(topOf(atlas.counterparty)));
+
+      await tester.tap(find.bySemanticsIdentifier('payments.search.sort'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Oldest first'));
+      await tester.pumpAndSettle();
+      expect(find.text('2 matching payments'), findsOneWidget);
+      expect(topOf(atlas.counterparty), lessThan(topOf(marina.counterparty)));
+
+      await tester.tap(find.bySemanticsIdentifier('payments.search.sort'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Newest first').last);
+      await tester.pumpAndSettle();
+      expect(searchBlocOf(tester).state.isActive, isFalse);
+      expect(topOf(marina.counterparty), lessThan(topOf(atlas.counterparty)));
+    });
+
+    testWidgets('pull to refresh reloads the collection and open search', (
+      WidgetTester tester,
+    ) async {
+      final List<Payment> stored = <Payment>[atlas];
+      final (_, StubPaymentsBackend backend) = await pumpPage(
+        tester,
+        onLoad: () async => List<Payment>.of(stored),
+      );
+      expect(backend.loadCalls, 1);
+
+      stored.add(marina);
+      await tester.fling(find.byType(ListView), const Offset(0, 300), 1000);
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+      expect(backend.loadCalls, 2);
+      expect(find.text(marina.counterparty), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField), 'nobody');
+      await tester.pumpAndSettle();
+      expect(find.bySemanticsIdentifier('payments.search.empty'), findsOne);
+      final int searchesBefore = backend.searchCalls;
+      await tester.fling(
+        find.bySemanticsIdentifier('payments.search.empty'),
+        const Offset(0, 300),
+        1000,
+      );
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pumpAndSettle();
+      expect(backend.loadCalls, 3);
+      expect(backend.searchCalls, greaterThan(searchesBefore));
     });
 
     testWidgets('a canonical collection change re-runs the active search', (

@@ -129,14 +129,14 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  idle,TResult Function( String query,  Set<PaymentStatus> statuses)?  loading,TResult Function( String query,  Set<PaymentStatus> statuses,  List<Payment> payments)?  results,TResult Function( String query,  Set<PaymentStatus> statuses)?  empty,TResult Function( String query,  Set<PaymentStatus> statuses,  PaymentsFailure failure)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  idle,TResult Function( PaymentsSearchCriteria criteria)?  loading,TResult Function( PaymentsSearchCriteria criteria,  List<Payment> payments)?  results,TResult Function( PaymentsSearchCriteria criteria)?  empty,TResult Function( PaymentsSearchCriteria criteria,  PaymentsFailure failure)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case PaymentsSearchIdle() when idle != null:
 return idle();case PaymentsSearchLoading() when loading != null:
-return loading(_that.query,_that.statuses);case PaymentsSearchResults() when results != null:
-return results(_that.query,_that.statuses,_that.payments);case PaymentsSearchEmpty() when empty != null:
-return empty(_that.query,_that.statuses);case PaymentsSearchError() when error != null:
-return error(_that.query,_that.statuses,_that.failure);case _:
+return loading(_that.criteria);case PaymentsSearchResults() when results != null:
+return results(_that.criteria,_that.payments);case PaymentsSearchEmpty() when empty != null:
+return empty(_that.criteria);case PaymentsSearchError() when error != null:
+return error(_that.criteria,_that.failure);case _:
   return orElse();
 
 }
@@ -154,14 +154,14 @@ return error(_that.query,_that.statuses,_that.failure);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  idle,required TResult Function( String query,  Set<PaymentStatus> statuses)  loading,required TResult Function( String query,  Set<PaymentStatus> statuses,  List<Payment> payments)  results,required TResult Function( String query,  Set<PaymentStatus> statuses)  empty,required TResult Function( String query,  Set<PaymentStatus> statuses,  PaymentsFailure failure)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  idle,required TResult Function( PaymentsSearchCriteria criteria)  loading,required TResult Function( PaymentsSearchCriteria criteria,  List<Payment> payments)  results,required TResult Function( PaymentsSearchCriteria criteria)  empty,required TResult Function( PaymentsSearchCriteria criteria,  PaymentsFailure failure)  error,}) {final _that = this;
 switch (_that) {
 case PaymentsSearchIdle():
 return idle();case PaymentsSearchLoading():
-return loading(_that.query,_that.statuses);case PaymentsSearchResults():
-return results(_that.query,_that.statuses,_that.payments);case PaymentsSearchEmpty():
-return empty(_that.query,_that.statuses);case PaymentsSearchError():
-return error(_that.query,_that.statuses,_that.failure);}
+return loading(_that.criteria);case PaymentsSearchResults():
+return results(_that.criteria,_that.payments);case PaymentsSearchEmpty():
+return empty(_that.criteria);case PaymentsSearchError():
+return error(_that.criteria,_that.failure);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -175,14 +175,14 @@ return error(_that.query,_that.statuses,_that.failure);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  idle,TResult? Function( String query,  Set<PaymentStatus> statuses)?  loading,TResult? Function( String query,  Set<PaymentStatus> statuses,  List<Payment> payments)?  results,TResult? Function( String query,  Set<PaymentStatus> statuses)?  empty,TResult? Function( String query,  Set<PaymentStatus> statuses,  PaymentsFailure failure)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  idle,TResult? Function( PaymentsSearchCriteria criteria)?  loading,TResult? Function( PaymentsSearchCriteria criteria,  List<Payment> payments)?  results,TResult? Function( PaymentsSearchCriteria criteria)?  empty,TResult? Function( PaymentsSearchCriteria criteria,  PaymentsFailure failure)?  error,}) {final _that = this;
 switch (_that) {
 case PaymentsSearchIdle() when idle != null:
 return idle();case PaymentsSearchLoading() when loading != null:
-return loading(_that.query,_that.statuses);case PaymentsSearchResults() when results != null:
-return results(_that.query,_that.statuses,_that.payments);case PaymentsSearchEmpty() when empty != null:
-return empty(_that.query,_that.statuses);case PaymentsSearchError() when error != null:
-return error(_that.query,_that.statuses,_that.failure);case _:
+return loading(_that.criteria);case PaymentsSearchResults() when results != null:
+return results(_that.criteria,_that.payments);case PaymentsSearchEmpty() when empty != null:
+return empty(_that.criteria);case PaymentsSearchError() when error != null:
+return error(_that.criteria,_that.failure);case _:
   return null;
 
 }
@@ -226,17 +226,10 @@ String toString() {
 
 
 class PaymentsSearchLoading extends PaymentsSearchState {
-  const PaymentsSearchLoading({required this.query, required  Set<PaymentStatus> statuses}): _statuses = statuses,super._();
+  const PaymentsSearchLoading({required this.criteria}): super._();
   
 
- final  String query;
- final  Set<PaymentStatus> _statuses;
- Set<PaymentStatus> get statuses {
-  if (_statuses is EqualUnmodifiableSetView) return _statuses;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableSetView(_statuses);
-}
-
+ final  PaymentsSearchCriteria criteria;
 
 /// Create a copy of PaymentsSearchState
 /// with the given fields replaced by the non-null parameter values.
@@ -248,18 +241,18 @@ $PaymentsSearchLoadingCopyWith<PaymentsSearchLoading> get copyWith => _$Payments
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsSearchLoading&&(identical(other.query, query) || other.query == query)&&const DeepCollectionEquality().equals(other.statuses, _statuses));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsSearchLoading&&(identical(other.criteria, criteria) || other.criteria == criteria));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,query,const DeepCollectionEquality().hash(_statuses));
+    return Object.hash(runtimeType,criteria);
 }
 
 @override
 String toString() {
-    return 'PaymentsSearchState.loading(query: $query, statuses: $statuses)';
+    return 'PaymentsSearchState.loading(criteria: $criteria)';
 }
 
 
@@ -270,11 +263,11 @@ abstract mixin class $PaymentsSearchLoadingCopyWith<$Res> implements $PaymentsSe
   factory $PaymentsSearchLoadingCopyWith(PaymentsSearchLoading value, $Res Function(PaymentsSearchLoading) _then) = _$PaymentsSearchLoadingCopyWithImpl;
 @useResult
 $Res call({
- String query, Set<PaymentStatus> statuses
+ PaymentsSearchCriteria criteria
 });
 
 
-
+$PaymentsSearchCriteriaCopyWith<$Res> get criteria;
 
 }
 /// @nodoc
@@ -287,32 +280,33 @@ class _$PaymentsSearchLoadingCopyWithImpl<$Res>
 
 /// Create a copy of PaymentsSearchState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? query = null,Object? statuses = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? criteria = null,}) {
   return _then(PaymentsSearchLoading(
-query: null == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
-as String,statuses: null == statuses ? _self._statuses : statuses // ignore: cast_nullable_to_non_nullable
-as Set<PaymentStatus>,
+criteria: null == criteria ? _self.criteria : criteria // ignore: cast_nullable_to_non_nullable
+as PaymentsSearchCriteria,
   ));
 }
 
-
+/// Create a copy of PaymentsSearchState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PaymentsSearchCriteriaCopyWith<$Res> get criteria {
+  
+  return $PaymentsSearchCriteriaCopyWith<$Res>(_self.criteria, (value) {
+    return _then(_self.copyWith(criteria: value));
+  });
+}
 }
 
 /// @nodoc
 
 
 class PaymentsSearchResults extends PaymentsSearchState {
-  const PaymentsSearchResults({required this.query, required  Set<PaymentStatus> statuses, required  List<Payment> payments}): _statuses = statuses,_payments = payments,super._();
+  const PaymentsSearchResults({required this.criteria, required  List<Payment> payments}): _payments = payments,super._();
   
 
- final  String query;
- final  Set<PaymentStatus> _statuses;
- Set<PaymentStatus> get statuses {
-  if (_statuses is EqualUnmodifiableSetView) return _statuses;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableSetView(_statuses);
-}
-
+ final  PaymentsSearchCriteria criteria;
  final  List<Payment> _payments;
  List<Payment> get payments {
   if (_payments is EqualUnmodifiableListView) return _payments;
@@ -331,18 +325,18 @@ $PaymentsSearchResultsCopyWith<PaymentsSearchResults> get copyWith => _$Payments
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsSearchResults&&(identical(other.query, query) || other.query == query)&&const DeepCollectionEquality().equals(other.statuses, _statuses)&&const DeepCollectionEquality().equals(other.payments, _payments));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsSearchResults&&(identical(other.criteria, criteria) || other.criteria == criteria)&&const DeepCollectionEquality().equals(other.payments, _payments));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,query,const DeepCollectionEquality().hash(_statuses),const DeepCollectionEquality().hash(_payments));
+    return Object.hash(runtimeType,criteria,const DeepCollectionEquality().hash(_payments));
 }
 
 @override
 String toString() {
-    return 'PaymentsSearchState.results(query: $query, statuses: $statuses, payments: $payments)';
+    return 'PaymentsSearchState.results(criteria: $criteria, payments: $payments)';
 }
 
 
@@ -353,11 +347,11 @@ abstract mixin class $PaymentsSearchResultsCopyWith<$Res> implements $PaymentsSe
   factory $PaymentsSearchResultsCopyWith(PaymentsSearchResults value, $Res Function(PaymentsSearchResults) _then) = _$PaymentsSearchResultsCopyWithImpl;
 @useResult
 $Res call({
- String query, Set<PaymentStatus> statuses, List<Payment> payments
+ PaymentsSearchCriteria criteria, List<Payment> payments
 });
 
 
-
+$PaymentsSearchCriteriaCopyWith<$Res> get criteria;
 
 }
 /// @nodoc
@@ -370,33 +364,34 @@ class _$PaymentsSearchResultsCopyWithImpl<$Res>
 
 /// Create a copy of PaymentsSearchState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? query = null,Object? statuses = null,Object? payments = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? criteria = null,Object? payments = null,}) {
   return _then(PaymentsSearchResults(
-query: null == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
-as String,statuses: null == statuses ? _self._statuses : statuses // ignore: cast_nullable_to_non_nullable
-as Set<PaymentStatus>,payments: null == payments ? _self._payments : payments // ignore: cast_nullable_to_non_nullable
+criteria: null == criteria ? _self.criteria : criteria // ignore: cast_nullable_to_non_nullable
+as PaymentsSearchCriteria,payments: null == payments ? _self._payments : payments // ignore: cast_nullable_to_non_nullable
 as List<Payment>,
   ));
 }
 
-
+/// Create a copy of PaymentsSearchState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PaymentsSearchCriteriaCopyWith<$Res> get criteria {
+  
+  return $PaymentsSearchCriteriaCopyWith<$Res>(_self.criteria, (value) {
+    return _then(_self.copyWith(criteria: value));
+  });
+}
 }
 
 /// @nodoc
 
 
 class PaymentsSearchEmpty extends PaymentsSearchState {
-  const PaymentsSearchEmpty({required this.query, required  Set<PaymentStatus> statuses}): _statuses = statuses,super._();
+  const PaymentsSearchEmpty({required this.criteria}): super._();
   
 
- final  String query;
- final  Set<PaymentStatus> _statuses;
- Set<PaymentStatus> get statuses {
-  if (_statuses is EqualUnmodifiableSetView) return _statuses;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableSetView(_statuses);
-}
-
+ final  PaymentsSearchCriteria criteria;
 
 /// Create a copy of PaymentsSearchState
 /// with the given fields replaced by the non-null parameter values.
@@ -408,18 +403,18 @@ $PaymentsSearchEmptyCopyWith<PaymentsSearchEmpty> get copyWith => _$PaymentsSear
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsSearchEmpty&&(identical(other.query, query) || other.query == query)&&const DeepCollectionEquality().equals(other.statuses, _statuses));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsSearchEmpty&&(identical(other.criteria, criteria) || other.criteria == criteria));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,query,const DeepCollectionEquality().hash(_statuses));
+    return Object.hash(runtimeType,criteria);
 }
 
 @override
 String toString() {
-    return 'PaymentsSearchState.empty(query: $query, statuses: $statuses)';
+    return 'PaymentsSearchState.empty(criteria: $criteria)';
 }
 
 
@@ -430,11 +425,11 @@ abstract mixin class $PaymentsSearchEmptyCopyWith<$Res> implements $PaymentsSear
   factory $PaymentsSearchEmptyCopyWith(PaymentsSearchEmpty value, $Res Function(PaymentsSearchEmpty) _then) = _$PaymentsSearchEmptyCopyWithImpl;
 @useResult
 $Res call({
- String query, Set<PaymentStatus> statuses
+ PaymentsSearchCriteria criteria
 });
 
 
-
+$PaymentsSearchCriteriaCopyWith<$Res> get criteria;
 
 }
 /// @nodoc
@@ -447,32 +442,33 @@ class _$PaymentsSearchEmptyCopyWithImpl<$Res>
 
 /// Create a copy of PaymentsSearchState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? query = null,Object? statuses = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? criteria = null,}) {
   return _then(PaymentsSearchEmpty(
-query: null == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
-as String,statuses: null == statuses ? _self._statuses : statuses // ignore: cast_nullable_to_non_nullable
-as Set<PaymentStatus>,
+criteria: null == criteria ? _self.criteria : criteria // ignore: cast_nullable_to_non_nullable
+as PaymentsSearchCriteria,
   ));
 }
 
-
+/// Create a copy of PaymentsSearchState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PaymentsSearchCriteriaCopyWith<$Res> get criteria {
+  
+  return $PaymentsSearchCriteriaCopyWith<$Res>(_self.criteria, (value) {
+    return _then(_self.copyWith(criteria: value));
+  });
+}
 }
 
 /// @nodoc
 
 
 class PaymentsSearchError extends PaymentsSearchState {
-  const PaymentsSearchError({required this.query, required  Set<PaymentStatus> statuses, required this.failure}): _statuses = statuses,super._();
+  const PaymentsSearchError({required this.criteria, required this.failure}): super._();
   
 
- final  String query;
- final  Set<PaymentStatus> _statuses;
- Set<PaymentStatus> get statuses {
-  if (_statuses is EqualUnmodifiableSetView) return _statuses;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableSetView(_statuses);
-}
-
+ final  PaymentsSearchCriteria criteria;
  final  PaymentsFailure failure;
 
 /// Create a copy of PaymentsSearchState
@@ -485,18 +481,18 @@ $PaymentsSearchErrorCopyWith<PaymentsSearchError> get copyWith => _$PaymentsSear
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsSearchError&&(identical(other.query, query) || other.query == query)&&const DeepCollectionEquality().equals(other.statuses, _statuses)&&(identical(other.failure, failure) || other.failure == failure));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsSearchError&&(identical(other.criteria, criteria) || other.criteria == criteria)&&(identical(other.failure, failure) || other.failure == failure));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,query,const DeepCollectionEquality().hash(_statuses),failure);
+    return Object.hash(runtimeType,criteria,failure);
 }
 
 @override
 String toString() {
-    return 'PaymentsSearchState.error(query: $query, statuses: $statuses, failure: $failure)';
+    return 'PaymentsSearchState.error(criteria: $criteria, failure: $failure)';
 }
 
 
@@ -507,11 +503,11 @@ abstract mixin class $PaymentsSearchErrorCopyWith<$Res> implements $PaymentsSear
   factory $PaymentsSearchErrorCopyWith(PaymentsSearchError value, $Res Function(PaymentsSearchError) _then) = _$PaymentsSearchErrorCopyWithImpl;
 @useResult
 $Res call({
- String query, Set<PaymentStatus> statuses, PaymentsFailure failure
+ PaymentsSearchCriteria criteria, PaymentsFailure failure
 });
 
 
-$PaymentsFailureCopyWith<$Res> get failure;
+$PaymentsSearchCriteriaCopyWith<$Res> get criteria;$PaymentsFailureCopyWith<$Res> get failure;
 
 }
 /// @nodoc
@@ -524,16 +520,24 @@ class _$PaymentsSearchErrorCopyWithImpl<$Res>
 
 /// Create a copy of PaymentsSearchState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? query = null,Object? statuses = null,Object? failure = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? criteria = null,Object? failure = null,}) {
   return _then(PaymentsSearchError(
-query: null == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
-as String,statuses: null == statuses ? _self._statuses : statuses // ignore: cast_nullable_to_non_nullable
-as Set<PaymentStatus>,failure: null == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
+criteria: null == criteria ? _self.criteria : criteria // ignore: cast_nullable_to_non_nullable
+as PaymentsSearchCriteria,failure: null == failure ? _self.failure : failure // ignore: cast_nullable_to_non_nullable
 as PaymentsFailure,
   ));
 }
 
 /// Create a copy of PaymentsSearchState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PaymentsSearchCriteriaCopyWith<$Res> get criteria {
+  
+  return $PaymentsSearchCriteriaCopyWith<$Res>(_self.criteria, (value) {
+    return _then(_self.copyWith(criteria: value));
+  });
+}/// Create a copy of PaymentsSearchState
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')

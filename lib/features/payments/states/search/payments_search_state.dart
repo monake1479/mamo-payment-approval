@@ -1,6 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_search_criteria.dart';
 
 part 'payments_search_state.freezed.dart';
 
@@ -12,43 +13,32 @@ sealed class PaymentsSearchState with _$PaymentsSearchState {
   const factory PaymentsSearchState.idle() = PaymentsSearchIdle;
 
   const factory PaymentsSearchState.loading({
-    required String query,
-    required Set<PaymentStatus> statuses,
+    required PaymentsSearchCriteria criteria,
   }) = PaymentsSearchLoading;
 
   const factory PaymentsSearchState.results({
-    required String query,
-    required Set<PaymentStatus> statuses,
+    required PaymentsSearchCriteria criteria,
     required List<Payment> payments,
   }) = PaymentsSearchResults;
 
   const factory PaymentsSearchState.empty({
-    required String query,
-    required Set<PaymentStatus> statuses,
+    required PaymentsSearchCriteria criteria,
   }) = PaymentsSearchEmpty;
 
   const factory PaymentsSearchState.error({
-    required String query,
-    required Set<PaymentStatus> statuses,
+    required PaymentsSearchCriteria criteria,
     required PaymentsFailure failure,
   }) = PaymentsSearchError;
 
   /// Whether any criterion is set; idle is the only inactive state.
   bool get isActive => this is! PaymentsSearchIdle;
 
-  String get query => switch (this) {
-    PaymentsSearchIdle() => '',
-    PaymentsSearchLoading(:final query) ||
-    PaymentsSearchResults(:final query) ||
-    PaymentsSearchEmpty(:final query) ||
-    PaymentsSearchError(:final query) => query,
-  };
-
-  Set<PaymentStatus> get statuses => switch (this) {
-    PaymentsSearchIdle() => const <PaymentStatus>{},
-    PaymentsSearchLoading(:final statuses) ||
-    PaymentsSearchResults(:final statuses) ||
-    PaymentsSearchEmpty(:final statuses) ||
-    PaymentsSearchError(:final statuses) => statuses,
+  /// The criteria the state describes; idle carries the empty criteria.
+  PaymentsSearchCriteria get criteria => switch (this) {
+    PaymentsSearchIdle() => PaymentsSearchCriteria.none,
+    PaymentsSearchLoading(:final criteria) ||
+    PaymentsSearchResults(:final criteria) ||
+    PaymentsSearchEmpty(:final criteria) ||
+    PaymentsSearchError(:final criteria) => criteria,
   };
 }

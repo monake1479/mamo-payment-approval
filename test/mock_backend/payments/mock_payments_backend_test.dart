@@ -207,6 +207,55 @@ void main() {
       },
     );
 
+    test('search applies an inclusive-exclusive decision window', () async {
+      final MockPaymentsBackend backend = MockPaymentsBackend(clock: () => now);
+      final List<Map<String, Object?>> all = await backend.searchPayments(
+        query: '',
+        statuses: const <String>[],
+        sortBy: 'decidedAt',
+        sortDirection: 'desc',
+      );
+      final String currentDecision = all.first['decidedAt']! as String;
+      final String previousDecision = all.last['decidedAt']! as String;
+
+      final List<Map<String, Object?>> fromCurrent = await backend
+          .searchPayments(
+            query: '',
+            statuses: const <String>[],
+            sortBy: 'decidedAt',
+            sortDirection: 'desc',
+            decidedFrom: currentDecision,
+          );
+      final List<Map<String, Object?>> beforeCurrent = await backend
+          .searchPayments(
+            query: '',
+            statuses: const <String>[],
+            sortBy: 'decidedAt',
+            sortDirection: 'desc',
+            decidedTo: currentDecision,
+          );
+      final List<Map<String, Object?>> onlyPrevious = await backend
+          .searchPayments(
+            query: '',
+            statuses: const <String>[],
+            sortBy: 'decidedAt',
+            sortDirection: 'desc',
+            decidedFrom: previousDecision,
+            decidedTo: currentDecision,
+          );
+
+      expect(fromCurrent.map((r) => r['id']), <String>[
+        'seed-approved-current',
+        'seed-rejected-current',
+      ]);
+      expect(beforeCurrent.map((r) => r['id']), <String>[
+        'seed-approved-previous',
+      ]);
+      expect(onlyPrevious.map((r) => r['id']), <String>[
+        'seed-approved-previous',
+      ]);
+    });
+
     test('search returns copies of the authoritative records', () async {
       final MockPaymentsBackend backend = MockPaymentsBackend(clock: () => now);
 

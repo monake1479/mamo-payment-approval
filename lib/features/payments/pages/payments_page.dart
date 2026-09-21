@@ -66,10 +66,23 @@ class PaymentsPage extends StatelessWidget {
                     motionReplayKey: pageMotion?.activation,
                     startMotion: pageMotion?.startAnimation ?? true,
                     reportingTimeZone: state.reportingTimeZone,
+                    // Decisions never lie in the future; the current account
+                    // month is the widest window worth offering.
+                    lastSelectableDay:
+                        PaymentFormatters(
+                          reportingTimeZone: state.reportingTimeZone,
+                        ).accountDay(
+                          state.reportingPeriodStartUtc.add(
+                            const Duration(days: 31),
+                          ),
+                        ),
                     formatters: PaymentFormatters(
                       reportingTimeZone: state.reportingTimeZone,
                     ),
                     onOpenPayment: onOpenPayment,
+                    onRefresh: () async {
+                      await context.read<PaymentsCubit>().load();
+                    },
                   ),
                 },
               );

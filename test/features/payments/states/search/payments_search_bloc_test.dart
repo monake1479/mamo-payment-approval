@@ -5,8 +5,9 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_date_range.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_search_criteria.dart';
 import 'package:mamo_approval/common/data/payments/models/payments_sort.dart';
-
 import 'package:mamo_approval/common/result/models/result.dart';
 import 'package:mamo_approval/features/payments/states/search/payments_search_bloc.dart';
 import 'package:mamo_approval/features/payments/states/search/payments_search_event.dart';
@@ -20,6 +21,17 @@ void main() {
   const Set<PaymentStatus> approvedOnly = <PaymentStatus>{
     PaymentStatus.approved,
   };
+  const PaymentsSearchCriteria approvedCriteria = PaymentsSearchCriteria(
+    statuses: approvedOnly,
+  );
+  const PaymentsSort oldestFirst = PaymentsSort(
+    field: PaymentsSortField.decidedAt,
+    direction: SortDirection.ascending,
+  );
+  final PaymentsDateRange september = PaymentsDateRange(
+    startUtc: DateTime.utc(2026, 9),
+    endUtc: DateTime.utc(2026, 10),
+  );
 
   StubPaymentsRepository repositoryReturning(
     Result<PaymentsFailure, List<Payment>> result,
@@ -27,11 +39,7 @@ void main() {
     return StubPaymentsRepository(
       onLoad: () async =>
           const Success<PaymentsFailure, List<Payment>>(<Payment>[]),
-      onSearch: (
-        String query,
-        Set<PaymentStatus> statuses,
-        PaymentsSort sort,
-      ) async => result,
+      onSearch: (PaymentsSearchCriteria criteria) async => result,
     );
   }
 
@@ -51,19 +59,16 @@ void main() {
       wait: Duration.zero,
       expect: () => <PaymentsSearchState>[
         const PaymentsSearchState.loading(
-          query: 'Atlas',
-          statuses: <PaymentStatus>{},
+          criteria: PaymentsSearchCriteria(query: 'Atlas'),
         ),
         PaymentsSearchState.results(
-          query: 'Atlas',
-          statuses: const <PaymentStatus>{},
+          criteria: const PaymentsSearchCriteria(query: 'Atlas'),
           payments: <Payment>[approved],
         ),
       ],
       verify: (PaymentsSearchBloc _) {
-        expect(repository.searchQueries, <String>['Atlas']);
-        expect(repository.searchStatuses, <Set<PaymentStatus>>[
-          <PaymentStatus>{},
+        expect(repository.searches, <PaymentsSearchCriteria>[
+          const PaymentsSearchCriteria(query: 'Atlas'),
         ]);
       },
     );
@@ -81,10 +86,11 @@ void main() {
       wait: Duration.zero,
       expect: () => const <PaymentsSearchState>[
         PaymentsSearchState.loading(
-          query: 'nobody',
-          statuses: <PaymentStatus>{},
+          criteria: PaymentsSearchCriteria(query: 'nobody'),
         ),
-        PaymentsSearchState.empty(query: 'nobody', statuses: <PaymentStatus>{}),
+        PaymentsSearchState.empty(
+          criteria: PaymentsSearchCriteria(query: 'nobody'),
+        ),
       ],
     );
 
@@ -101,17 +107,16 @@ void main() {
       act: (PaymentsSearchBloc bloc) =>
           bloc.add(const PaymentsSearchEvent.statusFilterChanged(approvedOnly)),
       expect: () => const <PaymentsSearchState>[
-        PaymentsSearchState.loading(query: '', statuses: approvedOnly),
+        PaymentsSearchState.loading(criteria: approvedCriteria),
         PaymentsSearchState.error(
-          query: '',
-          statuses: approvedOnly,
+          criteria: approvedCriteria,
           failure: PaymentsUnavailableFailure(),
         ),
       ],
     );
 
     blocTest<PaymentsSearchBloc, PaymentsSearchState>(
-      'status filter keeps the current query and query keeps the filter',
+      'each criterion change keeps the others',
       setUp: () {
         repository = repositoryReturning(
           Success<PaymentsFailure, List<Payment>>(<Payment>[approved]),
@@ -123,19 +128,100 @@ void main() {
         await pumpEventQueue();
         bloc.add(const PaymentsSearchEvent.statusFilterChanged(approvedOnly));
         await pumpEventQueue();
+        bloc.add(PaymentsSearchEvent.dateRangeChanged(september));
+        await pumpEventQueue();
+        bloc.add(const PaymentsSearchEvent.sortChanged(oldestFirst));
+        await pumpEventQueue();
         bloc.add(const PaymentsSearchEvent.queryChanged('PO-1'));
       },
       wait: Duration.zero,
       verify: (PaymentsSearchBloc bloc) {
-        expect(repository.searchQueries, <String>['PO', 'PO', 'PO-1']);
-        expect(repository.searchStatuses, <Set<PaymentStatus>>[
-          <PaymentStatus>{},
-          approvedOnly,
-          approvedOnly,
+        expect(repository.searches, <PaymentsSearchCriteria>[
+          const PaymentsSearchCriteria(query: 'PO'),
+          const PaymentsSearchCriteria(query: 'PO', statuses: approvedOnly),
+          PaymentsSearchCriteria(
+            query: 'PO',
+            statuses: approvedOnly,
+            dateRange: september,
+          ),
+          PaymentsSearchCriteria(
+            query: 'PO',
+            statuses: approvedOnly,
+            dateRange: september,
+            sort: oldestFirst,
+          ),
+          PaymentsSearchCriteria(
+            query: 'PO-1',
+            statuses: approvedOnly,
+            dateRange: september,
+            sort: oldestFirst,
+          ),
         ]);
-        expect(bloc.state.query, 'PO-1');
-        expect(bloc.state.statuses, approvedOnly);
+        expect(bloc.state.criteria.query, 'PO-1');
+        expect(bloc.state.criteria.sort, oldestFirst);
       },
+    );
+
+    blocTest<PaymentsSearchBloc, PaymentsSearchState>(
+      'a sort other than the history order is an active criterion',
+      setUp: () {
+        repository = repositoryReturning(
+          Success<PaymentsFailure, List<Payment>>(<Payment>[
+            rejected,
+            approved,
+          ]),
+        );
+      },
+      build: () => createPaymentsSearchBlocFromRepository(repository),
+      act: (PaymentsSearchBloc bloc) =>
+          bloc.add(const PaymentsSearchEvent.sortChanged(oldestFirst)),
+      expect: () => <PaymentsSearchState>[
+        const PaymentsSearchState.loading(
+          criteria: PaymentsSearchCriteria(sort: oldestFirst),
+        ),
+        PaymentsSearchState.results(
+          criteria: const PaymentsSearchCriteria(sort: oldestFirst),
+          payments: <Payment>[rejected, approved],
+        ),
+      ],
+    );
+
+    blocTest<PaymentsSearchBloc, PaymentsSearchState>(
+      'restoring the history order with no other criterion returns to idle',
+      setUp: () {
+        repository = repositoryReturning(
+          Success<PaymentsFailure, List<Payment>>(<Payment>[approved]),
+        );
+      },
+      build: () => createPaymentsSearchBlocFromRepository(repository),
+      seed: () => PaymentsSearchState.results(
+        criteria: const PaymentsSearchCriteria(sort: oldestFirst),
+        payments: <Payment>[approved],
+      ),
+      act: (PaymentsSearchBloc bloc) => bloc.add(
+        const PaymentsSearchEvent.sortChanged(
+          PaymentsSort.decidedAtNewestFirst,
+        ),
+      ),
+      expect: () => const <PaymentsSearchState>[PaymentsSearchState.idle()],
+      verify: (PaymentsSearchBloc _) => expect(repository.searches, isEmpty),
+    );
+
+    blocTest<PaymentsSearchBloc, PaymentsSearchState>(
+      'removing the date window with no other criterion returns to idle',
+      setUp: () {
+        repository = repositoryReturning(
+          Success<PaymentsFailure, List<Payment>>(<Payment>[approved]),
+        );
+      },
+      build: () => createPaymentsSearchBlocFromRepository(repository),
+      seed: () => PaymentsSearchState.empty(
+        criteria: PaymentsSearchCriteria(dateRange: september),
+      ),
+      act: (PaymentsSearchBloc bloc) =>
+          bloc.add(const PaymentsSearchEvent.dateRangeChanged(null)),
+      expect: () => const <PaymentsSearchState>[PaymentsSearchState.idle()],
+      verify: (PaymentsSearchBloc _) => expect(repository.searches, isEmpty),
     );
 
     blocTest<PaymentsSearchBloc, PaymentsSearchState>(
@@ -147,33 +233,36 @@ void main() {
       },
       build: () => createPaymentsSearchBlocFromRepository(repository),
       seed: () => PaymentsSearchState.results(
-        query: 'Atlas',
-        statuses: const <PaymentStatus>{},
+        criteria: const PaymentsSearchCriteria(query: 'Atlas'),
         payments: <Payment>[approved],
       ),
       act: (PaymentsSearchBloc bloc) =>
           bloc.add(const PaymentsSearchEvent.queryChanged('   ')),
       wait: Duration.zero,
       expect: () => const <PaymentsSearchState>[PaymentsSearchState.idle()],
-      verify: (PaymentsSearchBloc _) =>
-          expect(repository.searchQueries, isEmpty),
+      verify: (PaymentsSearchBloc _) => expect(repository.searches, isEmpty),
     );
 
     blocTest<PaymentsSearchBloc, PaymentsSearchState>(
-      'cleared drops the query and the filter',
+      'cleared drops every criterion',
       setUp: () {
         repository = repositoryReturning(
           Success<PaymentsFailure, List<Payment>>(<Payment>[approved]),
         );
       },
       build: () => createPaymentsSearchBlocFromRepository(repository),
-      seed: () =>
-          const PaymentsSearchState.empty(query: 'x', statuses: approvedOnly),
+      seed: () => PaymentsSearchState.empty(
+        criteria: PaymentsSearchCriteria(
+          query: 'x',
+          statuses: approvedOnly,
+          dateRange: september,
+          sort: oldestFirst,
+        ),
+      ),
       act: (PaymentsSearchBloc bloc) =>
           bloc.add(const PaymentsSearchEvent.cleared()),
       expect: () => const <PaymentsSearchState>[PaymentsSearchState.idle()],
-      verify: (PaymentsSearchBloc _) =>
-          expect(repository.searchQueries, isEmpty),
+      verify: (PaymentsSearchBloc _) => expect(repository.searches, isEmpty),
     );
 
     blocTest<PaymentsSearchBloc, PaymentsSearchState>(
@@ -187,8 +276,7 @@ void main() {
       act: (PaymentsSearchBloc bloc) =>
           bloc.add(const PaymentsSearchEvent.refreshRequested()),
       expect: () => const <PaymentsSearchState>[],
-      verify: (PaymentsSearchBloc _) =>
-          expect(repository.searchQueries, isEmpty),
+      verify: (PaymentsSearchBloc _) => expect(repository.searches, isEmpty),
     );
 
     blocTest<PaymentsSearchBloc, PaymentsSearchState>(
@@ -200,26 +288,33 @@ void main() {
       },
       build: () => createPaymentsSearchBlocFromRepository(repository),
       seed: () => const PaymentsSearchState.error(
-        query: 'Marina',
-        statuses: approvedOnly,
+        criteria: PaymentsSearchCriteria(
+          query: 'Marina',
+          statuses: approvedOnly,
+        ),
         failure: PaymentsUnavailableFailure(),
       ),
       act: (PaymentsSearchBloc bloc) =>
           bloc.add(const PaymentsSearchEvent.refreshRequested()),
       expect: () => <PaymentsSearchState>[
         const PaymentsSearchState.loading(
-          query: 'Marina',
-          statuses: approvedOnly,
+          criteria: PaymentsSearchCriteria(
+            query: 'Marina',
+            statuses: approvedOnly,
+          ),
         ),
         PaymentsSearchState.results(
-          query: 'Marina',
-          statuses: approvedOnly,
+          criteria: const PaymentsSearchCriteria(
+            query: 'Marina',
+            statuses: approvedOnly,
+          ),
           payments: <Payment>[rejected],
         ),
       ],
       verify: (PaymentsSearchBloc _) {
-        expect(repository.searchQueries, <String>['Marina']);
-        expect(repository.searchStatuses, <Set<PaymentStatus>>[approvedOnly]);
+        expect(repository.searches, <PaymentsSearchCriteria>[
+          const PaymentsSearchCriteria(query: 'Marina', statuses: approvedOnly),
+        ]);
       },
     );
 
@@ -243,23 +338,20 @@ void main() {
         bloc.add(const PaymentsSearchEvent.queryChanged('Atl'));
         async.elapse(const Duration(milliseconds: 299));
 
-        expect(repository.searchQueries, isEmpty);
+        expect(repository.searches, isEmpty);
         expect(states, isEmpty);
 
         async.elapse(const Duration(milliseconds: 1));
 
-        expect(repository.searchQueries, <String>['Atl']);
-        expect(repository.searchStatuses, <Set<PaymentStatus>>[
-          <PaymentStatus>{},
+        expect(repository.searches, <PaymentsSearchCriteria>[
+          const PaymentsSearchCriteria(query: 'Atl'),
         ]);
         expect(states, <PaymentsSearchState>[
           const PaymentsSearchState.loading(
-            query: 'Atl',
-            statuses: <PaymentStatus>{},
+            criteria: PaymentsSearchCriteria(query: 'Atl'),
           ),
           PaymentsSearchState.results(
-            query: 'Atl',
-            statuses: const <PaymentStatus>{},
+            criteria: const PaymentsSearchCriteria(query: 'Atl'),
             payments: <Payment>[approved],
           ),
         ]);
@@ -290,12 +382,11 @@ void main() {
         bloc.add(const PaymentsSearchEvent.cleared());
         async.elapse(const Duration(seconds: 1));
 
-        expect(repository.searchQueries, <String>['']);
-        expect(repository.searchStatuses, <Set<PaymentStatus>>[approvedOnly]);
+        expect(repository.searches, <PaymentsSearchCriteria>[approvedCriteria]);
         expect(states.last, const PaymentsSearchState.idle());
         expect(
           states.whereType<PaymentsSearchLoading>().map(
-            (PaymentsSearchLoading state) => state.query,
+            (PaymentsSearchLoading state) => state.criteria.query,
           ),
           isNot(contains('Atlas')),
         );
@@ -312,15 +403,12 @@ void main() {
       final StubPaymentsRepository repository = StubPaymentsRepository(
         onLoad: () async =>
             const Success<PaymentsFailure, List<Payment>>(<Payment>[]),
-        onSearch:
-            (String query, Set<PaymentStatus> statuses, PaymentsSort sort) =>
-                statuses.contains(PaymentStatus.approved)
-                ? slow.future
-                : Future<Result<PaymentsFailure, List<Payment>>>.value(
-                    Success<PaymentsFailure, List<Payment>>(<Payment>[
-                      rejected,
-                    ]),
-                  ),
+        onSearch: (PaymentsSearchCriteria criteria) =>
+            criteria.statuses.contains(PaymentStatus.approved)
+            ? slow.future
+            : Future<Result<PaymentsFailure, List<Payment>>>.value(
+                Success<PaymentsFailure, List<Payment>>(<Payment>[rejected]),
+              ),
       );
       final PaymentsSearchBloc bloc = createPaymentsSearchBlocFromRepository(
         repository,
@@ -330,13 +418,17 @@ void main() {
       final StreamSubscription<PaymentsSearchState> subscription = bloc.stream
           .listen(states.add);
       addTearDown(subscription.cancel);
-      const Set<PaymentStatus> rejectedOnly = <PaymentStatus>{
-        PaymentStatus.rejected,
-      };
+      const PaymentsSearchCriteria rejectedCriteria = PaymentsSearchCriteria(
+        statuses: <PaymentStatus>{PaymentStatus.rejected},
+      );
 
       bloc.add(const PaymentsSearchEvent.statusFilterChanged(approvedOnly));
       await Future<void>.delayed(Duration.zero);
-      bloc.add(const PaymentsSearchEvent.statusFilterChanged(rejectedOnly));
+      bloc.add(
+        const PaymentsSearchEvent.statusFilterChanged(<PaymentStatus>{
+          PaymentStatus.rejected,
+        }),
+      );
       await Future<void>.delayed(Duration.zero);
       slow.complete(
         Success<PaymentsFailure, List<Payment>>(<Payment>[approved]),
@@ -344,15 +436,53 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       expect(states, <PaymentsSearchState>[
-        const PaymentsSearchState.loading(query: '', statuses: approvedOnly),
-        const PaymentsSearchState.loading(query: '', statuses: rejectedOnly),
+        const PaymentsSearchState.loading(criteria: approvedCriteria),
+        const PaymentsSearchState.loading(criteria: rejectedCriteria),
         PaymentsSearchState.results(
-          query: '',
-          statuses: rejectedOnly,
+          criteria: rejectedCriteria,
           payments: <Payment>[rejected],
         ),
       ]);
-      expect(bloc.state.statuses, rejectedOnly);
+    });
+
+    test('a sort change cancels a query search still in flight', () async {
+      final Completer<Result<PaymentsFailure, List<Payment>>> slow =
+          Completer<Result<PaymentsFailure, List<Payment>>>();
+      final StubPaymentsRepository repository = StubPaymentsRepository(
+        onLoad: () async =>
+            const Success<PaymentsFailure, List<Payment>>(<Payment>[]),
+        onSearch: (PaymentsSearchCriteria criteria) =>
+            criteria.sort == PaymentsSort.decidedAtNewestFirst
+            ? slow.future
+            : Future<Result<PaymentsFailure, List<Payment>>>.value(
+                Success<PaymentsFailure, List<Payment>>(<Payment>[rejected]),
+              ),
+      );
+      final PaymentsSearchBloc bloc = createPaymentsSearchBlocFromRepository(
+        repository,
+      );
+      addTearDown(bloc.close);
+      final List<PaymentsSearchState> states = <PaymentsSearchState>[];
+      final StreamSubscription<PaymentsSearchState> subscription = bloc.stream
+          .listen(states.add);
+      addTearDown(subscription.cancel);
+
+      bloc.add(const PaymentsSearchEvent.queryChanged('Marina'));
+      await pumpEventQueue();
+      bloc.add(const PaymentsSearchEvent.sortChanged(oldestFirst));
+      await pumpEventQueue();
+      slow.complete(
+        Success<PaymentsFailure, List<Payment>>(<Payment>[approved]),
+      );
+      await pumpEventQueue();
+
+      // The stale query search completed after the sort search; a different
+      // handler type cannot restart it, so the sequence guard drops it.
+      expect(states.last, isA<PaymentsSearchResults>());
+      expect((states.last as PaymentsSearchResults).payments, <Payment>[
+        rejected,
+      ]);
+      expect(bloc.state.criteria.sort, oldestFirst);
     });
 
     test('closing with a pending query edit leaves no timer behind', () {
@@ -372,7 +502,7 @@ void main() {
 
         expect(async.pendingTimers, isEmpty);
         async.elapse(const Duration(seconds: 1));
-        expect(repository.searchQueries, isEmpty);
+        expect(repository.searches, isEmpty);
       });
     });
   });

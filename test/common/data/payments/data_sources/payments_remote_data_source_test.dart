@@ -3,8 +3,9 @@ import 'package:mamo_approval/common/data/payments/data_sources/payments_remote_
 import 'package:mamo_approval/common/data/payments/dtos/payment_dto.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_date_range.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_search_criteria.dart';
 import 'package:mamo_approval/common/data/payments/models/payments_sort.dart';
-
 import 'package:mamo_approval/common/result/models/result.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_client.dart';
 import 'package:mamo_approval/mock_backend/payments/payments_backend_exception.dart';
@@ -13,7 +14,7 @@ import '../../../../support/payments_test_support.dart';
 
 void main() {
   group('PaymentsRemoteDataSource.search', () {
-    test('forwards query, decided statuses, and sort to the backend', () async {
+    test('maps the criteria to transport parameters', () async {
       final _RecordingBackend backend = _RecordingBackend(
         records: <Map<String, Object?>>[
           PaymentDto.fromModel(approvedPayment()).toJson(),
@@ -25,23 +26,44 @@ void main() {
 
       final Result<PaymentsFailure, List<Payment>> result = await dataSource
           .search(
-            query: 'atlas',
-            statuses: const <PaymentStatus>{
-              PaymentStatus.pending,
-              PaymentStatus.approved,
-            },
-            sort: PaymentsSort.decidedAtNewestFirst,
+            PaymentsSearchCriteria(
+              query: 'atlas',
+              statuses: const <PaymentStatus>{
+                PaymentStatus.pending,
+                PaymentStatus.approved,
+              },
+              dateRange: PaymentsDateRange(
+                startUtc: DateTime.utc(2026, 9),
+                endUtc: DateTime.utc(2026, 10),
+              ),
+              sort: const PaymentsSort(
+                field: PaymentsSortField.amount,
+                direction: SortDirection.ascending,
+              ),
+            ),
           );
 
-      expect(backend.queries, <String>['atlas']);
-      expect(backend.statuses, <List<String>>[
-        <String>['approved'],
+      expect(backend.calls, <String>[
+        'query=atlas statuses=[approved] sort=amount asc '
+            'from=2026-09-01T00:00:00.000Z to=2026-10-01T00:00:00.000Z',
       ]);
-      expect(backend.sorts, <String>['decidedAt desc']);
       expect(
         (result as Success<PaymentsFailure, List<Payment>>).value.single.id,
         approvedPayment().id,
       );
+    });
+
+    test('omits the date bounds when no window is set', () async {
+      final _RecordingBackend backend = _RecordingBackend();
+      final PaymentsRemoteDataSource dataSource = PaymentsRemoteDataSource(
+        backend,
+      );
+
+      await dataSource.search(const PaymentsSearchCriteria(query: 'x'));
+
+      expect(backend.calls, <String>[
+        'query=x statuses=[] sort=decidedAt desc from=null to=null',
+      ]);
     });
 
     test('drops a pending record even if the backend returned one', () async {
@@ -56,11 +78,7 @@ void main() {
       );
 
       final Result<PaymentsFailure, List<Payment>> result = await dataSource
-          .search(
-            query: '',
-            statuses: const <PaymentStatus>{},
-            sort: PaymentsSort.decidedAtNewestFirst,
-          );
+          .search(PaymentsSearchCriteria.none);
 
       final List<Payment> payments =
           (result as Success<PaymentsFailure, List<Payment>>).value;
@@ -87,11 +105,7 @@ void main() {
       );
 
       final Result<PaymentsFailure, List<Payment>> result = await dataSource
-          .search(
-            query: 'x',
-            statuses: const <PaymentStatus>{},
-            sort: PaymentsSort.decidedAtNewestFirst,
-          );
+          .search(const PaymentsSearchCriteria(query: 'x'));
 
       expect(
         (result as Failure<PaymentsFailure, List<Payment>>).failure,
@@ -108,11 +122,7 @@ void main() {
       );
 
       final Result<PaymentsFailure, List<Payment>> result = await dataSource
-          .search(
-            query: 'x',
-            statuses: const <PaymentStatus>{},
-            sort: PaymentsSort.decidedAtNewestFirst,
-          );
+          .search(const PaymentsSearchCriteria(query: 'x'));
 
       expect(
         (result as Failure<PaymentsFailure, List<Payment>>).failure,
@@ -131,11 +141,7 @@ void main() {
       );
 
       final Result<PaymentsFailure, List<Payment>> result = await dataSource
-          .search(
-            query: '',
-            statuses: const <PaymentStatus>{},
-            sort: PaymentsSort.decidedAtNewestFirst,
-          );
+          .search(PaymentsSearchCriteria.none);
 
       expect(
         (result as Failure<PaymentsFailure, List<Payment>>).failure,
@@ -153,9 +159,7 @@ final class _RecordingBackend implements PaymentsBackendClient {
 
   final List<Map<String, Object?>> records;
   final Exception? error;
-  final List<String> queries = <String>[];
-  final List<List<String>> statuses = <List<String>>[];
-  final List<String> sorts = <String>[];
+  final List<String> calls = <String>[];
 
   @override
   String get currency => 'AED';
@@ -169,10 +173,13 @@ final class _RecordingBackend implements PaymentsBackendClient {
     required List<String> statuses,
     required String sortBy,
     required String sortDirection,
+    String? decidedFrom,
+    String? decidedTo,
   }) async {
-    queries.add(query);
-    this.statuses.add(statuses);
-    sorts.add('$sortBy $sortDirection');
+    calls.add(
+      'query=$query statuses=$statuses sort=$sortBy $sortDirection '
+      'from=$decidedFrom to=$decidedTo',
+    );
     if (error != null) {
       throw error!;
     }

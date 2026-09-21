@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_search_criteria.dart';
 import 'package:mamo_approval/common/data/payments/use_cases/search_payments_use_case.dart';
 import 'package:mamo_approval/common/result/models/result.dart';
 import 'package:mamo_approval/features/payments/states/search/payments_search_event.dart';
@@ -32,6 +33,11 @@ final class PaymentsSearchBloc
       _onStatusFilterChanged,
       transformer: _restartable(),
     );
+    on<PaymentsSearchDateRangeChanged>(
+      _onDateRangeChanged,
+      transformer: _restartable(),
+    );
+    on<PaymentsSearchSortChanged>(_onSortChanged, transformer: _restartable());
     on<PaymentsSearchCleared>(_onCleared);
     on<PaymentsSearchRefreshRequested>(
       _onRefreshRequested,
@@ -56,14 +62,33 @@ final class PaymentsSearchBloc
     PaymentsSearchQueryChanged event,
     Emitter<PaymentsSearchState> emit,
   ) {
-    return _search(emit, query: event.query, statuses: state.statuses);
+    return _search(emit, state.criteria.copyWith(query: event.query));
   }
 
   Future<void> _onStatusFilterChanged(
     PaymentsSearchStatusFilterChanged event,
     Emitter<PaymentsSearchState> emit,
   ) {
-    return _search(emit, query: state.query, statuses: event.statuses);
+    return _search(
+      emit,
+      state.criteria.copyWith(
+        statuses: Set<PaymentStatus>.unmodifiable(event.statuses),
+      ),
+    );
+  }
+
+  Future<void> _onDateRangeChanged(
+    PaymentsSearchDateRangeChanged event,
+    Emitter<PaymentsSearchState> emit,
+  ) {
+    return _search(emit, state.criteria.copyWith(dateRange: event.dateRange));
+  }
+
+  Future<void> _onSortChanged(
+    PaymentsSearchSortChanged event,
+    Emitter<PaymentsSearchState> emit,
+  ) {
+    return _search(emit, state.criteria.copyWith(sort: event.sort));
   }
 
   void _onCleared(
@@ -82,47 +107,36 @@ final class PaymentsSearchBloc
     if (!state.isActive) {
       return Future<void>.value();
     }
-    return _search(emit, query: state.query, statuses: state.statuses);
+    return _search(emit, state.criteria);
   }
 
   Future<void> _search(
-    Emitter<PaymentsSearchState> emit, {
-    required String query,
-    required Set<PaymentStatus> statuses,
-  }) async {
+    Emitter<PaymentsSearchState> emit,
+    PaymentsSearchCriteria requested,
+  ) async {
     final int sequence = ++_searchSequence;
-    final String trimmed = query.trim();
-    final Set<PaymentStatus> selected = Set<PaymentStatus>.unmodifiable(
-      statuses,
+    final PaymentsSearchCriteria criteria = requested.copyWith(
+      query: requested.query.trim(),
     );
-    if (trimmed.isEmpty && selected.isEmpty) {
+    if (criteria.isEmpty) {
       emit(const PaymentsSearchState.idle());
       return;
     }
-    emit(PaymentsSearchState.loading(query: trimmed, statuses: selected));
+    emit(PaymentsSearchState.loading(criteria: criteria));
     final Result<PaymentsFailure, List<Payment>> result = await _searchPayments(
-      query: trimmed,
-      statuses: selected,
+      criteria,
     );
     if (emit.isDone || sequence != _searchSequence) {
       return;
     }
     emit(switch (result) {
       Failure<PaymentsFailure, List<Payment>>(:final failure) =>
-        PaymentsSearchState.error(
-          query: trimmed,
-          statuses: selected,
-          failure: failure,
-        ),
+        PaymentsSearchState.error(criteria: criteria, failure: failure),
       Success<PaymentsFailure, List<Payment>>(:final value)
           when value.isEmpty =>
-        PaymentsSearchState.empty(query: trimmed, statuses: selected),
+        PaymentsSearchState.empty(criteria: criteria),
       Success<PaymentsFailure, List<Payment>>(:final value) =>
-        PaymentsSearchState.results(
-          query: trimmed,
-          statuses: selected,
-          payments: value,
-        ),
+        PaymentsSearchState.results(criteria: criteria, payments: value),
     });
   }
 

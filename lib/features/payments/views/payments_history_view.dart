@@ -23,8 +23,10 @@ class PaymentsHistoryView extends StatelessWidget {
     required this.motionReplayKey,
     required this.startMotion,
     required this.reportingTimeZone,
+    required this.lastSelectableDay,
     required this.formatters,
     required this.onOpenPayment,
+    required this.onRefresh,
     super.key,
   });
 
@@ -32,8 +34,15 @@ class PaymentsHistoryView extends StatelessWidget {
   final Object? motionReplayKey;
   final bool startMotion;
   final String reportingTimeZone;
+
+  /// Latest calendar day the date filter offers.
+  final DateTime lastSelectableDay;
   final PaymentFormatters formatters;
   final ValueChanged<String> onOpenPayment;
+
+  /// Pull-to-refresh reloads the authoritative collection; an active search
+  /// re-runs through the page's collection listener.
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -54,35 +63,47 @@ class PaymentsHistoryView extends StatelessWidget {
             ),
           ),
         ),
-        const PaymentsSearchControls(),
+        PaymentsSearchControls(
+          formatters: formatters,
+          lastSelectableDay: lastSelectableDay,
+        ),
         Expanded(
           child: BlocBuilder<PaymentsSearchBloc, PaymentsSearchState>(
             builder: (BuildContext context, PaymentsSearchState searchState) {
-              return switch (searchState) {
-                PaymentsSearchIdle() =>
-                  payments.isEmpty
-                      ? PaymentsEmptyView(
-                          title: l10n.emptyPaymentsTitle,
-                          description: l10n.emptyPaymentsDescription,
-                        )
-                      : PaymentsList(
-                          storageKey: 'payments.history',
-                          payments: payments,
-                          formatters: formatters,
-                          onOpenPayment: onOpenPayment,
-                        ),
-                PaymentsSearchLoading() => const PaymentsSearchLoadingView(),
-                PaymentsSearchResults(payments: final List<Payment> results) =>
-                  PaymentsSearchResultsView(
-                    payments: results,
-                    formatters: formatters,
-                    onOpenPayment: onOpenPayment,
-                  ),
-                PaymentsSearchEmpty() => const PaymentsSearchEmptyView(),
-                PaymentsSearchError(:final failure) => PaymentsSearchErrorView(
-                  failure: failure,
+              return Semantics(
+                identifier: 'payments.refresh',
+                label: l10n.paymentsRefreshLabel,
+                child: RefreshIndicator(
+                  onRefresh: onRefresh,
+                  child: switch (searchState) {
+                    PaymentsSearchIdle() =>
+                      payments.isEmpty
+                          ? PaymentsEmptyView(
+                              title: l10n.emptyPaymentsTitle,
+                              description: l10n.emptyPaymentsDescription,
+                            )
+                          : PaymentsList(
+                              storageKey: 'payments.history',
+                              payments: payments,
+                              formatters: formatters,
+                              onOpenPayment: onOpenPayment,
+                            ),
+                    PaymentsSearchLoading() =>
+                      const PaymentsSearchLoadingView(),
+                    PaymentsSearchResults(
+                      payments: final List<Payment> results,
+                    ) =>
+                      PaymentsSearchResultsView(
+                        payments: results,
+                        formatters: formatters,
+                        onOpenPayment: onOpenPayment,
+                      ),
+                    PaymentsSearchEmpty() => const PaymentsSearchEmptyView(),
+                    PaymentsSearchError(:final failure) =>
+                      PaymentsSearchErrorView(failure: failure),
+                  },
                 ),
-              };
+              );
             },
           ),
         ),

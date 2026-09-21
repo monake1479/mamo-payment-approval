@@ -3,7 +3,7 @@ import 'package:mamo_approval/app/di/configure_dependencies.dart';
 import 'package:mamo_approval/common/data/payments/data_sources/payments_remote_data_source.dart';
 import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
 import 'package:mamo_approval/common/data/payments/models/payment.dart';
-import 'package:mamo_approval/common/data/payments/models/payments_sort.dart';
+import 'package:mamo_approval/common/data/payments/models/payments_search_criteria.dart';
 import 'package:mamo_approval/common/data/payments/payments_repository.dart';
 import 'package:mamo_approval/common/data/payments/use_cases/create_payment_request_use_case.dart';
 import 'package:mamo_approval/common/data/payments/use_cases/decide_payment_use_case.dart';
@@ -37,25 +37,36 @@ final class StubPaymentsBackend implements PaymentsBackendClient {
     return (await onLoad()).map(_record).toList(growable: false);
   }
 
-  /// Mirrors the mock backend's decided-only, case-insensitive rules and its
-  /// decision-time ordering over the same [onLoad] data so page tests can
-  /// drive search without a second store.
+  /// Mirrors the mock backend's decided-only, case-insensitive rules, its
+  /// decision window, and its decision-time ordering over the same [onLoad]
+  /// data so page tests can drive search without a second store.
   @override
   Future<List<Map<String, Object?>>> searchPayments({
     required String query,
     required List<String> statuses,
     required String sortBy,
     required String sortDirection,
+    String? decidedFrom,
+    String? decidedTo,
   }) async {
     searchCalls += 1;
     final String needle = query.trim().toLowerCase();
     final int sign = sortDirection == 'asc' ? 1 : -1;
+    final DateTime? from = decidedFrom == null
+        ? null
+        : DateTime.parse(decidedFrom);
+    final DateTime? to = decidedTo == null ? null : DateTime.parse(decidedTo);
     final List<Payment> matches =
         (await onLoad())
             .where((Payment payment) => payment.status != PaymentStatus.pending)
             .where(
               (Payment payment) =>
                   statuses.isEmpty || statuses.contains(payment.status.name),
+            )
+            .where(
+              (Payment payment) =>
+                  (from == null || !payment.decidedAt!.isBefore(from)) &&
+                  (to == null || payment.decidedAt!.isBefore(to)),
             )
             .where(
               (Payment payment) =>
@@ -235,17 +246,13 @@ final class StubPaymentsRepository extends PaymentsRepository {
   )?
   onDecide;
   final Future<Result<PaymentsFailure, List<Payment>>> Function(
-    String query,
-    Set<PaymentStatus> statuses,
-    PaymentsSort sort,
+    PaymentsSearchCriteria criteria,
   )?
   onSearch;
   int loadCalls = 0;
   int createCalls = 0;
   int decideCalls = 0;
-  final List<String> searchQueries = <String>[];
-  final List<Set<PaymentStatus>> searchStatuses = <Set<PaymentStatus>>[];
-  final List<PaymentsSort> searchSorts = <PaymentsSort>[];
+  final List<PaymentsSearchCriteria> searches = <PaymentsSearchCriteria>[];
 
   @override
   String get reportingTimeZone => 'Asia/Dubai';
@@ -277,15 +284,11 @@ final class StubPaymentsRepository extends PaymentsRepository {
   }
 
   @override
-  Future<Result<PaymentsFailure, List<Payment>>> searchPayments({
-    required String query,
-    required Set<PaymentStatus> statuses,
-    required PaymentsSort sort,
-  }) async {
-    searchQueries.add(query);
-    searchStatuses.add(statuses);
-    searchSorts.add(sort);
-    return onSearch?.call(query, statuses, sort) ??
+  Future<Result<PaymentsFailure, List<Payment>>> searchPayments(
+    PaymentsSearchCriteria criteria,
+  ) async {
+    searches.add(criteria);
+    return onSearch?.call(criteria) ??
         const Failure<PaymentsFailure, List<Payment>>(
           PaymentsUnavailableFailure(),
         );
@@ -321,6 +324,8 @@ final class _UnusedBackendClient implements PaymentsBackendClient {
     required List<String> statuses,
     required String sortBy,
     required String sortDirection,
+    String? decidedFrom,
+    String? decidedTo,
   }) => throw UnimplementedError();
 }
 

@@ -24,6 +24,7 @@ class PaymentsList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.separated(
       key: PageStorageKey<String>(storageKey),
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: AppTheme.sectionGap),
       itemCount: payments.length,
       separatorBuilder: (BuildContext context, int index) =>

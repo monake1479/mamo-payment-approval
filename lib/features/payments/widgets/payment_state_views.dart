@@ -77,7 +77,12 @@ class PaymentsEmptyView extends StatelessWidget {
       ),
     );
     return Center(
-      child: scrollable ? SingleChildScrollView(child: content) : content,
+      child: scrollable
+          ? SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: content,
+            )
+          : content,
     );
   }
 }
@@ -108,6 +113,7 @@ class PaymentsErrorView extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     return Center(
       child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(AppTheme.sectionGap),
         child: Semantics(
           identifier: identifier,
