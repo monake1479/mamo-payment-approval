@@ -4,18 +4,19 @@ A production-minded Flutter implementation of a payment approval flow (the "Mamo
 
 The application is intentionally small, but it is structured as code that could evolve safely: business rules are separated from Flutter widgets, external capabilities sit behind interfaces, and acceptance criteria are backed by focused tests.
 
-> Status: project foundation. The user-facing payment flow will be implemented in the next iteration.
+> Status: the baseline is implemented on `dev`. Home, Payments, decided-payment details, the masked approval overlay with native device authentication, the draggable debug action, payments search, the appearance setting, and the About section were delivered through reviewed PRs. Slice status and evidence live in [the implementation plan](docs/implementation-plan.md).
 
 ## Product scope
 
-The app will provide:
+The app provides:
 
 - a home summary for the current month and recent payments;
-- a newest-first list of all payments;
+- a newest-first list of all decided payments;
+- text search, status and decision-date filters, sort order, and pull-to-refresh over the decided history;
 - details for payments that have already been approved or rejected;
 - an approval overlay with masked sensitive data;
 - an explicit device-authentication step before sensitive data is revealed;
-- a draggable debug action available on every screen to simulate an incoming payment request.
+- a draggable debug action available on every screen to simulate an incoming payment request;
 - a settings screen with the appearance mode and an About section that summarises the delivered scope and shows the installed version/build/environment/package and device-authentication availability.
 
 See [the product requirements](docs/product/requirements.md) for the complete acceptance-criteria map.
@@ -23,11 +24,13 @@ See [the product requirements](docs/product/requirements.md) for the complete ac
 ## Engineering approach
 
 - Flutter for Android and iOS only.
-- Feature-first structure with domain, data, and presentation boundaries added when they earn their place.
-- BLoC/Cubit for explicit state transitions and testable business logic.
-- `go_router` in app composition, passed to `MaterialApp.router`; feature routes arrive with their screens.
+- Feature-first structure: pages, widgets, and state owners live under `lib/features/<feature>/`, with one `states/<concern>/` directory per Cubit or BLoC and no extra `presentation/` layer.
+- Reusable models, DTOs, data sources, repositories, and use cases are grouped by domain under `lib/common/data/<domain>/`, so several features can share them without importing each other ([ADR 0011](docs/decisions/0011-shared-data-and-use-case-layer.md)).
+- BLoC/Cubit for explicit state transitions and testable business logic; the decided-history search is the one event-driven BLoC ([ADR 0014](docs/decisions/0014-event-driven-bloc-for-payments-search.md)).
+- `MamoPaymentRouter` in `lib/app/navigation/` owns the single `GoRouter`, which the app injects into `MaterialApp.router`; pages provide their own state owners, so the router never wraps routes in providers.
+- A deterministic in-memory mock backend under `lib/mock_backend/` is the only backend; the remote data source stays production-shaped and maps transport errors into typed failures.
 - External capabilities, including device authentication, behind replaceable interfaces.
-- Dependency direction from presentation to domain contracts, never from domain code to Flutter.
+- Presentation depends on use cases and shared models, never on repositories or concrete data sources; domain and data code do not import Flutter.
 - Tests chosen at the lowest useful level: Flutter unit tests for logic, widget tests for rendering and interaction, and Maestro for native E2E journeys.
 
 The architecture is described in [docs/architecture/overview.md](docs/architecture/overview.md). Decisions and unresolved trade-offs are recorded under [docs/decisions](docs/decisions).
@@ -89,9 +92,9 @@ fvm flutter test
 python3 -B -m unittest discover -s tool/tests -p 'test_*.py'
 ```
 
-CI is configured for PRs targeting `dev` or `main` and pushes to both branches. It checks PR direction and uploads logs. The setup action reads `.fvmrc` directly and places that exact SDK on PATH, so CI runs Flutter/Dart commands without a separate FVM installation. Local commands use the FVM wrapper.
+CI is configured for PRs targeting `dev` or `main` and pushes to both branches. It checks PR direction and uploads logs. A separate Android reviewer-build workflow runs on PRs into `main`, builds the `prod` release APK, and uploads it as a private workflow artifact kept for 30 days, so reviewers can install the promoted build without compiling. The setup action reads `.fvmrc` directly and places that exact SDK on PATH, so CI runs Flutter/Dart commands without a separate FVM installation. Local commands use the FVM wrapper.
 
-Maestro is the selected Android/iOS E2E tool. Foundation launch/resume and configuration-failure flows live under `maestro/`; payment journeys are added with their slices. CI does not run Maestro yet. See [the testing strategy](docs/testing/strategy.md) and [Maestro workflow](.ai/workflows/maestro-e2e.md) for build pairing, commands, and evidence.
+Maestro is the selected Android/iOS E2E tool. Flows under `maestro/` cover foundation launch/resume, a mismatched native flavor and Dart entry point, the decided payments list and monthly summary, payment details preserving the Home and Payments origins, system Back returning to Home, the draggable incoming-request action surviving navigation, and rejecting an incoming request without authentication. A search journey is a follow-up. CI does not run Maestro yet. See [the testing strategy](docs/testing/strategy.md) and [Maestro workflow](.ai/workflows/maestro-e2e.md) for build pairing, commands, and evidence.
 
 CI enforces `pubspec.lock` and scans publishable files/history with pinned Gitleaks.
 Run `python3 tool/scan_secrets.py` locally with Gitleaks 8.30.1 on PATH, or supply
@@ -121,17 +124,34 @@ See [the review loop](.ai/workflows/review-loop.md), [PR template](.github/pull_
 
 ```text
 lib/
-  app/                         # Application composition, navigation, and theme
-  core/                        # Cross-feature primitives only when genuinely shared
-  features/payments/
-    data/                      # Repository implementations and local/demo data source
-    domain/                    # Payment model, contracts, and business rules
-    presentation/             # Pages, widgets, and BLoC/Cubit state
+  main_dev.dart, main_staging.dart, main_prod.dart
+                               # Thin flavor entry points sharing one bootstrap
+  app/                         # Composition: bootstrap, config/, di/, errors/, theme/,
+                               # and navigation/ with MamoPaymentRouter
+  common/
+    converters/                # Shared JSON converters
+    data/<domain>/             # payments, appearance, device_authentication, app_info:
+                               # models/, use_cases/, data_sources/, error_handling/,
+                               # the repository, and dtos/ + converters/ where a transport shape exists
+    result/models/             # Result and Unit primitives
+    widgets/                   # Cross-feature widgets
+  features/<feature>/          # payments, settings
+    pages/                     # Routed pages
+    views/                     # Per-state views selected by a page
+    widgets/                   # Feature widgets
+    states/<concern>/          # One Cubit or BLoC per concern, e.g. payments/, approval/,
+                               # debug_action/, search/, theme_mode/, about/
+  l10n/                        # English ARB copy; generated classes are ignored
+  mock_backend/payments/       # Deterministic in-memory backend behind the backend-client contract
+test/                          # Mirrors lib/: app/, common/, features/, mock_backend/, support/
+maestro/                       # Native E2E journeys
+tool/                          # Push gate, test-scope map, secret scan, and their Python tests
 docs/
-  architecture/               # System boundaries and dependency rules
-  decisions/                  # Small architecture decision records
-  product/                    # Requirements and acceptance criteria
-  testing/                    # Test strategy and coverage expectations
+  architecture/                # System boundaries and dependency rules
+  decisions/                   # Small architecture decision records
+  features/                    # Feature notes for delivered increments
+  product/                     # Requirements and acceptance criteria
+  testing/                     # Test strategy and coverage expectations
 .ai/                           # Concise, tool-agnostic instructions for AI-assisted work
 ```
 
@@ -146,4 +166,4 @@ The final submission will include:
 
 The About section on the settings screen carries an in-app summary of the delivered scope (`DELIVERY-03`, [ADR 0015](docs/decisions/0015-about-section-and-package-info.md)); decisions and limitations remain only in the repository documentation.
 
-Reviewer access without compilation remains required. Candidate original additions live in [the extension backlog](docs/product/extension-backlog.md) for joint selection after the baseline flow works.
+Reviewer access without compilation remains required. The baseline flow works, and payments search was selected from [the extension backlog](docs/product/extension-backlog.md) and delivered as the original addition; the backlog keeps the remaining candidates and deferred owner requests for any further selection.
