@@ -92,9 +92,9 @@ fvm flutter test
 python3 -B -m unittest discover -s tool/tests -p 'test_*.py'
 ```
 
-CI is configured for PRs targeting `dev` or `main` and pushes to both branches. It checks PR direction and uploads logs. The setup action reads `.fvmrc` directly and places that exact SDK on PATH, so CI runs Flutter/Dart commands without a separate FVM installation. Local commands use the FVM wrapper.
+CI is configured for PRs targeting `dev` or `main` and pushes to both branches. It checks PR direction and uploads logs. A separate Android reviewer-build workflow runs on PRs into `main`, builds the `prod` release APK, and uploads it as a private workflow artifact kept for 30 days, so reviewers can install the promoted build without compiling. The setup action reads `.fvmrc` directly and places that exact SDK on PATH, so CI runs Flutter/Dart commands without a separate FVM installation. Local commands use the FVM wrapper.
 
-Maestro is the selected Android/iOS E2E tool. Foundation launch/resume and configuration-failure flows live under `maestro/`; payment journeys are added with their slices. CI does not run Maestro yet. See [the testing strategy](docs/testing/strategy.md) and [Maestro workflow](.ai/workflows/maestro-e2e.md) for build pairing, commands, and evidence.
+Maestro is the selected Android/iOS E2E tool. Flows under `maestro/` cover foundation launch/resume, a mismatched native flavor and Dart entry point, the decided payments list and monthly summary, payment details preserving the Home and Payments origins, system Back returning to Home, the draggable incoming-request action surviving navigation, and rejecting an incoming request without authentication. A search journey is a follow-up. CI does not run Maestro yet. See [the testing strategy](docs/testing/strategy.md) and [Maestro workflow](.ai/workflows/maestro-e2e.md) for build pairing, commands, and evidence.
 
 CI enforces `pubspec.lock` and scans publishable files/history with pinned Gitleaks.
 Run `python3 tool/scan_secrets.py` locally with Gitleaks 8.30.1 on PATH, or supply
@@ -166,4 +166,4 @@ The final submission will include:
 
 The About section on the settings screen carries an in-app summary of the delivered scope (`DELIVERY-03`, [ADR 0015](docs/decisions/0015-about-section-and-package-info.md)); decisions and limitations remain only in the repository documentation.
 
-Reviewer access without compilation remains required. Candidate original additions live in [the extension backlog](docs/product/extension-backlog.md) for joint selection after the baseline flow works.
+Reviewer access without compilation remains required. The baseline flow works, and payments search was selected from [the extension backlog](docs/product/extension-backlog.md) and delivered as the original addition; the backlog keeps the remaining candidates and deferred owner requests for any further selection.
