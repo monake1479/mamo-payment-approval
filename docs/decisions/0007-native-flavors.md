@@ -1,6 +1,6 @@
 # ADR 0007: Native flavors
 
-- Status: Accepted
+- Status: Accepted (identity table revised by [ADR 0012](0012-single-application-identity.md) on 2026-09-21)
 - Date: 2026-09-17
 
 ## Context and alternatives
@@ -13,20 +13,22 @@ Dart defines alone cannot select native installation identities. Native flavors 
 
 Use Android product flavors in one `environment` dimension and shared iOS schemes named `dev`, `staging`, and `prod`. Each iOS scheme maps Run/Test/Analyze to `Debug-<flavor>`, Profile to `Profile-<flavor>`, and Archive to `Release-<flavor>` for the same Runner target. The project and RunnerTests expose matching configurations. Retain Flutter's Debug/Release xcconfig inheritance; Profile uses Release settings.
 
-| Flavor | Launcher name | Android application ID | iOS bundle ID |
+The identity table below records the original per-flavor scheme. [ADR 0012](0012-single-application-identity.md) revised it on 2026-09-21: every flavor now ships the single launcher name `Mamo Approval` and the single application/bundle identifier `mamo.payment.approval`, so the flavors no longer differ in installed identity.
+
+| Flavor | Launcher name (original) | Android application ID (original) | iOS bundle ID (original) |
 |---|---|---|---|
 | `dev` | Mamo Dev | `com.danieloblak.mamo_payment_approval_challenge.dev` | `com.danieloblak.mamoPaymentApprovalChallenge.dev` |
 | `staging` | Mamo Staging | `com.danieloblak.mamo_payment_approval_challenge.staging` | `com.danieloblak.mamoPaymentApprovalChallenge.staging` |
 | `prod` | Mamo | `com.danieloblak.mamo_payment_approval_challenge` | `com.danieloblak.mamoPaymentApprovalChallenge` |
 
-Keep the existing base identifiers for `prod`. Android's source namespace remains unchanged. Flavor and build mode are independent: all three support debug, profile, and release. `default-flavor: dev` makes ordinary local commands safe by default; distribution and E2E commands must still name the intended flavor explicitly.
+Android's source namespace remains unchanged. Flavor and build mode are independent: all three support debug, profile, and release. `default-flavor: dev` makes ordinary local commands safe by default; distribution and E2E commands must still name the intended flavor explicitly.
 
 Use `lib/main_dev.dart`, `lib/main_staging.dart`, and `lib/main_prod.dart` with a shared bootstrap (ADR 0010). This supersedes the initial single-entrypoint arrangement. Commands pair `--flavor <name>` with `-t lib/main_<name>.dart`; Xcode Runner configurations and VS Code launches encode this pair. Runtime validation rejects disagreement with native `appFlavor`, also in release. Do not create another selector via `--dart-define`, speculative API URLs, secrets, or flavor-specific business rules.
 
 ## Consequences
 
 - VS Code launch configurations and Xcode schemes use the same flavor names.
-- Separate native identifiers isolate each installation's app sandbox. This does not introduce persistence or separate backend environments.
+- Originally, separate native identifiers isolated each installation's app sandbox without introducing persistence or separate backend environments. ADR 0012 collapsed the flavors to one identity, so they can no longer be installed side by side.
 - The required debug request action is a product capability, not conditional on flavor or build mode.
 - Flavors do not permit an authentication bypass, additional sensitive logging, or production test fakes.
 - Android release builds remain debug-key-signed until distribution signing is configured. iOS device signing/provisioning remains separate work; flavor names do not establish store readiness.

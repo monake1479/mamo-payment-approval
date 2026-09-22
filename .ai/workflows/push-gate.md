@@ -35,6 +35,8 @@ For Flutter-relevant changes the gate runs, in order:
 
 Any failed command or changed tracked/untracked input blocks the push. Generated ignored files may change. The hook verifies the current branch/HEAD/destination again afterward. Do not edit the checkout while checks run. It does not automatically run Maestro, native builds, or manual reviews; their affected-slice requirements remain in the quality gate.
 
+Child check commands run without Git's repository-local environment variables, so SDK managers can inspect their own Git caches. The gate's own repository/destination checks retain the original hook context; this isolation does not skip any check.
+
 ## Request, approve, consume
 
 A test exception skips **only the selected Flutter tests**, never other selected checks. It is tied to the exact commit, branch, configured remote and push-URL hash, and target branch. No generic `SKIP_TESTS` flag is supported. A push with no selected Flutter tests needs no exception.

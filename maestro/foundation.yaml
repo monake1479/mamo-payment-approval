@@ -3,14 +3,18 @@ name: Foundation launch and resume
 ---
 - launchApp:
     clearState: true
-- assertVisible: Payment approval
+- assertVisible:
+    id: home.page
+- assertVisible: Home
 - assertNotVisible:
     id: app.failure
 - takeScreenshot: foundation
 - pressKey: Home
 - launchApp:
     stopApp: false
-- assertVisible: Payment approval
+- assertVisible:
+    id: home.page
+- assertVisible: Home
 - assertNotVisible:
     id: app.failure
 - takeScreenshot: resumed

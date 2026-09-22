@@ -147,8 +147,18 @@ def approve_exception(args):
 def run_check(directory, attempt_id, label, command, results):
     log_name = f"{attempt_id}-{label}.log"
     print(f"Push gate: {label}", flush=True)
+    # SDK managers run Git in their own caches; hook-local repository context
+    # must not redirect those commands into the application worktree.
+    local_git_variables = set(git("rev-parse", "--local-env-vars").splitlines())
+    check_environment = {
+        key: value for key, value in os.environ.items()
+        if key not in local_git_variables
+    }
     with (directory / log_name).open("w", encoding="utf-8") as log:
-        result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, check=False)
+        result = subprocess.run(
+            command, stdout=log, stderr=subprocess.STDOUT,
+            env=check_environment, check=False,
+        )
     results.append({"check": label, "exit_code": result.returncode, "log": log_name})
     if result.returncode:
         raise GateError(f"{label} failed. Inspect {directory / log_name}.")

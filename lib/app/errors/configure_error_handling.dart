@@ -1,9 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
-import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostics.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart';
+import 'package:mamo_approval/app/diagnostics/local_diagnostics.dart';
+import 'package:mamo_approval/app/errors/app_failure.dart';
+import 'package:mamo_approval/app/errors/app_failure_app.dart';
 
 void configureErrorHandling(LocalDiagnostics diagnostics) {
   FlutterError.onError = (details) {

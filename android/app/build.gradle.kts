@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.danieloblak.mamo_payment_approval_challenge"
+        applicationId = "mamo.payment.approval"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -28,21 +28,23 @@ android {
         resValues = true
     }
 
+    // Per owner decision (2026-09-21) every flavor ships the single "Mamo Approval"
+    // installation identity `mamo.payment.approval`; see ADR 0007. Flavors remain
+    // for entry-point/scheme selection but no longer differ in id or launcher name,
+    // so dev/staging/prod cannot be installed side by side.
     flavorDimensions += "environment"
     productFlavors {
         create("dev") {
             dimension = "environment"
-            applicationIdSuffix = ".dev"
-            resValue("string", "app_name", "Mamo Dev")
+            resValue("string", "app_name", "Mamo Approval")
         }
         create("staging") {
             dimension = "environment"
-            applicationIdSuffix = ".staging"
-            resValue("string", "app_name", "Mamo Staging")
+            resValue("string", "app_name", "Mamo Approval")
         }
         create("prod") {
             dimension = "environment"
-            resValue("string", "app_name", "Mamo")
+            resValue("string", "app_name", "Mamo Approval")
         }
     }
 

@@ -64,6 +64,10 @@ class PushGateTest(unittest.TestCase):
             "command = ' '.join(sys.argv[1:])\n"
             "with open(os.environ['FIXTURE_CALLS'], 'a') as stream:\n"
             "    stream.write(command + '\\n')\n"
+            "if os.environ.get('FIXTURE_REJECT_GIT_CONTEXT') and any(\n"
+            "    key in os.environ for key in ('GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE')\n"
+            "):\n"
+            "    sys.exit(92)\n"
             "if os.environ.get('FIXTURE_MUTATE') == command:\n"
             "    pathlib.Path('source.txt').write_text('changed during checks')\n"
             "sys.exit(1 if os.environ.get('FIXTURE_FAIL') == command else 0)\n"
@@ -347,13 +351,14 @@ class PushGateTest(unittest.TestCase):
         self.assertEqual(self.commands(), [])
         self.assertEqual([c["check"] for c in self.records()[-1]["checks"]], ["hook-tests"])
 
-    def test_new_branch_scope_includes_all_unpushed_commits(self):
+    def test_new_branch_scope_includes_retired_unpushed_source(self):
         self.git("update-ref", "refs/remotes/origin/dev", "HEAD")
         tests = self.repo / "test/app"
         tests.mkdir(parents=True)
         (tests / "app_test.dart").write_text("fixture")
         (tests / "app_failure_view_test.dart").write_text("fixture")
-        source = self.repo / "lib/features/payments/presentation/pages/foundation_page.dart"
+        (tests / "app_theme_test.dart").write_text("fixture")
+        source = self.repo / "lib/features/payments/pages/foundation_page.dart"
         source.parent.mkdir(parents=True)
         source.write_text("fixture")
         self.commit()
@@ -361,7 +366,7 @@ class PushGateTest(unittest.TestCase):
         self.commit()
         result = self.gate()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(self.commands()[-1], "flutter test test/app/app_failure_view_test.dart test/app/app_test.dart")
+        self.assertEqual(self.commands()[-1], "flutter test")
 
     def test_unavailable_remote_history_falls_back_to_full_suite(self):
         payload = f"{BRANCH} {self.git('rev-parse', 'HEAD')} {BRANCH} {'1' * 40}\n"
@@ -370,11 +375,21 @@ class PushGateTest(unittest.TestCase):
         self.assertEqual(self.commands()[-1], "flutter test")
         self.assertIsNone(self.records()[1]["base"])
 
+    def test_checks_do_not_inherit_hook_repository_context(self):
+        result = self.gate(extra={
+            "GIT_DIR": str(self.repo / ".git"),
+            "GIT_WORK_TREE": str(self.repo),
+            "GIT_INDEX_FILE": str(self.repo / ".git/index"),
+            "FIXTURE_REJECT_GIT_CONTEXT": "1",
+        })
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.commands()[-1], "flutter test")
+
 
 class TestScopeTest(unittest.TestCase):
-    def test_existing_foundation_mapping(self):
-        scope = select_scope(["lib/features/payments/presentation/pages/foundation_page.dart"], SOURCE)
-        self.assertEqual(scope["flutter_tests"], ["test/app/app_failure_view_test.dart", "test/app/app_test.dart"])
+    def test_retired_foundation_page_falls_back_to_full_suite(self):
+        scope = select_scope(["lib/features/payments/pages/foundation_page.dart"], SOURCE)
+        self.assertIsNone(scope["flutter_tests"])
 
     def test_unknown_shared_deleted_and_missing_inputs_fall_back(self):
         for path in ("lib/new.dart", "lib/core/shared.dart", "pubspec.lock", "lib/main.dart", "test/deleted_test.dart"):
@@ -382,7 +397,7 @@ class TestScopeTest(unittest.TestCase):
                 self.assertIsNone(select_scope([path], SOURCE)["flutter_tests"])
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            source = root / "lib/features/payments/presentation/pages/foundation_page.dart"
+            source = root / "lib/features/payments/pages/foundation_page.dart"
             source.parent.mkdir(parents=True)
             source.write_text("fixture")
             self.assertIsNone(select_scope([str(source.relative_to(root))], root)["flutter_tests"])

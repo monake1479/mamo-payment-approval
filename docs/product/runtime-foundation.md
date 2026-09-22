@@ -16,7 +16,8 @@ there is no startup controller, fatal-state notifier, or synthetic environment a
 
 ## Failure screen
 
-Normal app composition uses the DI-owned `GoRouter` through `MaterialApp.router`.
+Normal app composition uses the `GoRouter` owned by the DI-registered
+`MamoPaymentRouter` through `MaterialApp.router`.
 The `/` route renders the existing foundation page. Unknown paths reuse the safe
 localized unexpected-error view, never raw route exceptions or URIs. Router
 identity and location survive root rebuilds. `AppFailureApp` renders startup/build
@@ -32,7 +33,7 @@ failures without requiring a router; no new layout or visual direction is introd
 - Appearance: existing light theme; centered icon/text column, 24-pixel padding,
   maximum width 520, gaps 24/12. Reuse these tokens on the foundation page.
 - Compact/expanded: safe area, width constraint, vertical scrolling; no breakpoint
-  needed for this single column. Verify 320x640 and 1024x768 at 200% text size.
+  needed for this single column. Verify 320x640 and 768x1024 portrait viewports at 200% text size.
 - Accessibility: readable text, non-colour error cue, live-region semantics with
   stable identifier `app.failure`. No tappable controls, focus trap, or animation.
 - Empty/data/submitting are not states of this terminal screen. Success continues
@@ -58,12 +59,15 @@ inactive and removed when active again. It resizes with the window and does not
 replace navigation/content. It contains no readable copy or interaction. A native
 cover is needed before the OS captures a snapshot, independently of Dart frames.
 On Android 13+, disable recents screenshots through the Activity API; the system
-may substitute its window background. Normal foreground screenshots remain allowed.
-
-Android 12 and older are **not protected yet**: approval of the broader
-`FLAG_SECURE` screenshot restriction is pending. This is an explicit incomplete
-criterion, not a claim of complete cross-version protection. No foreground
-screenshot restriction is added without that choice.
+may substitute its window background. The delegated implementation keeps ordinary
+foreground screenshots and screen recording allowed on these versions; it does not
+apply a broader `FLAG_SECURE` restriction. On Android API 24–32, which do not offer
+the recents-only API, the delegated implementation applies `FLAG_SECURE` as a
+stronger privacy boundary, blocking ordinary foreground screenshots and screen
+recording while the activity is visible. This API 24–32 choice is subject to owner
+review. App-switcher snapshot behavior on those older devices remains unverified
+until native evidence is collected, so this document makes no claim of complete
+cross-version preview coverage.
 
 Native checks must verify the preview visually, repeated background/resume,
 preserved content, and no reauthentication. Swift tests cover opaque/idempotent

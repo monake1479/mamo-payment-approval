@@ -2,8 +2,11 @@
 
 - [Product requirements](product/requirements.md): behavioural source of truth and acceptance criteria.
 - [Architecture overview](architecture/overview.md): boundaries, state ownership, and runtime flow.
-- [ADR 0001](decisions/0001-feature-first-clean-architecture.md): initial architecture decision.
-- [Money representation](decisions/0002-money-representation.md): deferred details for the explicit `double` direction.
+- [ADR 0001](decisions/0001-feature-first-clean-architecture.md): superseded initial feature-first data placement.
+- [ADR 0011](decisions/0011-shared-data-and-use-case-layer.md): shared data, repository, use-case, and generated DI boundaries.
+- [ADR 0013](decisions/0013-persistent-theme-mode.md): user-selectable, persistent appearance mode and the `shared_preferences` dependency.
+- [Appearance mode](features/appearance.md): theme-mode feature note, contract, and accessibility.
+- [Money representation](decisions/0002-money-representation.md): accepted `double`, currency, validation, and limit boundaries.
 - [Testing strategy](testing/strategy.md): test levels and critical scenarios.
 - [Verification record template](testing/evidence-template.md): criteria, local input identity, results, findings, and handoff evidence.
 - [Agent workflow review](testing/agent-workflow-review.md): independent audit scope, corrections, and verification limits.

@@ -12,11 +12,34 @@ This document paraphrases the supplied challenge brief. The original attachment 
 - Keep Flutter UI text in ARB resources accessed through `AppLocalizations`, using Flutter localization tooling and `intl`; see [ADR 0008](../decisions/0008-localization.md). English remains the only supported locale.
 - Use `go_router` for application navigation, wired at app composition from the foundation stage. Feature routes are added with their implementations.
 
+### Planning Q&A: accepted decisions
+
+These answers define the implementation scope; they do not claim that the behaviour is implemented. The visual direction is inspired by Mamo Business. On 2026-09-17 the owner delegated UI/theme selection and remaining implementation decisions for an overnight increment. The [UI contract](ui-contract.md) was accepted with its merge into `dev` on 2026-09-18; the remaining [implementation contracts](../architecture/implementation-contract.md) record coordinator-selected details for subsequent owner review.
+
+| Question | Accepted answer |
+|---|---|
+| Q1. Which appearance modes are required? | Both light and dark. The delegated UI contract selected system-following behaviour without a manual selector for the initial baseline. On 2026-09-21 the owner explicitly extended this with a persistent user selector (System, Light, Dark; default System); see `UI-03` and [ADR 0013](../decisions/0013-persistent-theme-mode.md). |
+| Q2. Which statuses contribute to the monthly summary? | Approved only, for both the amount total and payment count. Pending and rejected are excluded. |
+| Q3. Where are pending requests visible initially? | Only in the approval overlay. Home recent payments and Payments contain approved/rejected history. A dedicated pending-payments screen is deferred to the [extension backlog](extension-backlog.md#deferred-owner-request-pending-payments-screen). |
+| Q4. Which currencies are supported initially? | The mock backend defaults to AED, but every payment carries its own validated currency code and the shared data flow supports another mock-backend account currency. Do not sum different currencies. |
+| Q5. Which timestamp drives history and monthly membership? | Decision time, newest first in history. An August request approved in September belongs to September's summary. Preserve creation time separately. |
+| Q6. How are timestamps stored and which time zone defines reporting? | UTC instants in the domain; ISO 8601 with a UTC `Z` suffix in serialized records. An account-level IANA `reportingTimeZone` defines monthly boundaries and initial date display. Use `Asia/Dubai` for the demonstration account, not a global business rule or a value inferred from currency/device settings. |
+| Q7. Can the approval overlay be dismissed without a decision? | No. Outside taps, swipe-to-dismiss, and Back do not close it or reject the request. Close only after a successful approve/reject operation. |
+| Q8. Can the FAB create another request while one is open? | No. Keep it visible but disable request creation until the active request is decided. No queue or replacement in the initial scope. |
+| Q9. Which device authentication methods are allowed? | Biometrics or the operating system's device PIN/passcode. This is not an application-owned PIN. Cancellation, failure, or unavailable device authentication never grants access. |
+| Q10. Does approval require authentication first? | Yes. Successfully authenticate and reveal the active request, then explicitly select Approve. Authentication alone never approves. Reject is available without authentication. |
+| Q11. What happens to revealed data after leaving the app? | Actual backgrounding remasks the active request and revokes its reveal/approval authorization. Keep the overlay open and require fresh authentication before revealing or approving again. No global app lock on return. Merely presenting the native authentication prompt is not treated as leaving the app. |
+| Q12. Are payment amounts with fractional fils supported? | No. Incoming payment amounts are already expressed to whole fils (at most two decimal places). Excess business precision is invalid data, not a supported payment scenario or an invitation to silently round the requested amount. |
+| Q13. Which business rounding mode is required? | None in the initial scope. The app approves existing amounts and sums them for reporting; it does not calculate amounts requiring fractional-fils rounding. Floating-point handling for valid amounts remains a technical concern, not a new product feature. |
+| Q14. Which money display format is used? | Fixed English formatting, such as `AED 1,234.56`, independent of device locale: the payment's explicit currency code, comma grouping, decimal point, and exactly two decimal places. |
+
+For monthly reporting, determine the current calendar month in the account's reporting zone, convert the start of that month and the start of the next month to UTC, and filter `decidedAt` using an inclusive start and exclusive end. Device time zone changes must not change the account's report. Date formatting is separate from the reporting zone. This contract does not select a persistent database or add a time-zone settings screen; the initial repository remains in memory.
+
 ## Core concepts
 
 The current SDK baseline supports Android API 24+ and iOS 15+; see [ADR 0006](../decisions/0006-fvm-managed-flutter.md) for the toolchain and platform consequences.
 
-A payment request contains an identifier, counterparty, amount, reference, creation time, and status. Status begins as pending and may transition once to approved or rejected.
+A payment request contains an identifier, counterparty, amount, reference, creation time, and status. Status begins as pending and may transition once to approved or rejected, at which point a separate decision time is recorded.
 
 ## Acceptance criteria
 
@@ -29,17 +52,28 @@ A payment request contains an identifier, counterparty, amount, reference, creat
 
 ### Home
 
-- `HOME-01`: Show a current-month payment summary.
-- `HOME-02`: Rejected payments do not contribute to the summary.
-- `HOME-03`: Show recent payments.
+- `HOME-01`: Show the total amount and count of payments approved during the current month, using decision time and the account's reporting time zone (`Asia/Dubai` for the demonstration account).
+- `HOME-02`: Rejected and pending payments do not contribute to either summary value.
+- `HOME-03`: Show recent approved and rejected payments, excluding pending requests.
 - `HOME-04`: Selecting a decided payment opens its full details.
 
 ### Payments
 
-- `PAY-01`: Show all payments ordered newest first.
+- `PAY-01`: Show all decided payments (approved and rejected) ordered by decision time, newest first. Home recent payments use the same ordering. Pending requests are not part of this history in the initial scope.
 - `PAY-02`: Each row shows the counterparty, amount, and status.
 - `PAY-03`: Selecting a decided payment opens its details.
 - `PAY-04`: A newly approved or rejected payment appears at the top immediately.
+
+### Payments search (extension slice)
+
+- `SEARCH-01`: The Payments screen offers a text search and a status dropdown (all, approved, rejected) over the decided history; with no criteria it shows the unchanged full history, and a Clear action removes the status, date, and order filters whenever one is set; the search text has its own clear icon and never shows that action by itself.
+- `SEARCH-02`: Text search matches only the counterparty and reference fields already shown without authentication, case-insensitively; the pending request is never returned by any search or filter.
+- `SEARCH-03`: Rapid query edits produce one search for the final text; clearing discards a waiting edit and every newer criterion cancels the search still in flight.
+- `SEARCH-04`: Results keep the history ordering and rows, show a result count, and expose search-specific empty and recoverable error states without altering the history load states.
+- `SEARCH-05`: An active search re-runs when the authoritative collection changes and survives the Home/Payments switch, including system Back, for the session.
+- `SEARCH-06`: A decision-date window, chosen as calendar days in the account's reporting zone, filters the decided history; the chip shows the selected days and removes the window in one action.
+- `SEARCH-07`: The history order can be changed (newest/oldest decision, highest/lowest amount, counterparty A to Z); the backend applies the order and the default order with no other criterion shows the plain history.
+- `PAY-05`: Pulling down on the Payments history reloads the authoritative collection and re-runs any open search.
 
 ### Payment details
 
@@ -51,23 +85,33 @@ A payment request contains an identifier, counterparty, amount, reference, creat
 - `APPROVAL-01`: An incoming request opens as a confirmation overlay above the current screen, not as a replacement route.
 - `APPROVAL-02`: The amount and counterparty are partially masked initially.
 - `APPROVAL-03`: The payment reference remains visible.
-- `APPROVAL-04`: Full amount and counterparty are revealed only after successful device authentication.
-- `APPROVAL-05`: The user can approve or reject the request.
+- `APPROVAL-04`: Full amount and counterparty are revealed only after successful device authentication using biometrics or the operating system's device PIN/passcode. Unavailability, failure, and cancellation keep them masked.
+- `APPROVAL-05`: Approve requires successful authentication and disclosure for the active request, followed by a separate explicit approval action. Reject does not require authentication.
 - `APPROVAL-06`: Approval closes the overlay and opens the payments list.
 - `APPROVAL-07`: Rejection closes the overlay and returns to the prior screen.
 - `APPROVAL-08`: Either decision updates all affected screens consistently.
+- `APPROVAL-09`: Outside taps, swipe-to-dismiss, and Back leave the overlay and pending request intact. Only a successful approve/reject operation closes it; an operation failure keeps it open for recovery.
+- `APPROVAL-10`: Actual backgrounding remasks the active request and invalidates its reveal/approval authorization without closing the overlay or locking the app. Fresh authentication is required to reveal or initiate approval again. Ignore late authentication results from before backgrounding; the native prompt's own transient inactive state must not invalidate its success.
 
 ### Debug action
 
 - `DEBUG-01`: A debug floating action is visible on every screen.
 - `DEBUG-02`: It can be dragged to any safe position on the screen.
 - `DEBUG-03`: Its position survives navigation for the current app session.
-- `DEBUG-04`: Activating it creates a deterministic incoming payment request.
+- `DEBUG-04`: When no request is active, activating it creates a deterministic incoming payment request. While a request is active, the action remains visible but request creation is disabled; repeated activation must not queue or replace requests.
 
 ### Handover
 
 - `DELIVERY-01`: Reviewers can try the app without compiling or configuring it.
 - `DELIVERY-02`: The repository explains key decisions and what would be improved with more time.
+- `DELIVERY-03`: The settings screen has an About section that summarises what the app does and what was delivered, and shows the installed version, build number, environment, package identifier, and whether device authentication is available. It is read-only, never starts authentication, and adds no licences page or list of limitations. Coordinator-requested under delegated authority on 2026-09-21; see [ADR 0015](../decisions/0015-about-section-and-package-info.md).
+
+### Appearance and money display
+
+- `UI-01`: Support light and dark appearances across screens, overlays, and loading/empty/error states, with readable contrast and status cues that do not rely on colour alone.
+- `UI-02`: Run in portrait-up orientation on iOS and Android. Compact phones and expanded portrait tablets remain responsive; landscape layouts are outside the baseline.
+- `UI-03`: Provide a user-selectable appearance mode with three states — System, Light, and Dark — that drives the application theme, defaults to System, and persists across app launches. The selection is reachable from a discoverable, accessible control and applies to normal app composition; the standalone failure UI continues to follow the system appearance. See [ADR 0013](../decisions/0013-persistent-theme-mode.md).
+- `MONEY-01`: The demo source uses AED, while each payment carries a validated three-letter currency code. Incoming amounts use at most two decimal places and display in fixed English form such as `AED 1,234.56` regardless of device locale. Do not sum different currencies or impose a client-side transaction maximum. Money remains represented as Dart `double`; no precision tolerance, hidden minor-unit model, or business-rounding feature is in scope.
 
 ## Product invariants
 
@@ -77,13 +121,6 @@ A payment request contains an identifier, counterparty, amount, reference, creat
 - Totals, recent items, the full list, and details derive from the same authoritative payment state.
 - All displayed money uses an explicit currency and consistent formatting.
 
-## Clarifications to decide during implementation
+## Delegated implementation details
 
-- Exact definition of the current-month summary: approved-only versus approved plus pending.
-- Reporting calendar/time zone and whether the summary uses creation or decision time.
-- Ordering when an older pending request is decided: reconcile newest-first with newly decided items appearing at the top.
-- Exact mask format for the counterparty and amount.
-- Native authentication fallback policy when biometrics are unavailable.
-- Overlay dismissal/back behaviour, repeated incoming requests, and reveal state on background/resume.
-- Whether pending rows appear outside the overlay and how they avoid exposing full sensitive data before authentication.
-- Final seeded dataset, currency, and locale.
+The [UI contract](ui-contract.md) selects masks, appearance, layouts, and states. The [implementation contracts](../architecture/implementation-contract.md) select date formatting, equal-time ordering, money boundary behaviour, deterministic seed requirements, process reset, and in-flight decision handling. These are delegated choices, not additional answers attributed to the owner. Future product additions remain subject to separate agreement.

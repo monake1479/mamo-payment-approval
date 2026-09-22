@@ -1,0 +1,16 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:mamo_approval/common/data/payments/error_handling/payments_failure.dart';
+
+part 'approval_failure.freezed.dart';
+
+enum ApprovalAuthenticationFailure { cancelled, unavailable, failed }
+
+@freezed
+sealed class ApprovalFailure with _$ApprovalFailure {
+  const factory ApprovalFailure.authentication(
+    ApprovalAuthenticationFailure reason,
+  ) = ApprovalAuthenticationError;
+
+  const factory ApprovalFailure.decision(PaymentsFailure failure) =
+      ApprovalDecisionError;
+}

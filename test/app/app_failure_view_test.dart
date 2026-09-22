@@ -2,16 +2,16 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mamo_payment_approval_challenge/app/config/app_environment.dart';
-import 'package:mamo_payment_approval_challenge/app/diagnostics/local_diagnostics.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/app_failure.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/app_failure_app.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/app_failure_view.dart';
-import 'package:mamo_payment_approval_challenge/app/errors/configure_error_handling.dart';
-import 'package:mamo_payment_approval_challenge/l10n/generated/app_localizations.dart';
+import 'package:mamo_approval/app/config/app_environment.dart';
+import 'package:mamo_approval/app/diagnostics/local_diagnostics.dart';
+import 'package:mamo_approval/app/errors/app_failure.dart';
+import 'package:mamo_approval/app/errors/app_failure_app.dart';
+import 'package:mamo_approval/app/errors/app_failure_view.dart';
+import 'package:mamo_approval/app/errors/configure_error_handling.dart';
+import 'package:mamo_approval/l10n/generated/app_localizations.dart';
 
 void main() {
-  for (final Size size in <Size>[const Size(320, 640), const Size(1024, 768)]) {
+  for (final Size size in <Size>[const Size(320, 640), const Size(768, 1024)]) {
     for (final AppFailureCode code in AppFailureCode.values) {
       testWidgets('$code is localized at $size with large text', (
         tester,
